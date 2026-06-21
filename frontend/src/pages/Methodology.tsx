@@ -3,9 +3,9 @@ import { Callout, Cite, Equation, InlineMath, ReferenceList, Tabs, useShellLang 
 export default function Methodology() {
   const es = useShellLang() === 'es';
   return (
-    <article className="pf-doc">
+    <article className="page-body prose">
       <h1>{es ? 'Metodología' : 'Methodology'}</h1>
-      <p className="pf-lead">{es
+      <p className="lede">{es
         ? 'Generación sintética → clasificación por parche → segmentación run-merge → estiba por profundidad. La segmentación EMERGE del clasificador de parches, así que no hay un segmentador pesado aparte.'
         : 'Synthetic generation → per-patch classification → run-merge segmentation → depth stitching. The segmentation EMERGES from the patch classifier, so there is no separate heavy segmenter.'}</p>
 
