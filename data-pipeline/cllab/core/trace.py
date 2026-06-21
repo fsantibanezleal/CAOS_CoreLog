@@ -1,29 +1,38 @@
-"""The compact TRACE = the web-replay artifact (decimated trajectory + summary). Part of CONTRACT 2: its shape is
-mirrored by frontend/src/lib/contract.types.ts, so a drift fails the web build. Schema id is versioned."""
+"""The compact per-case TRACE = the web-replay artifact. Part of CONTRACT 2: its shape is mirrored by
+frontend/src/lib/contract.types.ts, so a drift fails the web build. Each trace is built deterministically from the
+committed CV outputs (case-results.json, produced by the SAME TS engine the browser runs) + the learned-model metrics
+(cl-learned.json, when present). It carries the tray SPEC so the browser can re-segment LIVE, the ground-truth + the
+baseline segments, the depth strip-log, and the model metrics. It references the shared ONNX, never copies it."""
 from __future__ import annotations
 
-from ..io.schema import SIRResult
-
-TRACE_SCHEMA = "example.trace/v1"
-MAX_POINTS = 200  # decimate longer trajectories so the committed artifact stays small (replay, not raw data)
+from typing import Any
 
 
-def build_trace(result: SIRResult) -> dict:
-    n = len(result.t)
-    if n > MAX_POINTS:
-        idx = [round(i * (n - 1) / (MAX_POINTS - 1)) for i in range(MAX_POINTS)]
-    else:
-        idx = list(range(n))
+TRACE_SCHEMA = "corelog.trace/v1"
+
+
+def _learned_block(learned: dict | None) -> dict:
+    if not learned:
+        return {"status": "pending-training", "lithoCNN": None, "ood": None}
+    return {
+        "status": "trained",
+        "lithoCNN": learned.get("lithoCNN"),   # {acc, acc_baseline, nEval, classes}
+        "ood": learned.get("ood"),             # {auc, nEval}
+    }
+
+
+def build_trace(case: Any, *, case_result: dict, learned: dict | None) -> dict:
     return {
         "schema": TRACE_SCHEMA,
-        "case_id": result.case_id,
-        "t": [round(result.t[i], 3) for i in idx],
-        "S": [round(result.S[i], 2) for i in idx],
-        "I": [round(result.I[i], 2) for i in idx],
-        "R": [round(result.R[i], 2) for i in idx],
-        "summary": {
-            "peak_I": round(result.peak_I, 2),
-            "t_peak": round(result.t_peak, 2),
-            "attack_rate": round(result.attack_rate, 4),
-        },
+        "case_id": case.id,
+        "name": case.name,
+        "category": case.category,
+        "real_or_synthetic": case.real_or_synthetic,
+        "expected_band": case.expected_band,
+        "spec": case_result.get("spec"),                 # {nChannels, chWidthPx, chHeightPx, depthFromM, depthToM, mmPerPx, seed, suite, quality}
+        "truth": case_result.get("truth", []),           # ground-truth segments
+        "baseline": case_result.get("baseline", {}),     # {segments, pixelAccuracy, confusion} — the classical classifier
+        "strip_log": case_result.get("stripLog", []),    # depth-ordered lithology bands
+        "grade_legend": case_result.get("lithoLegend"),  # the lithology palette used
+        "learned": _learned_block(learned),
     }

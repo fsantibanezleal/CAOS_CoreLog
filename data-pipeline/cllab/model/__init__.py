@@ -1,3 +1,4 @@
-"""The pure-Python analytic core — Pyodide-safe, shared by the offline stages AND the live lane (same code path).
-EXAMPLE: an SIR epidemic model. Replace with your product's research-chosen engine (kept here only if pure-Python
-and light enough for the live lane; heavy SOTA engines live in the offline stages, never imported by live)."""
+"""The learned-model contracts. CoreLog's CV core (the tray generator + run-merge segmentation + the classical
+baseline) is the TypeScript engine in frontend/src/cv/ — it is NOT re-implemented in Python. This package only
+declares the patch/feature contracts of the two learned models so the offline trainer (science/train_litho.py) and
+the in-browser inference agree byte-for-byte. See model/learned.py."""

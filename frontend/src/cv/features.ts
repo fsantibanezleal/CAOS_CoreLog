@@ -2,7 +2,7 @@
 // the learned CNN is measured against (the honest "does ML beat hand-crafted features?" comparison). Pure TS, no
 // training: the per-lithology centroids are estimated from clean synthetic patches of each rock type.
 
-import { makeTray, extractPatch } from './tray.ts';
+import { extractPatch } from './tray.ts';
 import { LITHOLOGIES, type Lithology, N_LITHO, PATCH, type PatchClassifier, type TraySpec } from './types.ts';
 
 export const N_FEAT = 8;

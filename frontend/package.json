@@ -9,7 +9,7 @@
     "prebuild": "node copy-data.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "node --import tsx --test test/cv.test.ts",
+    "test": "node --import tsx --test test/cv.test.ts test/contract.test.ts",
     "bake": "node --import tsx ../data-pipeline/cllab/science/bake_cases.mjs"
   },
   "dependencies": {
