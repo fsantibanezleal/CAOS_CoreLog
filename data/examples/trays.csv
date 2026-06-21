@@ -1,0 +1,9 @@
+tray_id,n_channels,px_width,px_height,depth_from_m,depth_to_m,mm_per_px,suite,quality
+S-PORPH,4,320,40,100.0,101.0,1.0,porphyry,clean
+S-SED,4,320,40,100.0,101.0,1.0,sedimentary,clean
+S-VOLC,4,320,40,100.0,101.0,1.0,volcanic,clean
+Q-CLEAN,3,320,40,100.0,100.75,1.0,porphyry,clean
+Q-SHADOW,3,320,40,100.0,100.75,1.0,porphyry,shadow
+Q-WET,3,320,40,100.0,100.75,1.0,porphyry,wet
+C-UNIFORM,2,320,40,100.0,100.5,1.0,uniform,clean
+C-SHARP,1,320,40,100.0,100.25,1.0,sharp,clean

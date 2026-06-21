@@ -28,5 +28,5 @@ line-length = 110
 target-version = "py311"
 
 [tool.ruff.lint]
-# S/I/R are the standard SIR compartment names; single-letter here is intentional domain notation, not ambiguous.
+# allow short index names (i, j, ix, iy) in the patch/grid loops — intentional domain notation.
 ignore = ["E741"]
