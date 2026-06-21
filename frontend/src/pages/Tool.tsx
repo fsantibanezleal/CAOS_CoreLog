@@ -4,7 +4,7 @@ import { CASES, caseSpec, type CoreCase } from '../cv/cases.ts';
 import { classifyTray, makeBaselineClassifier, makeTray, scoreVsTruth } from '../cv/index.ts';
 import { LITHO_INFO, LITHOLOGIES, type Lithology, type Segment } from '../cv/types.ts';
 import { classifyTrayCNN } from '../lib/cnn.ts';
-import { loadManifest } from '../lib/artifacts.ts';
+import { loadLearned, loadManifest, type LearnedFile } from '../lib/artifacts.ts';
 import type { CaseManifest } from '../lib/contract.types.ts';
 import { TrayView } from '../viz/TrayView.tsx';
 import { StripLog } from '../viz/StripLog.tsx';
@@ -26,6 +26,7 @@ export default function Tool() {
   const [manifest, setManifest] = useState<CaseManifest | null>(null);
   const [cnnSegs, setCnnSegs] = useState<Segment[] | null>(null);
   const [cnnPending, setCnnPending] = useState(true);
+  const [learned, setLearned] = useState<LearnedFile | null>(null);
 
   const theCase = useMemo<CoreCase>(() => CASES.find((c) => c.id === caseId) ?? CASES[0], [caseId]);
   const clf = useMemo(() => makeBaselineClassifier(7), []);
@@ -43,6 +44,7 @@ export default function Tool() {
     return () => { cancel = true; };
   }, [tray, conf]);
   useEffect(() => { loadManifest(caseId).then(setManifest).catch(() => setManifest(null)); }, [caseId]);
+  useEffect(() => { loadLearned().then(setLearned).catch(() => setLearned(null)); }, []);
 
   const cnnReady = useCnn && cnnSegs != null;
   const segs = cnnReady ? cnnSegs! : baseSegs;
@@ -153,15 +155,27 @@ export default function Tool() {
       id: 'learned', label: es ? 'Modelos aprendidos' : 'Learned models',
       content: (
         <div className="pf-vizstack">
-          {cnnPending ? (
+          {learned ? (
+            <>
+              <table className="cmp-table">
+                <thead><tr><th>{es ? 'modelo' : 'model'}</th><th>{es ? 'métrica (held-out)' : 'metric (held-out)'}</th><th>{es ? 'aprendido' : 'learned'}</th><th>{es ? 'baseline clásico' : 'classical baseline'}</th></tr></thead>
+                <tbody>
+                  <tr><td>lithology-cnn</td><td>{es ? 'precisión' : 'accuracy'}</td><td><b>{(learned.lithoCNN.acc * 100).toFixed(1)}%</b></td><td>{(learned.lithoCNN.acc_baseline * 100).toFixed(1)}%</td></tr>
+                  <tr><td>core-ood</td><td>AUC</td><td><b>{learned.ood.auc.toFixed(3)}</b></td><td>—</td></tr>
+                </tbody>
+              </table>
+              <p className="pf-note">{cnnPending
+                ? (es ? 'El ONNX del CNN aún no está cargado en esta sesión — la app usa el baseline en vivo. Activa el toggle "CNN" en los controles.' : 'The CNN ONNX is not loaded in this session yet — the app uses the baseline live. Flip the "CNN" toggle in the controls.')
+                : (es ? 'CNN cargado — el toggle "CNN" segmenta en vivo (onnxruntime-web). El ground-truth del generador es la autoridad.' : 'CNN loaded — the "CNN" toggle segments live (onnxruntime-web). The generator ground truth is the authority.')}</p>
+              <p className="pf-cap">{learned.honesty}</p>
+            </>
+          ) : (
             <div className="pf-pending">
               <strong>{es ? 'CNN de litología: pendiente de entrenamiento' : 'Lithology CNN: pending training'}</strong>
               <p>{es
-                ? 'El clasificador CNN por parche (vs el baseline clásico color/textura) y el autoencoder OOD se entrenan offline (torch → ONNX) en un commit posterior. La app usa el baseline clásico EN VIVO mientras tanto; el ground-truth del generador es siempre la autoridad.'
-                : 'The per-patch lithology CNN (vs the classical colour/texture baseline) and the OOD autoencoder are trained offline (torch → ONNX) in a later commit. The app uses the classical baseline LIVE meanwhile; the generator ground truth is always the authority.'}</p>
+                ? 'Corre `python -m cllab.pipeline all --retrain` para entrenar el CNN + el autoencoder OOD (torch → ONNX). La app usa el baseline clásico EN VIVO mientras tanto.'
+                : 'Run `python -m cllab.pipeline all --retrain` to train the CNN + the OOD autoencoder (torch → ONNX). The app uses the classical baseline LIVE meanwhile.'}</p>
             </div>
-          ) : (
-            <p className="pf-note">{es ? 'CNN cargado — inferencia en vivo (onnxruntime-web).' : 'CNN loaded — live inference (onnxruntime-web).'}</p>
           )}
         </div>
       ),
