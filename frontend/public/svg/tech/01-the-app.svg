@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="CoreLog — core-tray image to a depth strip-log">
+  <style>
+    .arch-svg text { font-family: var(--font-sans, Inter, "Segoe UI", system-ui, sans-serif); }
+    .arch-svg .mono { font-family: var(--font-mono, ui-monospace, Consolas, monospace); }
+    .arch-svg .bx { fill: var(--color-surface-2); stroke: var(--color-border); stroke-width: 1.2; }
+    .arch-svg .bx-hi { stroke: var(--color-accent); }
+    .arch-svg .bx-good { stroke: var(--color-good); }
+    .arch-svg .ttl { fill: var(--color-fg); font-size: 13px; font-weight: 700; }
+    .arch-svg .sub { fill: var(--color-fg-subtle); font-size: 10px; }
+    .arch-svg .it { fill: var(--color-fg); font-size: 11px; font-weight: 600; }
+    .arch-svg .cd { fill: var(--color-accent); font-size: 9.5px; }
+    .arch-svg .mu { fill: var(--color-fg-subtle); font-size: 10px; }
+    .arch-svg .flow { fill: none; stroke: var(--color-fg-faint); stroke-width: 1.6; }
+    .arch-svg .l1 { fill: var(--color-accent); opacity: 0.5; }
+    .arch-svg .l2 { fill: var(--color-good); opacity: 0.5; }
+    .arch-svg .l3 { fill: var(--color-warn); opacity: 0.5; }
+    .arch-svg .core { fill: var(--color-fg-faint); opacity: 0.25; }
+  </style>
+  <defs>
+    <marker id="ta-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L8,4 L0,8 z" fill="var(--color-fg-faint)"/>
+    </marker>
+  </defs>
+
+  <text class="ttl" x="22" y="30">CoreLog Vision — what lithology is each metre of core?</text>
+  <text class="sub" x="22" y="47">a core-logging product: from a core-tray image, a per-patch CNN + run-merge segmentation give a depth strip-log of lithology + confidence</text>
+
+  <!-- 1. The question -->
+  <rect class="bx bx-hi" x="20" y="74" width="196" height="150" rx="11"/>
+  <text class="it" x="34" y="98">The question</text>
+  <text class="mu" x="34" y="118">Logging a core tray</text>
+  <text class="mu" x="34" y="134">by eye is slow +</text>
+  <text class="mu" x="34" y="150">subjective. Which</text>
+  <text class="mu" x="34" y="166">lithology is each</text>
+  <text class="mu" x="34" y="182">segment, by depth?</text>
+  <text class="cd mono" x="34" y="206">6 lithologies</text>
+
+  <!-- 2. The input: tray -->
+  <rect class="bx" x="244" y="74" width="196" height="150" rx="11"/>
+  <text class="it" x="258" y="98">The input</text>
+  <rect class="core" x="262" y="120" width="160" height="14" rx="3"/>
+  <rect class="core" x="262" y="138" width="160" height="14" rx="3"/>
+  <rect class="core" x="262" y="156" width="160" height="14" rx="3"/>
+  <rect class="core" x="262" y="174" width="160" height="14" rx="3"/>
+  <text class="mu" x="258" y="206">a core-tray photo (N channels)</text>
+  <text class="cd mono" x="258" y="220" style="font-size:8.5px">tray descriptor · mm/px</text>
+
+  <!-- 3. The method -->
+  <rect class="bx bx-hi" x="468" y="74" width="196" height="150" rx="11"/>
+  <text class="it" x="482" y="98">The method</text>
+  <text class="mu" x="482" y="118">• per-patch CNN class</text>
+  <text class="mu" x="482" y="134">• colour/texture baseline</text>
+  <text class="mu" x="482" y="150">• run-merge → segments</text>
+  <text class="mu" x="482" y="166">• OOD-AE flags uncertain</text>
+  <text class="cd mono" x="482" y="190">cv/ · *.onnx (live)</text>
+  <text class="mu" x="482" y="210">runs in the browser</text>
+
+  <!-- 4. The value: strip log -->
+  <rect class="bx bx-good" x="692" y="74" width="188" height="150" rx="11"/>
+  <text class="it" x="706" y="98">The value</text>
+  <rect class="l1" x="800" y="116" width="40" height="22"/>
+  <rect class="l2" x="800" y="138" width="40" height="34"/>
+  <rect class="l3" x="800" y="172" width="40" height="18"/>
+  <rect class="l1" x="800" y="190" width="40" height="12"/>
+  <text class="mu" x="708" y="130">depth</text>
+  <text class="mu" x="708" y="150">strip-</text>
+  <text class="mu" x="708" y="170">log</text>
+  <text class="cd mono" x="706" y="218">lithology · confidence</text>
+
+  <path class="flow" d="M216,149 H242" marker-end="url(#ta-arrow)"/>
+  <path class="flow" d="M440,149 H466" marker-end="url(#ta-arrow)"/>
+  <path class="flow" d="M664,149 H690" marker-end="url(#ta-arrow)"/>
+
+  <!-- bottom band -->
+  <rect class="bx" x="20" y="252" width="860" height="184" rx="11"/>
+  <text class="it" x="36" y="278">It is a real system, not a demo:</text>
+  <text class="mu" x="36" y="302">• the CV engine (frontend/src/cv/) re-segments the tray live on every case / confidence-threshold / classifier change;</text>
+  <text class="mu" x="36" y="324">• the segmentation EMERGES from a sliding patch classifier (3-tap smoothing + run-merge) — no separate heavy segmenter;</text>
+  <text class="mu" x="36" y="346">• a lithology CNN (held-out accuracy 0.996 vs the classical colour/texture baseline 0.939) + an OOD autoencoder (AUC 0.790) run client-side as ONNX;</text>
+  <text class="mu" x="36" y="368">• out-of-distribution / low-confidence core is flagged + hatched, not forced into a class;</text>
+  <text class="mu" x="36" y="390">• Contract 1 accepts your own tray descriptor; six documented pages; the tray images are synthetic, the metrics scored vs the generator truth.</text>
+  <text class="cd mono" x="36" y="418">core-tray image  →  per-patch lithology CNN + run-merge segmentation  →  depth strip-log · confidence · OOD flag</text>
+</svg>
