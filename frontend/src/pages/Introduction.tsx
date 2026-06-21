@@ -3,9 +3,9 @@ import { Callout, Cite, Tabs, useShellLang } from '@fasl-work/caos-app-shell';
 export default function Introduction() {
   const es = useShellLang() === 'es';
   return (
-    <article className="pf-doc">
+    <article className="page-body prose">
       <h1>{es ? 'Introducción' : 'Introduction'}</h1>
-      <p className="pf-lead">{es
+      <p className="lede">{es
         ? 'CoreLog Vision automatiza el logueo litológico de testigos de sondaje: toma la foto de una bandeja de testigos, segmenta el core, clasifica la litología de cada segmento con una confianza, y arma un strip-log continuo por profundidad.'
         : 'CoreLog Vision automates drill-core lithology logging: it takes a core-tray photo, segments the core, classifies each segment’s lithology with a confidence, and assembles a continuous depth strip-log.'}</p>
 
