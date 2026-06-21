@@ -26,6 +26,24 @@ jobs:
       - name: CONTRACT 2 — manifests <-> artifacts consistent (no drift)
         run: python scripts/check_artifacts.py
 
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: Engine tests (the tray-generator + segmentation oracles)
+        run: npm test
+      - name: Type-check + build the SPA
+        run: npm run build
+
   guards:
     runs-on: ubuntu-latest
     steps:
