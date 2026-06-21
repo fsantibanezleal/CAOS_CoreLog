@@ -1,10 +1,3 @@
-"""Stage 1 — preprocess: read the raw parameter table and apply CONTRACT 1 (schema + outlier policy).
-Output = a ContractReport (accepted SIRParams + rejected rows + flags). The bring-your-own-data entry point."""
-from __future__ import annotations
-
-from ..io.contract import ContractReport, validate_rows
-from ..io.formats import read_csv_rows
-
-
-def run(raw_csv_path: str) -> ContractReport:
-    return validate_rows(read_csv_rows(raw_csv_path))
+"""Stage 1 — preprocess (heavy lane): generate the synthetic core trays for the cases by running the SAME TypeScript
+generator the browser uses (frontend/src/cv/tray.ts, via tsx). Delegates to the preserved science
+`cllab/science/bake_cases.mjs`, invoked by `pipeline.retrain`. No Python re-port of the generator."""

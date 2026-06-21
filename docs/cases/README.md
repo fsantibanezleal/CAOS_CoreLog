@@ -1,19 +1,23 @@
 # Cases + categories
 
-Each case (`data-pipeline/cllab/cases/`) declares a **CATEGORY** (the domain problem-type taxonomy), its
-params, an expected band (what a domain expert should see), and a real|synthetic flag. `registry.list_categories()`
-groups them. The **App shows ONE selected case**; **Experiments/Benchmark show cross-case summaries by category**
-(never mixed into the App).
+Each case (`data-pipeline/cllab/cases/core_cases.py`, mirrored in `frontend/src/cv/cases.ts`) declares a **CATEGORY**,
+its parameters, an **expected band** (what a domain reader should see), a **validation anchor** (a property the result
+MUST satisfy — checked in `frontend/test/contract.test.ts`), and a real|synthetic flag. The **App shows ONE selected
+case**; **Experiments/Benchmark show cross-case summaries** (never mixed into the App).
 
-## Coverage matrix (EXAMPLE — SIR; replace with your real, varied matrix)
+## The 8-case matrix
 
-| id | category | expected band | real/synthetic |
+| id | category | tray | validation anchor |
 |---|---|---|---|
-| `EX01_subcritical` | sub-critical (R0<1) | no outbreak; attack rate ≈ 0 | synthetic |
-| `EX02_epidemic` | epidemic (R0>1) | clear single peak; attack rate ≈ 0.7–0.9 | synthetic |
-| `EX03_fast_burn` | fast-burn (high R0) | early sharp peak; attack rate → ~1 | synthetic |
-| `EX04_slow_spread` | slow-spread (R0~1.2) | broad low peak | synthetic |
-| `CTRL_degenerate` | control: degenerate | `I0=0` → no dynamics (must not crash) | synthetic |
+| `S-PORPH` | lithology suite | porphyry (granite · schist · ore) | baseline pixel-accuracy > 0.6 (textures separable) |
+| `S-SED` | lithology suite | sedimentary (sandstone · limestone) | segments map to monotone depth |
+| `S-VOLC` | lithology suite | volcanic (basalt · schist) | schist recovered via its foliation (texture, not just colour) |
+| `Q-CLEAN` | image quality | porphyry, even lighting | the reference accuracy band |
+| `Q-SHADOW` | image quality | porphyry, shadow gradient | accuracy ≤ the clean case (a known robustness drop) |
+| `Q-WET` | image quality | porphyry, wet core | accuracy ≤ the clean case |
+| `C-UNIFORM` | oracle control | single lithology (limestone) | **closed-form**: pixel-accuracy > 0.85 on the one class |
+| `C-SHARP` | oracle control | two lithologies, sharp cut | **closed-form**: a segment boundary within 20 px of the known cut |
 
-A real product fills a matrix spanning its real axes (not "two of everything") + explicit negative/sanity
-controls, and adds one `docs/cases/<category>/<case-id>.md` per case (formalization + expected results + anchor).
+The suites vary the **geology**; the quality cases reuse the porphyry geology and vary the **imaging** (so the
+robustness comparison isolates one axis); the controls are the **exactness anchors** (their answer is computable by
+hand, so any regression in the classifier/segmentation is caught immediately).

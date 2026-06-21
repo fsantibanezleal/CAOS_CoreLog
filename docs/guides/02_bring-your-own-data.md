@@ -1,17 +1,46 @@
-# Guide — bring your own data
+# Guide — bring your own tray
 
-The product is **applicable to NEW data**, not just the baked cases — that is what makes it a tool. The door is
-**CONTRACT 1** (`data-pipeline/cllab/io/contract.py`).
+CoreLog is built to log **your** core tray, not just the synthetic cases. The gate is CONTRACT 1
+(`cllab/io/contract.py`); the schema + outlier policy are documented in [data-contracts](../architecture/08_data-contracts.md)
+and `data/README.md`.
 
-1. Put your input in the documented standard format (see [`data/README.md`](../../data/README.md) — EXAMPLE: a
-   params CSV with `case_id,beta,gamma,N,I0[,days]`). Drop the file under `data/raw/` (git-ignored).
-2. Point `preprocess` at it (or pass it on the CLI) and run `scripts/precompute.{sh,ps1}`. CONTRACT 1 validates
-   each row: **rejected** with a reason if it violates the schema/ranges (NaN, out-of-range, `I0>N`, …),
-   **flagged** if plausible-but-suspicious (e.g. `R0>20`), **accepted** otherwise. Nothing is silently coerced.
-3. The pipeline produces a compact artifact + manifest you can replay in the SPA, exactly like the built-in cases.
-4. **Live (optional):** if the [gate](../architecture/03_the-gate.md) classifies your case `live`, the frontend's
-   Pyodide lane calls `cllab.live.run_trace_json({...your params...})` and renders the result in-browser — no
-   server, no precompute.
+## The tray-descriptor schema
 
-If your data legitimately doesn't fit, extend CONTRACT 1 (and its tests) **deliberately** — never loosen it just
-to make bad data pass.
+A CSV (or any table) with one row per tray:
+
+| column | unit | rule |
+|---|---|---|
+| `tray_id` | — | identifier |
+| `n_channels` | count | 1–12; the number of parallel core channels in the photo |
+| `px_width`, `px_height` | px | the per-channel pixel size (16–8000) |
+| `depth_from_m`, `depth_to_m` | metres | the depth interval the tray covers; `to > from` |
+| `mm_per_px` | mm/px | the image scale (0.02–5.0; > 2.0 is flagged as coarse) |
+| `suite`, `quality` | — | optional (for the synthetic generator) |
+
+A tiny valid example ships at `data/examples/trays.csv`.
+
+## Validate it
+
+```python
+from cllab.io.contract import validate_records, validate_image
+from cllab.io.formats import read_csv_rows
+
+rep = validate_records(read_csv_rows("my_trays.csv"))
+print(rep.summary())          # "N accepted, M rejected, K flagged"
+for r in rep.rejected: print("REJECT", r["reason"])
+for f in rep.flagged:  print("FLAG  ", f["flags"])
+
+# or validate a single dropped image's metadata:
+validate_image({"width": 1280, "height": 160, "n_channels": 4,
+                "depth_from_m": 100, "depth_to_m": 101, "mm_per_px": 1})
+```
+
+Bad rows are **rejected with a reason** (never silently coerced); suspicious-but-usable rows are **flagged** (accepted;
+the flag is recorded).
+
+## What to check first
+
+- **Channels** — `n_channels` is how many parallel core rows the photo holds; the App splits the height evenly.
+- **Depth** — `depth_to_m` must exceed `depth_from_m`; the strip-log maps along-core x → depth within each channel's
+  slice, top channel = shallowest.
+- **Scale** — `mm_per_px` drives the flag for coarse imagery; below ~2 mm/px the texture is resolvable.

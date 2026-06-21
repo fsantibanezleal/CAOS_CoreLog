@@ -1,39 +1,29 @@
-"""Typed objects passed between pipeline stages — the inter-stage contract. Plain dataclasses (Pyodide-safe)."""
+"""Typed objects passed between pipeline stages — the inter-stage contract. Plain dataclasses (no heavy deps)."""
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-
-@dataclass(frozen=True)
-class SIRParams:
-    """One validated operating point (EXAMPLE domain: an SIR epidemic)."""
-    case_id: str
-    beta: float        # 1/day, effective contact rate
-    gamma: float       # 1/day, recovery rate
-    N: float           # population
-    I0: float          # initial infected
-    days: int = 160    # horizon
+LITHOLOGIES = ("granite", "basalt", "sandstone", "limestone", "schist", "ore")  # matches frontend src/cv/types.ts
+SUITES = ("porphyry", "sedimentary", "volcanic", "uniform", "sharp")
+QUALITIES = ("clean", "shadow", "wet")
 
 
 @dataclass(frozen=True)
-class FeatureRow:
-    """Derived features for the surrogate (feature_extraction stage)."""
-    case_id: str
-    r0: float          # beta / gamma (basic reproduction number)
-    beta: float
-    gamma: float
-    n_scaled: float    # log10(N)
-    i0_frac: float     # I0 / N
+class TrayDescriptor:
+    """One validated core-tray descriptor (CONTRACT 1 output) — the tray geometry + the depth interval it covers.
 
+    The per-PIXEL image of a real dropped tray is validated by the same module (io.contract.validate_image) against
+    the image schema documented in data/README.md. For the synthetic cases the tray is regenerated from this
+    descriptor + a seed by the TypeScript engine (frontend/src/cv/).
+    """
 
-@dataclass(frozen=True)
-class SIRResult:
-    """The engine output for one case (infer stage) — the raw, undecimated trajectory + scalars."""
-    case_id: str
-    t: list[float]
-    S: list[float]
-    I: list[float]
-    R: list[float]
-    peak_I: float
-    t_peak: float
-    attack_rate: float
+    tray_id: str
+    n_channels: int
+    px_width: int            # along-core pixels per channel
+    px_height: int           # pixels per channel (y)
+    depth_from_m: float
+    depth_to_m: float
+    mm_per_px: float
+    suite: str = "porphyry"  # one of SUITES (synthetic cases)
+    quality: str = "clean"   # one of QUALITIES
+    flags: tuple[str, ...] = ()
