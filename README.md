@@ -1,5 +1,9 @@
 # CoreLog Vision — drill-core lithology from core-tray imagery
 
+[![CI](https://img.shields.io/github/actions/workflow/status/fsantibanezleal/CAOS_CoreLog/ci.yml?branch=main&label=CI)](https://github.com/fsantibanezleal/CAOS_CoreLog/actions)
+[![License](https://img.shields.io/github/license/fsantibanezleal/CAOS_CoreLog)](LICENSE)
+[![Live demo](https://img.shields.io/badge/demo-live-2ea44f)](https://corelog.fasl-work.com)
+
 [![CI](https://github.com/fsantibanezleal/CAOS_CoreLog/actions/workflows/ci.yml/badge.svg)](https://github.com/fsantibanezleal/CAOS_CoreLog/actions)
 **Live:** https://corelog.fasl-work.com
 
