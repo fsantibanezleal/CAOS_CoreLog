@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cllab"
 # PEP 440 form of the display version X.XX.XXX (see CHANGELOG.md + cllab.__version__).
-version = "0.6.0"
+version = "0.7.0"
 description = "CoreLog Vision — drill-core lithology from core-tray imagery (per-patch CNN + segmentation + depth strip log, ADR-0057)."
 readme = "README.md"
 requires-python = ">=3.11"

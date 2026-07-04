@@ -31,7 +31,7 @@ export interface LithoLegendItem { id: string; en: string; es: string; rgb: [num
 
 export interface LearnedMetrics {
   status: 'trained' | 'pending-training';
-  lithoCNN: { acc: number; acc_baseline: number; nEval: number; classes: string[] } | null;
+  lithoCNN: { acc: number; acc_baseline: number; nEval: number; nTrain?: number; split?: string; classes: string[] } | null;
   ood: { auc: number; nEval: number } | null;
 }
 
