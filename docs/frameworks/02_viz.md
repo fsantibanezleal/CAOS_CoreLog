@@ -1,4 +1,4 @@
-# Framework — the visualisation stack
+# Framework, the visualisation stack
 
 CoreLog uses one renderer per data type (per the CAOS interactive-visualisation rubric), all interactive and theme-
 aware where appropriate.

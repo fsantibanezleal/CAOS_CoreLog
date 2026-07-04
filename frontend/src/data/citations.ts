@@ -1,6 +1,6 @@
 import type { Citation } from '@fasl-work/caos-app-shell';
 
-// The references CoreLog's methodology rests on — core-image lithology CV + the classical texture baseline.
+// The references CoreLog's methodology rests on, core-image lithology CV + the classical texture baseline.
 export const CITATIONS: Citation[] = [
   {
     id: 'baraboshkin2020',

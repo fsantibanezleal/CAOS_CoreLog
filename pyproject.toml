@@ -1,4 +1,4 @@
-# CoreLog Vision — the offline engine package (ADR-0057, instantiated from the product-repo archetype).
+# CoreLog Vision, the offline engine package (ADR-0057, instantiated from the product-repo archetype).
 # The EXAMPLE engine is numpy-only on purpose (an instantly-installable, no-hang reference); a real product pins
 # its research-chosen SOTA engines in data-pipeline/requirements.txt and documents them in docs/frameworks/.
 [build-system]
@@ -8,8 +8,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cllab"
 # PEP 440 form of the display version X.XX.XXX (see CHANGELOG.md + cllab.__version__).
-version = "0.7.0"
-description = "CoreLog Vision — drill-core lithology from core-tray imagery (per-patch CNN + segmentation + depth strip log, ADR-0057)."
+version = "0.7.1"
+description = "CoreLog Vision, drill-core lithology from core-tray imagery (per-patch CNN + segmentation + depth strip log, ADR-0057)."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -28,5 +28,5 @@ line-length = 110
 target-version = "py311"
 
 [tool.ruff.lint]
-# allow short index names (i, j, ix, iy) in the patch/grid loops — intentional domain notation.
+# allow short index names (i, j, ix, iy) in the patch/grid loops, intentional domain notation.
 ignore = ["E741"]

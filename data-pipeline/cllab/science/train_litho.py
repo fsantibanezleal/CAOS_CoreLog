@@ -1,12 +1,12 @@
-"""HEAVY lane (local-only) — train CoreLog's two learned models and export them to ONNX + a metrics JSON. Run inside
+"""HEAVY lane (local-only), train CoreLog's two learned models and export them to ONNX + a metrics JSON. Run inside
 the .venv-precompute (torch) after gen_train.mjs has written data/raw/{litho-train,ood-patches}.json:
 
     python data-pipeline/cllab/science/train_litho.py
 
-1. lithology-cnn — a small per-patch CNN classifier (PATCH×PATCH RGB → 6-way softmax), benchmarked vs the CLASSICAL
+1. lithology-cnn, a small per-patch CNN classifier (PATCH×PATCH RGB → 6-way softmax), benchmarked vs the CLASSICAL
    colour/texture nearest-centroid baseline on the SAME held-out patches (the baseline's prediction is baked into the
    training table by gen_train.mjs, so the comparison is apples-to-apples). Reports held-out accuracy + confusion.
-2. core-ood — a small patch autoencoder; the reconstruction MSE separates in-distribution core from out-of-distribution
+2. core-ood, a small patch autoencoder; the reconstruction MSE separates in-distribution core from out-of-distribution
    patches (the tray frame), reported as AUC.
 
 Outputs (committed, small): data/derived/{lithology-cnn.onnx, core-ood.onnx, cl-learned.json}.
@@ -196,7 +196,7 @@ def main() -> None:
         "ood": ood["metrics"],
         "honesty": ("Synthetic core textures + the generator ground truth as the authority. The CNN is measured "
                     "against the classical colour/texture baseline on the SAME held-out patches; the OOD AE against "
-                    "frame/no-recovery patches. Reported whichever way the numbers land — no fabricated win."),
+                    "frame/no-recovery patches. Reported whichever way the numbers land, no fabricated win."),
     }
     (DERIVED / "cl-learned.json").write_text(json.dumps(learned, indent=2))
     print("lithology-cnn:", cnn["metrics"]["acc"], "vs baseline", cnn["metrics"]["acc_baseline"])

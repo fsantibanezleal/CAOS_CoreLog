@@ -1,6 +1,6 @@
-"""Stage 6 — export (CONTRACT 2): build the compact per-case trace from the committed CV outputs (case-results.json,
+"""Stage 6, export (CONTRACT 2): build the compact per-case trace from the committed CV outputs (case-results.json,
 baked by the SAME TS engine the browser runs) + the learned-model metrics (cl-learned.json, when trained), run the
-lane gate, and write the manifest. No torch/node — so the contract + replay regenerate deterministically anywhere, and
+lane gate, and write the manifest. No torch/node, so the contract + replay regenerate deterministically anywhere, and
 CI stays fast. The HEAVY export (baking case-results.json + training the ONNX) is done by the preserved science
 (cllab/science/bake_cases.mjs + train_litho.py), invoked by pipeline.retrain."""
 from __future__ import annotations
@@ -13,7 +13,7 @@ from ..core.manifest import build_case_manifest
 from ..core.trace import build_trace
 from ..io.formats import write_json
 
-_RUN_MS = 80.0   # a teaching-scale tray segmentation — tens of ms; deterministic gate budget
+_RUN_MS = 80.0   # a teaching-scale tray segmentation, tens of ms; deterministic gate budget
 _RUNTIMES = {"ts-cv", "onnxruntime-web"}
 
 

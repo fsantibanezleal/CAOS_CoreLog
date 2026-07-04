@@ -2,7 +2,7 @@
 
 Each case (`data-pipeline/cllab/cases/core_cases.py`, mirrored in `frontend/src/cv/cases.ts`) declares a **CATEGORY**,
 its parameters, an **expected band** (what a domain reader should see), a **validation anchor** (a property the result
-MUST satisfy — checked in `frontend/test/contract.test.ts`), and a real|synthetic flag. The **App shows ONE selected
+MUST satisfy, checked in `frontend/test/contract.test.ts`), and a real|synthetic flag. The **App shows ONE selected
 case**; **Experiments/Benchmark show cross-case summaries** (never mixed into the App).
 
 ## The 8-case matrix

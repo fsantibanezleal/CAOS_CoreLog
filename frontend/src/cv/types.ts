@@ -1,4 +1,4 @@
-// CoreLog Vision — shared types for the core-tray CV pipeline.
+// CoreLog Vision, shared types for the core-tray CV pipeline.
 //
 // A tray holds `nChannels` parallel core channels stacked vertically; each channel is a horizontal run of core
 // covering a depth interval, made of segments of different lithologies along x. The generator renders the RGB image

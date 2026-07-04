@@ -1,11 +1,11 @@
-# Architecture — overview
+# Architecture, overview
 
 CoreLog Vision is an instance of the **CAOS product-repo archetype** ([ADR-0057]): an offline-pipeline-heavy, backend-
 optional product that deploys as a static, deterministic-replay viewer. The base is **frozen** (instantiated, never
-re-litigated); per-product rework lives only in the **core** — the CV engine, the visualisations, the cases, content.
+re-litigated); per-product rework lives only in the **core**, the CV engine, the visualisations, the cases, content.
 
 The distinctive thing about CoreLog is that the **CV pipeline is the live lane**: the tray generator + segmentation
-are TypeScript that run in the browser, and the lithology CNN runs via onnxruntime-web — so the App re-segments the
+are TypeScript that run in the browser, and the lithology CNN runs via onnxruntime-web, so the App re-segments the
 tray as you change the case, the confidence threshold, or the classifier.
 
 ## The lanes (and what runs where)
@@ -13,7 +13,7 @@ tray as you change the case, the confidence threshold, or the classifier.
 | Lane | Where | Deps | Notes |
 |---|---|---|---|
 | **Live (client-side)** | `frontend/src/cv/` (generator + run-merge segmentation) + onnxruntime-web (the CNN) | web npm | the interactive core; re-segments on every control change |
-| **Offline (precompute)** | `cllab/science/` — Node bake of the SAME TS engine + torch training | `data-pipeline/requirements-precompute.txt` | bakes `case-results.json` + the ONNX |
+| **Offline (precompute)** | `cllab/science/`, Node bake of the SAME TS engine + torch training | `data-pipeline/requirements-precompute.txt` | bakes `case-results.json` + the ONNX |
 | **Replay (light)** | `cllab.pipeline` (numpy) | `data-pipeline/requirements.txt` | reshapes the committed bake → per-case traces + manifests |
 | **API (backend)** | `app/` (FastAPI) | `requirements-api.txt` | DORMANT; activate only on an ADR-0002 trigger |
 

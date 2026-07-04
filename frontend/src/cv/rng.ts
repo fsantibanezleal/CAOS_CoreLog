@@ -1,4 +1,4 @@
-// Tiny seedable PRNG (mulberry32) + value noise — deterministic across Node and the browser, so the synthetic trays
+// Tiny seedable PRNG (mulberry32) + value noise, deterministic across Node and the browser, so the synthetic trays
 // and the training patches are byte-identical given a seed.
 
 export function mulberry32(seed: number): () => number {
@@ -12,7 +12,7 @@ export function mulberry32(seed: number): () => number {
   };
 }
 
-/** A cheap, smooth-ish 2-D hash noise in [-1,1] (deterministic in x,y,seed) — for grain/banding modulation. */
+/** A cheap, smooth-ish 2-D hash noise in [-1,1] (deterministic in x,y,seed), for grain/banding modulation. */
 export function hashNoise(x: number, y: number, seed: number): number {
   let h = (x * 374761393 + y * 668265263 + seed * 2246822519) | 0;
   h = (h ^ (h >>> 13)) * 1274126177;
@@ -20,7 +20,7 @@ export function hashNoise(x: number, y: number, seed: number): number {
   return ((h >>> 0) / 4294967296) * 2 - 1;
 }
 
-/** Smoothed value noise (bilinear over an integer lattice) — gives correlated grain at a chosen scale. */
+/** Smoothed value noise (bilinear over an integer lattice), gives correlated grain at a chosen scale. */
 export function valueNoise(x: number, y: number, seed: number): number {
   const x0 = Math.floor(x);
   const y0 = Math.floor(y);

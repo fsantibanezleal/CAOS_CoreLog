@@ -1,12 +1,12 @@
 # The two data contracts
 
-## CONTRACT 1 — ingestion (`io/contract.py`)
+## CONTRACT 1, ingestion (`io/contract.py`)
 
 The *bring-your-own-tray* gate. Two entry points, one policy: a record is **accepted** iff it passes; ill-formed
 records are **rejected** with a reason (never silently coerced); plausible-but-extreme records are **flagged**
 (accepted; the flag travels into the manifest).
 
-### Tray descriptors (`validate_records`) — one row per tray
+### Tray descriptors (`validate_records`), one row per tray
 
 | column | unit / range | on violation |
 |---|---|---|
@@ -17,15 +17,15 @@ records are **rejected** with a reason (never silently coerced); plausible-but-e
 | `suite`, `quality` | ∈ the known sets | reject |
 | channel aspect | flag outside 3–60 | flag (unusual crop) |
 
-### Tray images (`validate_image`) — a tray photo's metadata
+### Tray images (`validate_image`), a tray photo's metadata
 
 `{width, height, n_channels, depth_from_m, depth_to_m, mm_per_px}` → the same policy (per-channel px = width /
-n_channels). Rejects non-positive dims, inverted depth, zero channels. Python-side only — the app has no
+n_channels). Rejects non-positive dims, inverted depth, zero channels. Python-side only, the app has no
 image drop/upload flow yet.
 
 Committed sample that must pass: `data/examples/trays.csv` (a CI test asserts it).
 
-## CONTRACT 2 — artifact (`core/{trace,manifest}.py`)
+## CONTRACT 2, artifact (`core/{trace,manifest}.py`)
 
 The pipeline → web contract. The web loads ONLY manifests + traces + the shared artifacts.
 
@@ -37,5 +37,5 @@ The pipeline → web contract. The web loads ONLY manifests + traces + the share
   flags, the metrics, and an honesty note.
 - **`corelog.index/v1`**: the flat inventory of all 8 cases.
 
-A TS mirror — `frontend/src/lib/contract.types.ts` — declares these shapes so a drift **fails `tsc`**.
+A TS mirror, `frontend/src/lib/contract.types.ts`, declares these shapes so a drift **fails `tsc`**.
 `scripts/check_artifacts.py` enforces manifest ↔ artifact consistency (existence, byte size, lane == gate verdict).
