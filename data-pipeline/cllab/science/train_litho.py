@@ -63,9 +63,28 @@ def train_cnn() -> dict:
     y = np.asarray(d["y"], dtype=np.int64)
     base = np.asarray(d["base"], dtype=np.int64)
     n = len(y)
-    idx = rng.permutation(n)
-    cut = int(n * 0.8)
-    tr, te = idx[:cut], idx[cut:]
+
+    # GROUPED (leakage-free) split by synthetic HOLE = (suite, seed). A random patch split let
+    # overlapping stride-10 windows from the same tray fall on both sides and inflated accuracy
+    # (deep-review critical finding #14). Splitting whole holes guarantees the test holes are
+    # never seen in training, at any quality. Fallback to the patch split only for legacy
+    # artifacts that predate the group field.
+    g = d.get("g")
+    if g is not None:
+        groups = np.asarray(g, dtype=np.int64)
+        uniq = np.unique(groups)
+        gperm = rng.permutation(len(uniq))
+        n_test_holes = max(1, int(round(len(uniq) * 0.2)))
+        test_holes = set(uniq[gperm[:n_test_holes]].tolist())
+        mask_te = np.array([gi in test_holes for gi in groups])
+        te = np.nonzero(mask_te)[0]
+        tr = np.nonzero(~mask_te)[0]
+        split_kind = f"grouped-by-hole ({len(uniq) - n_test_holes} train / {n_test_holes} test holes)"
+    else:
+        idx = rng.permutation(n)
+        cut = int(n * 0.8)
+        tr, te = idx[:cut], idx[cut:]
+        split_kind = "random-patch (legacy; leakage-prone)"
 
     net = LithoCNN()
     opt = torch.optim.Adam(net.parameters(), lr=1e-3)
@@ -88,7 +107,8 @@ def train_cnn() -> dict:
     acc_base = float((base[te] == y[te]).mean())
     confusion = [[int(((y[te] == i) & (pred == j)).sum()) for j in range(K)] for i in range(K)]
     return {"model": CNNSoftmax(net),
-            "metrics": {"acc": round(acc, 4), "acc_baseline": round(acc_base, 4), "nEval": int(n - cut),
+            "metrics": {"acc": round(acc, 4), "acc_baseline": round(acc_base, 4),
+                        "nTrain": int(len(tr)), "nEval": int(len(te)), "split": split_kind,
                         "classes": d["classes"], "confusion": confusion}}
 
 

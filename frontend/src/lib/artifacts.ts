@@ -13,7 +13,7 @@ async function getJSON<T>(rel: string): Promise<T> {
 
 export interface LearnedFile {
   schema: string;
-  lithoCNN: { acc: number; acc_baseline: number; nEval: number; classes: string[]; confusion?: number[][] };
+  lithoCNN: { acc: number; acc_baseline: number; nEval: number; nTrain?: number; split?: string; classes: string[]; confusion?: number[][] };
   ood: { auc: number; nEval: number };
   honesty: string;
 }

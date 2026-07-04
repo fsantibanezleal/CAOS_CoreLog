@@ -73,8 +73,8 @@ export default function Benchmark() {
             </tbody>
           </table>
           <p className="pf-note">{es
-            ? 'Nota de protocolo: el split actual es aleatorio por parche — ventanas deslizantes solapadas de las mismas bandejas filtran entre train y test — así que la accuracy del CNN está en re-evaluación con un split agrupado (issue #14).'
-            : 'Protocol note: the current split is patch-level random — overlapping sliding windows from the same trays leak between train and test — so the CNN accuracy is under re-evaluation with a grouped split (issue #14).'}</p>
+            ? `Protocolo: split AGRUPADO POR HOYO sintético (suite+seed) — ${learned.lithoCNN.split ?? 'grouped-by-hole'}: los hoyos de test nunca se ven en entrenamiento, a ninguna calidad, así que las ventanas deslizantes solapadas de una bandeja no pueden filtrar entre train y test (issue #14, la corrección del split aleatorio por parche). La accuracy se mantiene alta porque las clases litológicas sintéticas son texturalmente separables, no por memorización — evaluada sobre ${learned.lithoCNN.nEval} parches de hoyos retenidos. El ground-truth del generador es la autoridad.`
+            : `Protocol: split GROUPED BY synthetic HOLE (suite+seed) — ${learned.lithoCNN.split ?? 'grouped-by-hole'}: test holes are never seen in training, at any quality, so overlapping sliding windows from a tray cannot leak between train and test (issue #14, the fix for the random patch split). The accuracy stays high because the synthetic lithology classes are texturally separable, not through memorisation — evaluated on ${learned.lithoCNN.nEval} patches from held-out holes. The generator ground truth is the authority.`}</p>
         </>
       ) : (
         <Callout variant="honest" title={es ? 'Métricas aprendidas no disponibles' : 'Learned metrics unavailable'}>
