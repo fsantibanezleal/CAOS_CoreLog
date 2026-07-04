@@ -3,6 +3,19 @@
 All notable changes to CAOS CoreLog Vision. Versions follow `X.XX.XXX` (display) — see `cllab.__version__` and
 `frontend/package.json`. The project stays in `0.x` while the core-tray images are synthetic.
 
+## [0.07.000] — 2026-07-04
+
+### Fixed — leakage-free grouped split (#14, deep-review critical finding)
+- The lithology-CNN train/test split is now **grouped by synthetic HOLE = (suite, seed)** instead
+  of a random patch-level 80/20. Overlapping stride-10 sliding windows from the same tray used to
+  fall on both sides of the split, inflating the headline accuracy; now every hole goes entirely
+  to train OR test (test holes unseen at any quality). gen_train.mjs emits a per-patch hole id
+  (`g` + `nHoles`); train_litho.py splits ~20% of holes to test and records the split kind in the
+  metrics artifact; Benchmark/Implementation/docs render the honest protocol. Post-fix accuracy
+  ~0.99 (vs baseline ~0.93) — it stays high because the synthetic lithology classes are texturally
+  separable, not through memorisation, and that is stated. +3 anti-leakage guard tests (no hole
+  straddles the split; the artifact records the grouped split). 12/12 tests, build green.
+
 ## [0.06.000] — 2026-06-21
 
 First complete build of CoreLog Vision on the CAOS product-repo archetype (ADR-0057).

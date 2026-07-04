@@ -34,11 +34,23 @@ const B = []; // the classical baseline's prediction index (for a fair held-out 
 const OOD = []; // out-of-distribution patches (the tray frame + noise)
 
 let trayId = 0;
+// GROUP by synthetic HOLE = (suite, seed): the same lithology sequence photographed at different
+// qualities is one hole. A grouped split (train_litho.py) keeps every hole entirely in train OR
+// test, so overlapping stride-10 patches from the same tray can never leak across the split
+// (the deep-review critical finding — a random patch split inflated the headline accuracy).
+const G = []; // per-patch hole id (integer)
+const holeIndex = new Map();
+const holeId = (suite, seed) => {
+  const key = `${suite}:${seed}`;
+  if (!holeIndex.has(key)) holeIndex.set(key, holeIndex.size);
+  return holeIndex.get(key);
+};
 for (const suite of SUITES) {
   for (const quality of QUAL) {
     for (const seed of SEEDS) {
       const spec = { id: `tr${trayId++}`, nChannels: 4, chWidthPx: 320, chHeightPx: 40, depthFromM: 0, depthToM: 1,
         mmPerPx: 1, seed, suite, quality };
+      const hole = holeId(suite, seed);
       const tray = makeTray(spec);
       for (let ch = 0; ch < spec.nChannels; ch++) {
         const midY = channelTop(spec, ch) + (spec.chHeightPx >> 1);
@@ -48,6 +60,7 @@ for (const suite of SUITES) {
           const patch = extractPatch(tray, x, midY);
           X.push(Array.from(patch, (v) => Math.round(v * 1000) / 1000));
           Y.push(lithoIdx(litho));
+          G.push(hole);
           const p = baseClf(patch);
           let best = 0;
           for (let c = 1; c < p.length; c++) if (p[c] > p[best]) best = c;
@@ -63,6 +76,6 @@ for (const suite of SUITES) {
   }
 }
 
-writeFileSync(resolve(RAW, 'litho-train.json'), JSON.stringify({ x: X, y: Y, base: B, dim: D, classes: LITHOLOGIES }));
+writeFileSync(resolve(RAW, 'litho-train.json'), JSON.stringify({ x: X, y: Y, base: B, g: G, nHoles: holeIndex.size, dim: D, classes: LITHOLOGIES }));
 writeFileSync(resolve(RAW, 'ood-patches.json'), JSON.stringify({ x: OOD, dim: D }));
 console.log(`gen_train: ${Y.length} labelled patches · ${OOD.length} OOD patches -> ${RAW}`);

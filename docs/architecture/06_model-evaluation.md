@@ -25,10 +25,13 @@ metrics live in `data/derived/cl-learned.json` and show in the App's Learned-mod
 | `core-ood` | patch → reconstruction (MSE = OOD score) | — (separates frame vs core) | **AUC 0.790** |
 
 **Honesty.** The CNN is compared against the SAME classical baseline on the SAME test patches (gen_train.mjs bakes
-the baseline's prediction into the training table), so the comparison itself is apples-to-apples. But the split in
-this build is a **random patch-level 80/20** (`science/train_litho.py`): patches are sampled as overlapping sliding
-windows from the same trays, so test windows overlap training windows and share the same procedural texture instance.
-That leakage inflates the absolute accuracy, which is why the headline CNN number is **under re-evaluation with a
-grouped (by-tray, later by-hole) split** ([issue #14](https://github.com/fsantibanezleal/CAOS_CoreLog/issues/14)).
-The OOD AUC (0.79) is moderate — the autoencoder separates the dark uniform tray frame from textured core only
-partially, and we say so. The generator ground truth is always the authority.
+the baseline's prediction into the training table), so the comparison itself is apples-to-apples. The split is
+**grouped by synthetic HOLE = (suite, seed)** (`science/train_litho.py`): every hole goes ENTIRELY to train or to
+test, so the overlapping stride-10 sliding windows of a tray can never straddle the split, and a hole's lithology
+sequence photographed at another quality cannot leak either. This replaces the earlier random patch-level 80/20 that
+inflated the accuracy ([issue #14](https://github.com/fsantibanezleal/CAOS_CoreLog/issues/14)). The gen_train table
+carries a per-patch hole id (`g`); the trainer splits ~20% of holes to test and records the split kind in the
+metrics artifact. The headline accuracy stays high after the fix (~0.99) because the synthetic lithology classes are
+texturally separable, not because of memorisation — held-out holes are genuinely unseen. The OOD AUC (0.79) is
+moderate — the autoencoder separates the dark uniform tray frame from textured core only partially, and we say so.
+The generator ground truth is always the authority.
