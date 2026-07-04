@@ -158,7 +158,7 @@ export default function Tool() {
           {learned ? (
             <>
               <table className="cmp-table">
-                <thead><tr><th>{es ? 'modelo' : 'model'}</th><th>{es ? 'métrica (held-out)' : 'metric (held-out)'}</th><th>{es ? 'aprendido' : 'learned'}</th><th>{es ? 'baseline clásico' : 'classical baseline'}</th></tr></thead>
+                <thead><tr><th>{es ? 'modelo' : 'model'}</th><th>{es ? 'métrica' : 'metric'}</th><th>{es ? 'aprendido' : 'learned'}</th><th>{es ? 'baseline clásico' : 'classical baseline'}</th></tr></thead>
                 <tbody>
                   <tr><td>lithology-cnn</td><td>{es ? 'precisión' : 'accuracy'}</td><td><b>{(learned.lithoCNN.acc * 100).toFixed(1)}%</b></td><td>{(learned.lithoCNN.acc_baseline * 100).toFixed(1)}%</td></tr>
                   <tr><td>core-ood</td><td>AUC</td><td><b>{learned.ood.auc.toFixed(3)}</b></td><td>—</td></tr>
@@ -168,13 +168,16 @@ export default function Tool() {
                 ? (es ? 'El ONNX del CNN aún no está cargado en esta sesión — la app usa el baseline en vivo. Activa el toggle "CNN" en los controles.' : 'The CNN ONNX is not loaded in this session yet — the app uses the baseline live. Flip the "CNN" toggle in the controls.')
                 : (es ? 'CNN cargado — el toggle "CNN" segmenta en vivo (onnxruntime-web). El ground-truth del generador es la autoridad.' : 'CNN loaded — the "CNN" toggle segments live (onnxruntime-web). The generator ground truth is the authority.')}</p>
               <p className="pf-cap">{learned.honesty}</p>
+              <p className="pf-note">{es
+                ? 'Nota de protocolo: el split actual es aleatorio por parche — ventanas deslizantes solapadas de las mismas bandejas filtran entre train y test — así que la accuracy del CNN está en re-evaluación con un split agrupado (issue #14).'
+                : 'Protocol note: the current split is patch-level random — overlapping sliding windows from the same trays leak between train and test — so the CNN accuracy is under re-evaluation with a grouped split (issue #14).'}</p>
             </>
           ) : (
             <div className="pf-pending">
-              <strong>{es ? 'CNN de litología: pendiente de entrenamiento' : 'Lithology CNN: pending training'}</strong>
+              <strong>{es ? 'Métricas aprendidas no disponibles' : 'Learned metrics unavailable'}</strong>
               <p>{es
-                ? 'Corre `python -m cllab.pipeline all --retrain` para entrenar el CNN + el autoencoder OOD (torch → ONNX). La app usa el baseline clásico EN VIVO mientras tanto.'
-                : 'Run `python -m cllab.pipeline all --retrain` to train the CNN + the OOD autoencoder (torch → ONNX). The app uses the classical baseline LIVE meanwhile.'}</p>
+                ? 'cl-learned.json no cargó en esta sesión. Los modelos entrenados (torch → ONNX) vienen versionados con el build; corre `python -m cllab.pipeline all --retrain` para regenerarlos localmente. La app usa el baseline clásico EN VIVO mientras tanto.'
+                : 'cl-learned.json did not load in this session. The trained models (torch → ONNX) ship committed with the build; run `python -m cllab.pipeline all --retrain` to regenerate them locally. The app uses the classical baseline LIVE meanwhile.'}</p>
             </div>
           )}
         </div>
@@ -203,8 +206,8 @@ export default function Tool() {
       content: (
         <div className="pf-vizstack">
           <p className="pf-note">{es
-            ? 'CoreLog está hecho para registrar TU bandeja, no sólo los casos sintéticos. CONTRATO 1 (data/examples/trays.csv) valida un descriptor de bandeja {tray_id, n_channels, px dims, depth_from/to, mm_per_px}: rechaza dimensiones no-positivas, intervalo de profundidad invertido y 0 canales; marca aspecto inusual y resolución gruesa.'
-            : 'CoreLog is built to log YOUR tray, not just the synthetic cases. CONTRACT 1 (data/examples/trays.csv) validates a tray descriptor {tray_id, n_channels, px dims, depth_from/to, mm_per_px}: it rejects non-positive dimensions, an inverted depth interval and zero channels; it flags unusual aspect + coarse resolution.'}</p>
+            ? 'La carga de bandejas en la app NO está implementada todavía — la App corre sólo sobre los casos sintéticos. Lo que existe hoy es el CONTRATO 1 (data/examples/trays.csv, validado en el pipeline Python): un descriptor de bandeja {tray_id, n_channels, px dims, depth_from/to, mm_per_px} — rechaza dimensiones no-positivas, intervalo de profundidad invertido y 0 canales; marca aspecto inusual y resolución gruesa.'
+            : 'In-app tray upload is NOT implemented yet — the App runs on the synthetic cases only. What exists today is CONTRACT 1 (data/examples/trays.csv, validated in the Python pipeline): a tray descriptor {tray_id, n_channels, px dims, depth_from/to, mm_per_px} — it rejects non-positive dimensions, an inverted depth interval and zero channels; it flags unusual aspect + coarse resolution.'}</p>
           <p className="pf-cap">{es ? 'El esquema completo está en docs/ y data/README.md.' : 'The full schema is in docs/ and data/README.md.'}</p>
         </div>
       ),

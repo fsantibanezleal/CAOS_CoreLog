@@ -57,7 +57,7 @@
   <text class="it" x="42" y="346">Loads baked artifacts</text>
   <text class="cd mono" x="42" y="362">/case-results.json · /data/manifests</text>
   <text class="mu" x="42" y="376">read-only — never recomputes the bake</text>
-  <text class="mu" x="30" y="406">User: pick a case OR drop your own data</text>
+  <text class="mu" x="30" y="406">User: pick a synthetic case (no upload yet)</text>
   <text class="mu" x="30" y="420">→ engine + inference run client-side, live</text>
 
   <!-- ===== COMPUTE lane ===== -->

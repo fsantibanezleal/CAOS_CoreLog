@@ -32,7 +32,7 @@
   <rect class="bx bx-hi" x="14" y="70" width="190" height="120" rx="10"/>
   <text class="it" x="28" y="92">Inputs</text>
   <text class="mu" x="28" y="110">• case selector (built-in)</text>
-  <text class="mu" x="28" y="126">• drop your own data</text>
+  <text class="mu" x="28" y="126">• (no own-data upload yet)</text>
   <text class="mu" x="28" y="142">• sliders / toggles</text>
   <text class="cd mono" x="28" y="166">Tool.tsx · cases.ts</text>
   <text class="mu" x="28" y="182">every page reacts to the case</text>

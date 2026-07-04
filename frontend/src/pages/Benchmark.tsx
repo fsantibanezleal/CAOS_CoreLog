@@ -64,18 +64,23 @@ export default function Benchmark() {
 
       <h2>{es ? 'CNN vs baseline' : 'CNN vs baseline'}</h2>
       {learned ? (
-        <table className="cmp-table">
-          <thead><tr><th>{es ? 'modelo' : 'model'}</th><th>{es ? 'métrica' : 'metric'}</th><th>{es ? 'aprendido' : 'learned'}</th><th>{es ? 'baseline' : 'baseline'}</th></tr></thead>
-          <tbody>
-            <tr><td>lithology-cnn</td><td>{es ? 'precisión' : 'accuracy'}</td><td><b>{(learned.lithoCNN.acc * 100).toFixed(1)}%</b></td><td>{(learned.lithoCNN.acc_baseline * 100).toFixed(1)}%</td></tr>
-            <tr><td>core-ood</td><td>AUC</td><td><b>{learned.ood.auc.toFixed(3)}</b></td><td>—</td></tr>
-          </tbody>
-        </table>
+        <>
+          <table className="cmp-table">
+            <thead><tr><th>{es ? 'modelo' : 'model'}</th><th>{es ? 'métrica' : 'metric'}</th><th>{es ? 'aprendido' : 'learned'}</th><th>{es ? 'baseline' : 'baseline'}</th></tr></thead>
+            <tbody>
+              <tr><td>lithology-cnn</td><td>{es ? 'precisión' : 'accuracy'}</td><td><b>{(learned.lithoCNN.acc * 100).toFixed(1)}%</b></td><td>{(learned.lithoCNN.acc_baseline * 100).toFixed(1)}%</td></tr>
+              <tr><td>core-ood</td><td>AUC</td><td><b>{learned.ood.auc.toFixed(3)}</b></td><td>—</td></tr>
+            </tbody>
+          </table>
+          <p className="pf-note">{es
+            ? 'Nota de protocolo: el split actual es aleatorio por parche — ventanas deslizantes solapadas de las mismas bandejas filtran entre train y test — así que la accuracy del CNN está en re-evaluación con un split agrupado (issue #14).'
+            : 'Protocol note: the current split is patch-level random — overlapping sliding windows from the same trays leak between train and test — so the CNN accuracy is under re-evaluation with a grouped split (issue #14).'}</p>
+        </>
       ) : (
-        <Callout variant="honest" title={es ? 'CNN no entrenado todavía' : 'CNN not trained yet'}>
+        <Callout variant="honest" title={es ? 'Métricas aprendidas no disponibles' : 'Learned metrics unavailable'}>
           {es
-            ? 'El benchmark CNN-vs-baseline (accuracy held-out) y el AUC del OOD aparecen aquí una vez entrenados los modelos (commit posterior). El ground-truth del generador es siempre la verdad de terreno.'
-            : 'The CNN-vs-baseline benchmark (held-out accuracy) and the OOD AUC appear here once the models are trained (a later commit). The generator ground truth is always the authority.'}
+            ? 'cl-learned.json no cargó en esta sesión — los modelos entrenados (torch → ONNX) vienen versionados con el build; ver la pestaña Modelos aprendidos de la App. El ground-truth del generador es siempre la verdad de terreno.'
+            : 'cl-learned.json did not load in this session — the trained models (torch → ONNX) ship committed with the build; see the App’s Learned-models tab. The generator ground truth is always the authority.'}
         </Callout>
       )}
     </article>

@@ -17,10 +17,11 @@ records are **rejected** with a reason (never silently coerced); plausible-but-e
 | `suite`, `quality` | ∈ the known sets | reject |
 | channel aspect | flag outside 3–60 | flag (unusual crop) |
 
-### Dropped images (`validate_image`) — a real tray photo's metadata
+### Tray images (`validate_image`) — a tray photo's metadata
 
 `{width, height, n_channels, depth_from_m, depth_to_m, mm_per_px}` → the same policy (per-channel px = width /
-n_channels). Rejects non-positive dims, inverted depth, zero channels.
+n_channels). Rejects non-positive dims, inverted depth, zero channels. Python-side only — the app has no
+image drop/upload flow yet.
 
 Committed sample that must pass: `data/examples/trays.csv` (a CI test asserts it).
 
