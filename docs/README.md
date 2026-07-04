@@ -1,15 +1,15 @@
-# CoreLog Vision — documentation
+# CoreLog Vision, documentation
 
 The navigable wiki for CoreLog Vision: drill-core **lithology** from core-tray imagery (per-patch CNN + run-merge
 segmentation + a depth strip-log), with the whole CV pipeline running live in the browser. Instantiated on the CAOS
 product-repo archetype (ADR-0057).
 
-- **[Architecture](architecture.md)** — the archetype, the lanes, the gate, the two data contracts, determinism,
+- **[Architecture](architecture.md)**, the archetype, the lanes, the gate, the two data contracts, determinism,
   deploy.
-- **[Frameworks](frameworks.md)** — the CV pipeline (generator + segmentation), the viz stack, the learned models
+- **[Frameworks](frameworks.md)**, the CV pipeline (generator + segmentation), the viz stack, the learned models
   (torch → ONNX).
-- **[Cases](cases.md)** — the 8 cases by category + their validation anchors.
-- **[Guides](guides.md)** — instantiate, run the precompute/retrain lane, bring your own tray.
+- **[Cases](cases.md)**, the 8 cases by category + their validation anchors.
+- **[Guides](guides.md)**, instantiate, run the precompute/retrain lane, bring your own tray.
 
 ## One-paragraph orientation
 

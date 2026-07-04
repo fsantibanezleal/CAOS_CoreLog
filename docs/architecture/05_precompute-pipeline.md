@@ -13,7 +13,7 @@ re-implementing the CV engine in Python.
 | `train` | fit the lithology CNN + the OOD AE → ONNX (`science/train_litho.py`, torch) |
 | `infer` | segment every case's tray through the SAME TS engine (`science/bake_cases.mjs`) → `case-results.json` |
 | `evaluate` | the CNN accuracy vs the classical baseline on the test split (patch-level; under re-evaluation, [issue #14](https://github.com/fsantibanezleal/CAOS_CoreLog/issues/14)) + the OOD AUC |
-| `export` | build the compact per-case trace + manifest (CONTRACT 2) — the LIGHT, numpy-only step |
+| `export` | build the compact per-case trace + manifest (CONTRACT 2), the LIGHT, numpy-only step |
 
 ## The two lanes of `cllab.pipeline`
 
@@ -33,5 +33,5 @@ train_litho.py ──► data/derived/{lithology-cnn.onnx, core-ood.onnx, cl-lea
 pipeline.export──► data/derived/<case>/trace.json + manifests/<case>.json + index.json   (CONTRACT 2)
 ```
 
-Determinism: the light pipeline is a pure function of the committed artifacts — re-running it is byte-identical (the
+Determinism: the light pipeline is a pure function of the committed artifacts, re-running it is byte-identical (the
 manifest carries no wall-clock; see [02](02_determinism-and-trace.md)).
