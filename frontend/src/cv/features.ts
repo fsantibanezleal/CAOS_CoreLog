@@ -1,4 +1,4 @@
-// The CLASSICAL baseline classifier — hand-crafted colour + texture features + a nearest-centroid model. This is what
+// The CLASSICAL baseline classifier, hand-crafted colour + texture features + a nearest-centroid model. This is what
 // the learned CNN is measured against (the honest "does ML beat hand-crafted features?" comparison). Pure TS, no
 // training: the per-lithology centroids are estimated from clean synthetic patches of each rock type.
 

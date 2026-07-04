@@ -1,4 +1,4 @@
-// CNN segmentation path — slide the lithology CNN along every channel via ONE batched onnxruntime-web call, then
+// CNN segmentation path, slide the lithology CNN along every channel via ONE batched onnxruntime-web call, then
 // run-merge into segments (the same shape the classical baseline produces). Returns null until the model is trained,
 // so the App transparently falls back to the classical baseline.
 import { channelTop, extractPatch } from '../cv/tray.ts';

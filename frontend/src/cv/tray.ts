@@ -1,4 +1,4 @@
-// The synthetic core-tray generator — renders the RGBA image + the ground-truth segments. This is the irreplaceable
+// The synthetic core-tray generator, renders the RGBA image + the ground-truth segments. This is the irreplaceable
 // core: the same generator produces the App's trays, the training patches, and the oracle ground truth. Deterministic
 // given the spec seed.
 

@@ -31,7 +31,7 @@ def build_trace(case: Any, *, case_result: dict, learned: dict | None) -> dict:
         "expected_band": case.expected_band,
         "spec": case_result.get("spec"),                 # {nChannels, chWidthPx, chHeightPx, depthFromM, depthToM, mmPerPx, seed, suite, quality}
         "truth": case_result.get("truth", []),           # ground-truth segments
-        "baseline": case_result.get("baseline", {}),     # {segments, pixelAccuracy, confusion} — the classical classifier
+        "baseline": case_result.get("baseline", {}),     # {segments, pixelAccuracy, confusion}, the classical classifier
         "strip_log": case_result.get("stripLog", []),    # depth-ordered lithology bands
         "grade_legend": case_result.get("lithoLegend"),  # the lithology palette used
         "learned": _learned_block(learned),

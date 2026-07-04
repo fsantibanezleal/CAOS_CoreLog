@@ -1,8 +1,8 @@
-// CV engine correctness — run with: node --import tsx --test test/cv.test.ts
+// CV engine correctness, run with: node --import tsx --test test/cv.test.ts
 //
 // The science is pinned against the generator's own ground truth: the UNIFORM oracle (a single-lithology tray must
 // classify as that lithology), the SHARP oracle (the run-merge must recover the known boundary), determinism, and
-// baseline separability (the textures must be distinct enough that the classical classifier scores well — leaving
+// baseline separability (the textures must be distinct enough that the classical classifier scores well, leaving
 // headroom for the CNN).
 
 import assert from 'node:assert/strict';

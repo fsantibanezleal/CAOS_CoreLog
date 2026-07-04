@@ -1,9 +1,9 @@
-"""CONTRACT 2 — artifact (pipeline -> web). The manifest is the authoritative, versioned record of a baked case: its
+"""CONTRACT 2, artifact (pipeline -> web). The manifest is the authoritative, versioned record of a baked case: its
 category, seed, engine+version, the shared learned-model ONNX, the compact per-case trace pointer + byte size, the
 lane/gate verdict, the CONTRACT-1 flags, and the case metrics. The web loads ONLY manifests + traces + the shared
 artifacts; frontend/src/lib/contract.types.ts mirrors this schema so a drift fails the build. The committed
 case-results.json (baked by the SAME TS engine the browser runs) IS the real output of the offline lane; the learned
-CNN is honest — measured against the classical colour/texture baseline, never a fabricated win."""
+CNN is honest, measured against the classical colour/texture baseline, never a fabricated win."""
 from __future__ import annotations
 
 from typing import Any
@@ -20,7 +20,7 @@ ENGINE_NOTE = ("procedural synthetic core-tray generator + run-merge segmentatio
                "centroid model is the baseline.")
 HONESTY = ("The core-tray images are SYNTHETIC (procedural per-lithology textures), stated openly; UNIFORM/SHARP are "
            "closed-form analytic controls. The lithology CNN is measured against the classical colour/texture baseline "
-           "(held-out accuracy) — a real ML-vs-features comparison, never a fabricated win. Low-confidence / "
+           "(held-out accuracy), a real ML-vs-features comparison, never a fabricated win. Low-confidence / "
            "out-of-distribution core is flagged, not forced into a class.")
 
 

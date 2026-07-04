@@ -1,10 +1,10 @@
-"""CONTRACT 1 — ingestion (raw core-tray → pipeline). The *bring-your-own-tray* gate.
+"""CONTRACT 1, ingestion (raw core-tray → pipeline). The *bring-your-own-tray* gate.
 
 Two entry points, one policy:
 
-* ``validate_records`` — validates TRAY-DESCRIPTOR rows (one per tray: geometry + depth interval). This is what the
+* ``validate_records``, validates TRAY-DESCRIPTOR rows (one per tray: geometry + depth interval). This is what the
   pipeline runs over the case set; it proves the gate and carries flags into the manifest.
-* ``validate_image`` — validates a real dropped core-tray IMAGE's metadata (dimensions, channel layout, depth). This
+* ``validate_image``, validates a real dropped core-tray IMAGE's metadata (dimensions, channel layout, depth). This
   is the path that lets CoreLog log a NEW tray instead of only replaying the baked cases.
 
 A record is ACCEPTED iff it passes; ill-formed records are REJECTED with a reason (never silently coerced);
@@ -23,7 +23,7 @@ REQUIRED_COLUMNS: tuple[str, ...] = (
 )
 CHANNELS_RANGE = (1, 12)
 PX_RANGE = (16, 8000)
-MMPX_RANGE = (0.02, 5.0)            # mm per pixel — outside this the resolution is implausible
+MMPX_RANGE = (0.02, 5.0)            # mm per pixel, outside this the resolution is implausible
 ASPECT_FLAG = (3.0, 60.0)          # channel width:height outside this band → FLAG (unusual tray crop)
 MMPX_FLAG_HI = 2.0                 # very coarse resolution → FLAG (segmentation will be unreliable)
 
@@ -91,9 +91,9 @@ def validate_records(raw_rows: list[dict[str, Any]]) -> ContractReport:
         rec_flags: list[str] = []
         aspect = pw / ph if ph > 0 else math.inf
         if not (ASPECT_FLAG[0] <= aspect <= ASPECT_FLAG[1]):
-            rec_flags.append(f"channel aspect {aspect:.1f} outside [{ASPECT_FLAG[0]},{ASPECT_FLAG[1]}] — unusual crop")
+            rec_flags.append(f"channel aspect {aspect:.1f} outside [{ASPECT_FLAG[0]},{ASPECT_FLAG[1]}], unusual crop")
         if mmpx > MMPX_FLAG_HI:
-            rec_flags.append(f"coarse resolution {mmpx:g} mm/px (> {MMPX_FLAG_HI}) — segmentation may be unreliable")
+            rec_flags.append(f"coarse resolution {mmpx:g} mm/px (> {MMPX_FLAG_HI}), segmentation may be unreliable")
         if rec_flags:
             flagged.append({"tray_id": tid, "flags": rec_flags})
         accepted.append(TrayDescriptor(tray_id=tid, n_channels=nch, px_width=pw, px_height=ph, depth_from_m=df,

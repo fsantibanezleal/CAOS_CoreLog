@@ -1,6 +1,6 @@
 """The measured live-vs-precompute GATE (ADR-0054), adapted for CoreLog's client-side lane.
 
-CoreLog runs its whole CV pipeline IN THE BROWSER — a pure-TypeScript synthetic-tray generator + run-merge
+CoreLog runs its whole CV pipeline IN THE BROWSER, a pure-TypeScript synthetic-tray generator + run-merge
 segmentation (frontend/src/cv/) plus the lithology CNN via onnxruntime-web. A case runs LIVE iff it is client-side
 AND its runtimes are a subset of the deployed set AND a full segmentation + its replay trace are within budget;
 otherwise it is PRECOMPUTE and the SPA replays the committed trace. A teaching-scale tray segments in tens of

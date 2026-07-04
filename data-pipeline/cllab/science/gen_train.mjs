@@ -1,4 +1,4 @@
-// Generate the learned-model training patches by running the SAME TypeScript CV engine the browser runs — so the CNN
+// Generate the learned-model training patches by running the SAME TypeScript CV engine the browser runs, so the CNN
 // trains on EXACTLY the textures the App shows, and is compared against the SAME classical baseline. Writes to
 // data/raw/ (git-ignored, regenerable). Invoked by pipeline.retrain before train_litho.py. Run:
 //   node --import tsx data-pipeline/cllab/science/gen_train.mjs
@@ -37,7 +37,7 @@ let trayId = 0;
 // GROUP by synthetic HOLE = (suite, seed): the same lithology sequence photographed at different
 // qualities is one hole. A grouped split (train_litho.py) keeps every hole entirely in train OR
 // test, so overlapping stride-10 patches from the same tray can never leak across the split
-// (the deep-review critical finding — a random patch split inflated the headline accuracy).
+// (the deep-review critical finding, a random patch split inflated the headline accuracy).
 const G = []; // per-patch hole id (integer)
 const holeIndex = new Map();
 const holeId = (suite, seed) => {

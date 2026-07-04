@@ -1,4 +1,4 @@
-# Framework — the learned models (torch → ONNX → onnxruntime-web)
+# Framework, the learned models (torch → ONNX → onnxruntime-web)
 
 Two honest learned models, trained offline and run live. The generator ground truth is always the authority; these
 compete with a **classical baseline** (the CNN) or flag **out-of-distribution** core (the AE).
@@ -16,7 +16,7 @@ apples-to-apples on identical test patches (no moved goalpost).
 ## Inference (`frontend/src/lib/{ort,cnn}.ts`, onnxruntime-web)
 
 WASM execution provider, single-threaded; the npm package and the CDN `wasmPaths` are pinned to the SAME version. The
-loader is **graceful** — the trained ONNX ships committed, and if a model file is absent or fails to load it resolves
+loader is **graceful**, the trained ONNX ships committed, and if a model file is absent or fails to load it resolves
 to `null` and the App falls back to the classical baseline + says so. `cnn.ts` batches every window patch of the tray
 into ONE `run()` call, then run-merges; the OOD AE's reconstruction MSE marks uncertain segments.
 

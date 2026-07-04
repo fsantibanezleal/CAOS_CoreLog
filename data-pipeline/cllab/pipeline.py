@@ -3,7 +3,7 @@ trace from the committed CV outputs (case-results.json) + the learned-model metr
 runs the lane gate, and writes the manifest + a flat index (CONTRACT 2). The committed case-results.json IS the TS
 engine's real output (baked by the SAME engine the browser runs), so the DEFAULT path is light (numpy/stdlib, no
 torch/node) and deterministic. `--retrain` regenerates the artifacts (bake the trays + segment them; train the learned
-models torch → ONNX) — see cllab/science/.
+models torch → ONNX), see cllab/science/.
 
     python -m cllab.pipeline                 # rebuild all replay traces + manifests from committed artifacts
     python -m cllab.pipeline S-PORPH         # one case
@@ -33,7 +33,7 @@ def _load_artifacts() -> tuple[dict, dict | None]:
     if not cr.exists():
         raise SystemExit(
             f"missing committed artifact {cr}. case-results.json is baked by the TS engine "
-            f"(science/bake_cases.mjs) — run `python -m cllab.pipeline all --retrain` (or `npm run bake` in frontend/)."
+            f"(science/bake_cases.mjs), run `python -m cllab.pipeline all --retrain` (or `npm run bake` in frontend/)."
         )
     learned_path = DERIVED / "cl-learned.json"
     learned = read_json(learned_path) if learned_path.exists() else None  # learned models optional until trained
@@ -41,7 +41,7 @@ def _load_artifacts() -> tuple[dict, dict | None]:
 
 
 def _contract_flags() -> list[dict]:
-    """Apply CONTRACT 1 to the cases' tray descriptors — proves the ingestion gate, carries the flags."""
+    """Apply CONTRACT 1 to the cases' tray descriptors, proves the ingestion gate, carries the flags."""
     return validate_records([descriptor_row(c) for c in registry.list_cases()]).flagged
 
 
@@ -74,7 +74,7 @@ def retrain(seed: int = 42) -> None:
         py = str(vp) if vp.exists() else "python"
         subprocess.run([py, str(train)], check=True, cwd=str(REPO_ROOT))
     else:
-        print("[retrain] (science/train_litho.py absent — learned models pending; traces record learned=pending)",
+        print("[retrain] (science/train_litho.py absent, learned models pending; traces record learned=pending)",
               flush=True)
     print(f"[retrain] artifacts -> {DERIVED}", flush=True)
 

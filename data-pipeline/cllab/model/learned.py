@@ -1,14 +1,14 @@
 """Feature contracts for the two learned models (the SINGLE SOURCE OF TRUTH shared by the offline trainer
 science/train_litho.py and the in-browser inference). Both are honest, value-adding ML measured against a CLASSICAL
-baseline — NOT bolted-on. They are trained OFFLINE (torch → ONNX) and run LIVE (onnxruntime-web). The exact
+baseline, NOT bolted-on. They are trained OFFLINE (torch → ONNX) and run LIVE (onnxruntime-web). The exact
 ground-truth (the generator) is the authority for scoring.
 
-1. lithology-cnn — a per-patch lithology CLASSIFIER. Input: a PATCH×PATCH RGB patch (CHW, [1,3,P,P], values 0..1) →
+1. lithology-cnn, a per-patch lithology CLASSIFIER. Input: a PATCH×PATCH RGB patch (CHW, [1,3,P,P], values 0..1) →
    output: 6-way softmax over the lithologies. Benchmarked vs the classical colour/texture nearest-centroid baseline
    (frontend/src/cv/features.ts) on held-out patches (accuracy + confusion). The honest claim: "a small CNN beats
    hand-crafted colour/texture features on core lithology", reported whichever way it lands.
 
-2. core-ood — a patch AUTOENCODER for out-of-distribution / no-recovery detection. Input/output: the same PATCH RGB
+2. core-ood, a patch AUTOENCODER for out-of-distribution / no-recovery detection. Input/output: the same PATCH RGB
    patch; the reconstruction MSE is the OOD score (rubble, gaps, the tray frame reconstruct poorly → high score →
    flagged "uncertain / no recovery" instead of forced into a class). Benchmarked by its in- vs out-of-distribution
    separation (AUC).

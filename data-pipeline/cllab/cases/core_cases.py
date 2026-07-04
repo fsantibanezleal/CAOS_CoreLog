@@ -47,10 +47,10 @@ CASES: list[Case] = [
     Case("Q-WET", "Wet vs dry core", CAT_QUALITY, "porphyry", "wet", 3, 21,
          expected_band="wet core is darker/more saturated; the colour baseline shifts, texture helps",
          validation_anchor="accuracy ≤ the clean case"),
-    Case("C-UNIFORM", "Oracle — single-lithology tray", CAT_ORACLE, "uniform", "clean", 2, 31,
+    Case("C-UNIFORM", "Oracle, single-lithology tray", CAT_ORACLE, "uniform", "clean", 2, 31,
          expected_band="one lithology (limestone) → the classifier must be ~all-correct on that class",
          validation_anchor="closed-form: pixel-accuracy > 0.85 on the single class", real_or_synthetic="analytic control"),
-    Case("C-SHARP", "Oracle — known sharp boundary", CAT_ORACLE, "sharp", "clean", 1, 33,
+    Case("C-SHARP", "Oracle, known sharp boundary", CAT_ORACLE, "sharp", "clean", 1, 33,
          expected_band="two lithologies with a sharp cut → segmentation must recover the boundary",
          validation_anchor="closed-form: a segment boundary within 20 px of the known cut", real_or_synthetic="analytic control"),
 ]

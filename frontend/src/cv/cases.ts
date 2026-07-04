@@ -1,4 +1,4 @@
-// The canonical case set — shared by the offline bake (data-pipeline/cllab/science/bake_cases.mjs) and the SPA. Cases
+// The canonical case set, shared by the offline bake (data-pipeline/cllab/science/bake_cases.mjs) and the SPA. Cases
 // are grouped by CATEGORY (lithology suite / image quality / oracle control). The App shows ONE selected case;
 // Experiments/Benchmark show cross-case summaries. All trays are SYNTHETIC (procedural textures), stated openly;
 // C-UNIFORM and C-SHARP are the closed-form ORACLE controls.
@@ -50,11 +50,11 @@ export const CASES: CoreCase[] = [
     nChannels: 3, seed: 21, realOrSynthetic: 'synthetic',
     expectedBand: 'wet core is darker/more saturated; the colour baseline shifts, texture helps',
     validationAnchor: 'accuracy ≤ the clean case' },
-  { id: 'C-UNIFORM', name: 'Oracle — single-lithology tray', category: CAT_ORACLE, suite: 'uniform', quality: 'clean',
+  { id: 'C-UNIFORM', name: 'Oracle, single-lithology tray', category: CAT_ORACLE, suite: 'uniform', quality: 'clean',
     nChannels: 2, seed: 31, realOrSynthetic: 'analytic control',
     expectedBand: 'one lithology (limestone) → the classifier must be ~all-correct on that class',
     validationAnchor: 'closed-form: pixel-accuracy > 0.85 on the single class' },
-  { id: 'C-SHARP', name: 'Oracle — known sharp boundary', category: CAT_ORACLE, suite: 'sharp', quality: 'clean',
+  { id: 'C-SHARP', name: 'Oracle, known sharp boundary', category: CAT_ORACLE, suite: 'sharp', quality: 'clean',
     nChannels: 1, seed: 33, realOrSynthetic: 'analytic control',
     expectedBand: 'two lithologies with a sharp cut → segmentation must recover the boundary',
     validationAnchor: 'closed-form: a segment boundary within 20 px of the known cut' },
