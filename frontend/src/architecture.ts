@@ -13,24 +13,26 @@ export const architecture: ArchitectureConfig = {
       es: 'La app',
       svg: 'svg/tech/01-the-app.svg',
       body_en:
-        'CoreLog Vision automates drill-core lithology logging: drop a core-tray image (or pick a synthetic case) and a ' +
+        'CoreLog Vision automates drill-core lithology logging: pick a synthetic tray case and a ' +
         'per-patch CNN + run-merge segmentation give a depth strip-log of lithology + confidence — answering "which ' +
         'lithology is each metre of core?". You change the case, the confidence threshold or the classifier and the ' +
-        'whole tray re-segments live.\n\n' +
+        'whole tray re-segments live. In-app upload of your own tray image is not implemented yet.\n\n' +
         'It is a real system, not a demo. The CV engine (frontend/src/cv/) re-segments in the browser on every control; ' +
         'the segmentation emerges from a sliding patch classifier (3-tap smoothing + run-merge), so there is no ' +
-        'separate heavy segmenter. A lithology CNN (held-out accuracy 0.996 vs the classical baseline 0.939) and an OOD ' +
-        'autoencoder (AUC 0.790) run client-side as ONNX; low-confidence / out-of-distribution core is flagged, not forced.',
+        'separate heavy segmenter. A lithology CNN and an OOD autoencoder (AUC 0.790) run client-side as ONNX — the ' +
+        'CNN-vs-baseline accuracy is under re-evaluation (the patch-level split leaks; issue #14); low-confidence / ' +
+        'out-of-distribution core is flagged, not forced.',
       body_es:
-        'CoreLog Vision automatiza el logueo de litología de testigos: suelta una imagen de bandeja de testigos (o elige ' +
-        'un caso sintético) y un CNN por parche + segmentación run-merge dan un strip-log de profundidad de litología + ' +
+        'CoreLog Vision automatiza el logueo de litología de testigos: elige un caso sintético de bandeja y un CNN por ' +
+        'parche + segmentación run-merge dan un strip-log de profundidad de litología + ' +
         'confianza — respondiendo "¿qué litología es cada metro de testigo?". Cambias el caso, el umbral de confianza o ' +
-        'el clasificador y toda la bandeja se re-segmenta en vivo.\n\n' +
+        'el clasificador y toda la bandeja se re-segmenta en vivo. La carga de tu propia imagen de bandeja en la app ' +
+        'aún no está implementada.\n\n' +
         'Es un sistema real, no un demo. El motor CV (frontend/src/cv/) re-segmenta en el navegador con cada control; la ' +
         'segmentación emerge de un clasificador de parches deslizante (suavizado de 3 taps + run-merge), así que no hay ' +
-        'un segmentador pesado aparte. Un CNN de litología (accuracy held-out 0.996 vs el baseline clásico 0.939) y un ' +
-        'autoencoder OOD (AUC 0.790) corren en el cliente como ONNX; el testigo de baja confianza / fuera de ' +
-        'distribución se marca, no se fuerza.',
+        'un segmentador pesado aparte. Un CNN de litología y un autoencoder OOD (AUC 0.790) corren en el cliente como ' +
+        'ONNX — la accuracy CNN-vs-baseline está en re-evaluación (el split por parche filtra información; issue #14); ' +
+        'el testigo de baja confianza / fuera de distribución se marca, no se fuerza.',
     },
     {
       id: 'lanes',
@@ -60,7 +62,7 @@ export const architecture: ArchitectureConfig = {
       es: 'Flujo de la web',
       svg: 'svg/tech/03-web-flow.svg',
       body_en:
-        'The App page recomputes live: inputs (the case selector or your own tray, plus the confidence-threshold and ' +
+        'The App page recomputes live: inputs (the case selector plus the confidence-threshold and ' +
         'classifier controls) feed the TypeScript CV engine and the onnxruntime-web inference, which feed the ' +
         'interactive viz — the tray canvas + segmentation overlay, the depth strip-log, the confusion matrix and the ' +
         'per-channel view, each reading values back on hover. The six sibling pages (App · Introduction · Methodology · ' +
@@ -68,7 +70,7 @@ export const architecture: ArchitectureConfig = {
         'contract-type mirror, the artifacts are overlaid by copy-data, vite builds the static output, and GitHub Pages ' +
         'serves it at corelog.fasl-work.com.',
       body_es:
-        'La página App recalcula en vivo: las entradas (el selector de casos o tu propia bandeja, más los controles de ' +
+        'La página App recalcula en vivo: las entradas (el selector de casos, más los controles de ' +
         'umbral de confianza y clasificador) alimentan el motor CV en TypeScript y la inferencia onnxruntime-web, que ' +
         'alimentan la visualización interactiva — la bandeja en canvas + overlay de segmentación, el strip-log de ' +
         'profundidad, la matriz de confusión y la vista por canal, cada uno devolviendo valores al pasar el cursor. Las ' +
@@ -89,7 +91,8 @@ export const architecture: ArchitectureConfig = {
         'predictions into segments (the depth boundaries EMERGE where the class changes); ⑤ the segments order by depth ' +
         'into the strip-log with confidence shading.\n\n' +
         'The classical baseline is always on and transparent — the honest reference the CNN is measured against. The ' +
-        'learned lane: a lithology CNN (RGB patch → 6-way softmax, held-out accuracy 0.996 vs the baseline 0.939) and an ' +
+        'learned lane: a lithology CNN (RGB patch → 6-way softmax; its accuracy vs the baseline is under re-evaluation ' +
+        'because the patch-level split leaks, issue #14) and an ' +
         'OOD autoencoder (reconstruction MSE = anomaly, AUC 0.790); both run client-side as ONNX, reported whichever way ' +
         'the numbers land, never as a black box. The generator ground truth is always the authority.',
       body_es:
@@ -100,8 +103,9 @@ export const architecture: ArchitectureConfig = {
         'convierten las predicciones por posición en segmentos (los límites de profundidad EMERGEN donde cambia la ' +
         'clase); ⑤ los segmentos se ordenan por profundidad en el strip-log con sombreado por confianza.\n\n' +
         'El baseline clásico está siempre activo y es transparente — la referencia honesta contra la que se mide el CNN. ' +
-        'El carril aprendido: un CNN de litología (parche RGB → softmax de 6 clases, accuracy held-out 0.996 vs el ' +
-        'baseline 0.939) y un autoencoder OOD (MSE de reconstrucción = anomalía, AUC 0.790); ambos corren en el cliente ' +
+        'El carril aprendido: un CNN de litología (parche RGB → softmax de 6 clases; su accuracy vs el baseline está en ' +
+        're-evaluación porque el split por parche filtra información, issue #14) y un autoencoder OOD (MSE de ' +
+        'reconstrucción = anomalía, AUC 0.790); ambos corren en el cliente ' +
         'como ONNX, reportados como caigan los números, nunca como caja negra. La verdad del generador es siempre la autoridad.',
     },
     {
@@ -111,8 +115,8 @@ export const architecture: ArchitectureConfig = {
       svg: 'svg/tech/05-data-contracts.svg',
       body_en:
         'Two validated data contracts bracket the pipeline. Contract 1 (ingestion) defines a valid tray descriptor — ' +
-        'the channel count, pixel dimensions, depth interval and mm/px scale, with range/NaN guards — so the app ' +
-        'accepts your data, not just the built-in cases. Contract 2 (artifact) defines the output the web reads (the ' +
+        'the channel count, pixel dimensions, depth interval and mm/px scale, with range/NaN guards — validated in the ' +
+        'Python pipeline today (the app itself has no tray upload yet). Contract 2 (artifact) defines the output the web reads (the ' +
         'per-case segments + pixel-accuracy + confusion, the depth strip-log, the learned metrics, the model index), ' +
         'mirrored exactly by contract.types.ts. Between them the staged, deterministic pipeline runs the lane gate ' +
         '(numpy-light by default, --retrain for the heavy torch lane) and writes a provenance manifest, so every result ' +
@@ -120,7 +124,7 @@ export const architecture: ArchitectureConfig = {
       body_es:
         'Dos contratos de datos validados encierran el pipeline. El Contrato 1 (ingesta) define un descriptor de bandeja ' +
         'válido — el número de canales, dimensiones en píxeles, intervalo de profundidad y escala mm/px, con guardas de ' +
-        'rango/NaN — para que la app acepte tus datos, no sólo los casos incluidos. El Contrato 2 (artefacto) define la ' +
+        'rango/NaN — validado hoy en el pipeline Python (la app aún no tiene carga de bandejas). El Contrato 2 (artefacto) define la ' +
         'salida que lee la web (los segmentos por caso + pixel-accuracy + confusión, el strip-log de profundidad, las ' +
         'métricas aprendidas, el índice de modelos), espejada exactamente por contract.types.ts. Entre ambos, el ' +
         'pipeline por etapas y determinista corre el lane gate (numpy-light por defecto, --retrain para el carril pesado ' +

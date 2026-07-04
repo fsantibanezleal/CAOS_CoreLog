@@ -23,7 +23,7 @@ export default function Methodology() {
           id: 'cls', label: es ? 'Clasificación' : 'Classification',
           content: (
             <div className="pf-doc-sec">
-              <p>{es ? 'Se desliza una ventana de ' : 'Slide a '}<InlineMath tex="P\times P" />{es ? ' a lo largo del canal; un CNN clasifica cada parche → softmax de 6 clases. El CNN ' : ' window along the channel; a CNN classifies each patch → a 6-class softmax. The CNN '}<Cite id="lecun2015" paren />{es ? ' se compara contra un baseline clásico: momentos de color + features de textura (' : ' is compared against a classical baseline: colour moments + texture features ('}<Cite id="haralick1973" paren />, <Cite id="ojala2002" paren />{es ? ') + nearest-centroid.' : ') + nearest-centroid.'}</p>
+              <p>{es ? 'Se desliza una ventana de ' : 'Slide a '}<InlineMath tex="P\times P" />{es ? ' a lo largo del canal; un CNN clasifica cada parche → softmax de 6 clases. El CNN ' : ' window along the channel; a CNN classifies each patch → a 6-class softmax. The CNN '}<Cite id="lecun2015" paren />{es ? ' se compara contra un baseline clásico: momentos de color + estadísticas de gradiente de primer orden + nearest-centroid. Las features de textura clásicas GLCM (' : ' is compared against a classical baseline: colour moments + first-order gradient statistics + nearest-centroid. The classical GLCM ('}<Cite id="haralick1973" paren />{es ? ') y LBP (' : ') and LBP ('}<Cite id="ojala2002" paren />{es ? ') NO están implementadas en este build.' : ') texture features are NOT implemented in this build.'}</p>
               <Equation tex="\hat{y}(x) = \arg\max_c\ \mathrm{softmax}\big(\,\mathrm{CNN}(\text{patch}_x)\big)_c" caption={es ? 'la clase predicha en la posición x es el argmax del softmax del CNN' : 'the predicted class at position x is the argmax of the CNN softmax'} />
             </div>
           ),
@@ -35,8 +35,8 @@ export default function Methodology() {
               <p>{es ? 'Las predicciones por posición se suavizan (filtro de mayoría de 3 taps) y luego se fusionan los runs contiguos de la misma clase en SEGMENTOS, con confianza media. La profundidad de cada segmento sale del mapeo lineal x → profundidad dentro del slice del canal.'
                 : 'The per-position predictions are smoothed (a 3-tap majority filter) and adjacent same-class runs are merged into SEGMENTS, with a mean confidence. Each segment’s depth comes from the linear x → depth map within the channel’s slice.'}</p>
               <Callout variant="note" title={es ? 'Incertidumbre / no-recovery' : 'Uncertainty / no-recovery'}>
-                {es ? 'Un autoencoder de parche (OOD) reconstruye mal el frame de la bandeja, el rubble y los huecos; su MSE alto, o una confianza media bajo el umbral, marca el segmento como “incierto” en vez de forzar una clase '
-                : 'A patch autoencoder (OOD) reconstructs the tray frame, rubble and gaps poorly; a high MSE, or a mean confidence below the threshold, flags the segment as “uncertain” instead of forcing a class '}<Cite id="hendrycks2017" paren />.
+                {es ? 'Un autoencoder de parche (OOD), entrenado con parches de core en distribución, reconstruye mal el frame de la bandeja (el generador actual no produce rubble ni huecos de core-loss, así que eso no está evaluado); su MSE alto, o una confianza media bajo el umbral, marca el segmento como “incierto” en vez de forzar una clase '
+                : 'A patch autoencoder (OOD), trained on in-distribution core patches, reconstructs the tray frame poorly (the current generator produces no rubble or core-loss gaps, so those are not evaluated); a high MSE, or a mean confidence below the threshold, flags the segment as “uncertain” instead of forcing a class '}<Cite id="hendrycks2017" paren />.
               </Callout>
             </div>
           ),

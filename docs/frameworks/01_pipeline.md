@@ -13,9 +13,11 @@ classifier.
 ## 2. The classical baseline (`features.ts`)
 
 Per patch: colour moments (mean R,G,B), luma variance, mean gradient magnitude, and a horizontal/vertical gradient
-anisotropy (which captures bedding/foliation) — 8 features ([Haralick 1973](https://doi.org/10.1109/TSMC.1973.4309314),
-[Ojala 2002](https://doi.org/10.1109/TPAMI.2002.1017623)). A nearest-centroid model (centroids estimated from clean
-patches of each lithology) classifies the patch. This is what the CNN is measured against.
+anisotropy (which captures bedding/foliation) — 8 first-order colour/gradient statistics. The classical texture
+features of the literature — GLCM ([Haralick 1973](https://doi.org/10.1109/TSMC.1973.4309314)) and LBP
+([Ojala 2002](https://doi.org/10.1109/TPAMI.2002.1017623)) — are **not implemented** in this build. A nearest-centroid
+model (centroids estimated from clean patches of each lithology) classifies the patch. This is what the CNN is
+measured against.
 
 ## 3. Run-merge segmentation (`segment.ts`)
 

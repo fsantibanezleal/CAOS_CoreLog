@@ -6,13 +6,13 @@ export default function Introduction() {
     <article className="page-body prose">
       <h1>{es ? 'Introducción' : 'Introduction'}</h1>
       <p className="lede">{es
-        ? 'CoreLog Vision automatiza el logueo litológico de testigos de sondaje: toma la foto de una bandeja de testigos, segmenta el core, clasifica la litología de cada segmento con una confianza, y arma un strip-log continuo por profundidad.'
-        : 'CoreLog Vision automates drill-core lithology logging: it takes a core-tray photo, segments the core, classifies each segment’s lithology with a confidence, and assembles a continuous depth strip-log.'}</p>
+        ? 'CoreLog Vision automatiza el logueo litológico de testigos de sondaje: toma la imagen de una bandeja de testigos (sintética en este build), segmenta el core, clasifica la litología de cada segmento con una confianza, y arma un strip-log continuo por profundidad.'
+        : 'CoreLog Vision automates drill-core lithology logging: it takes a core-tray image (synthetic in this build), segments the core, classifies each segment’s lithology with a confidence, and assembles a continuous depth strip-log.'}</p>
 
       <Callout variant="strong" title={es ? 'Toda la CV corre EN VIVO en tu browser' : 'All the CV runs LIVE in your browser'}>
         {es
-          ? 'El generador de bandejas, la segmentación run-merge y el clasificador corren en TypeScript en el browser; el CNN de litología corre vía onnxruntime-web. Elige un caso o suelta tu bandeja y la segmentación se recalcula al instante.'
-          : 'The tray generator, the run-merge segmentation and the classifier run in TypeScript in the browser; the lithology CNN runs via onnxruntime-web. Pick a case or drop your tray and the segmentation re-computes instantly.'}
+          ? 'El generador de bandejas, la segmentación run-merge y el clasificador corren en TypeScript en el browser; el CNN de litología corre vía onnxruntime-web. Elige un caso y la segmentación se recalcula al instante. (La carga de tu propia bandeja en la app aún no está implementada.)'
+          : 'The tray generator, the run-merge segmentation and the classifier run in TypeScript in the browser; the lithology CNN runs via onnxruntime-web. Pick a case and the segmentation re-computes instantly. (In-app upload of your own tray is not implemented yet.)'}
       </Callout>
 
       <Tabs ariaLabel={es ? 'introducción' : 'introduction'} tabs={[
@@ -45,8 +45,8 @@ export default function Introduction() {
           content: (
             <Callout variant="honest" title={es ? 'Qué es real y qué es sintético' : 'What is real and what is synthetic'}>
               {es
-                ? 'Las imágenes de bandeja son SINTÉTICAS (texturas procedurales por litología) — no hay fotos reales de core. La segmentación y la métrica son reales: se puntúan contra el ground-truth del generador. Los controles UNIFORM/SHARP tienen respuesta cerrada. El CNN se compara SIEMPRE contra el baseline clásico (accuracy held-out), nunca se presenta superándolo si los números no lo dicen.'
-                : 'The tray images are SYNTHETIC (procedural per-lithology textures) — there are no real core photos. The segmentation + metrics are real: scored against the generator ground truth. The UNIFORM/SHARP controls are closed-form. The CNN is ALWAYS compared against the classical baseline (held-out accuracy), never presented as beating it unless the numbers say so.'}
+                ? 'Las imágenes de bandeja son SINTÉTICAS (texturas procedurales por litología) — no hay fotos reales de core. La segmentación y la métrica son reales: se puntúan contra el ground-truth del generador. Los controles UNIFORM/SHARP tienen respuesta cerrada. El CNN se compara SIEMPRE contra el baseline clásico sobre los mismos parches de test; el protocolo actual (split aleatorio por parche) filtra ventanas solapadas entre train y test, así que la accuracy titular está en re-evaluación con un split agrupado (issue #14).'
+                : 'The tray images are SYNTHETIC (procedural per-lithology textures) — there are no real core photos. The segmentation + metrics are real: scored against the generator ground truth. The UNIFORM/SHARP controls are closed-form. The CNN is ALWAYS compared against the classical baseline on the same test patches; the current protocol (random patch-level split) leaks overlapping windows between train and test, so the headline accuracy is under re-evaluation with a grouped split (issue #14).'}
             </Callout>
           ),
         },

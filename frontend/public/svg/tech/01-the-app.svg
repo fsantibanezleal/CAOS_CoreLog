@@ -76,8 +76,8 @@
   <text class="it" x="36" y="278">It is a real system, not a demo:</text>
   <text class="mu" x="36" y="302">• the CV engine (frontend/src/cv/) re-segments the tray live on every case / confidence-threshold / classifier change;</text>
   <text class="mu" x="36" y="324">• the segmentation EMERGES from a sliding patch classifier (3-tap smoothing + run-merge) — no separate heavy segmenter;</text>
-  <text class="mu" x="36" y="346">• a lithology CNN (held-out accuracy 0.996 vs the classical colour/texture baseline 0.939) + an OOD autoencoder (AUC 0.790) run client-side as ONNX;</text>
+  <text class="mu" x="36" y="346">• a lithology CNN (accuracy vs the classical baseline under re-evaluation — the patch-level split leaks; issue #14) + an OOD autoencoder (AUC 0.790), client-side ONNX;</text>
   <text class="mu" x="36" y="368">• out-of-distribution / low-confidence core is flagged + hatched, not forced into a class;</text>
-  <text class="mu" x="36" y="390">• Contract 1 accepts your own tray descriptor; six documented pages; the tray images are synthetic, the metrics scored vs the generator truth.</text>
+  <text class="mu" x="36" y="390">• Contract 1 validates a tray descriptor (Python-side; no in-app upload yet); six documented pages; the tray images are synthetic, the metrics scored vs the generator truth.</text>
   <text class="cd mono" x="36" y="418">core-tray image  →  per-patch lithology CNN + run-merge segmentation  →  depth strip-log · confidence · OOD flag</text>
 </svg>
