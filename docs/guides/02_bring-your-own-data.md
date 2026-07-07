@@ -1,9 +1,28 @@
-# Guide, bring your own tray
+# Guide, bring your own data
 
-CoreLog aims to log **your** core tray, not just the synthetic cases, but in this build the app has **no tray
-upload**: in-app ingestion of a real tray image is not implemented yet, and the App runs on the synthetic cases
-only. What exists today is the CONTRACT 1 validation gate (`cllab/io/contract.py`, Python-side); the schema +
-outlier policy are documented in [data-contracts](../architecture/08_data-contracts.md) and `data/README.md`.
+CoreLog logs **real** core, not just the synthetic cases. The App's first-level **Source selector** has two lanes:
+
+- **Synthetic**, the procedural tray generator (sim knobs live).
+- **Real sample**, real cropped core photos from the **DCID** dataset (Li et al. 2025, Petroleum Science, DOI
+  10.1016/j.petsci.2025.04.013, **CC BY-NC 4.0**), committed verbatim (512x512) with attribution under
+  `data/derived/real/` (served at `data/real/`). Its contract is `attribution.json` (schema `corelog.real/v1`):
+  `{ id, image, dcid_class, litho_label, source, doi, license, provenance }`. DCID-7 has 7 classes
+  (red/light sandstone, gray siltstone, mudstone, granite, basalt, marble) mapped to CoreLog's 6 lithologies as the
+  accuracy truth (the mapping note is in `attribution.json`).
+
+Inside the Real lane, the **Your image** tab is a genuine upload path: drop any core photo (jpg/png), it is decoded in
+the browser and the SAME pipeline (sliding windows + baseline + lithology-CNN + core-ood ONNX) runs on your pixels.
+Nothing is sent to a server.
+
+**Honesty.** The learned models were trained on the synthetic generator, so real photos are out-of-distribution: the
+predicted class is indicative. The domain gap shows in the low classifier confidence and the latent-space separation;
+the reconstruction-based OOD signal is reported as a measured novelty ratio versus a frame-free synthetic-core reference
+(and called weak when it does not exceed that reference, since the reconstruction-only detector is dominated by
+frame-vs-core contrast, AUC 0.729).
+
+For batch/offline ingestion of a real **multi-channel tray descriptor** (depth stitching, channel splitting), the
+CONTRACT 1 validation gate below (`cllab/io/contract.py`, Python-side) is the entry point; the schema + outlier policy
+are documented in [data-contracts](../architecture/08_data-contracts.md) and `data/README.md`.
 
 ## The tray-descriptor schema
 

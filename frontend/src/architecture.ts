@@ -16,23 +16,31 @@ export const architecture: ArchitectureConfig = {
         'CoreLog Vision automates drill-core lithology logging: pick a synthetic tray case and a ' +
         'per-patch CNN + run-merge segmentation give a depth strip-log of lithology + confidence, answering "which ' +
         'lithology is each metre of core?". You change the case, the confidence threshold or the classifier and the ' +
-        'whole tray re-segments live. In-app upload of your own tray image is not implemented yet.\n\n' +
+        'whole tray re-segments live. A first-level Source selector switches between the synthetic generator and a ' +
+        'REAL-sample lane (DCID drill-core photos, Li et al. 2025, CC BY-NC 4.0), and the Real lane also accepts your own ' +
+        'uploaded core photo, decoded and classified in the browser.\n\n' +
         'It is a real system, not a demo. The CV engine (frontend/src/cv/) re-segments in the browser on every control; ' +
         'the segmentation emerges from a sliding patch classifier (3-tap smoothing + run-merge), so there is no ' +
-        'separate heavy segmenter. A lithology CNN and an OOD autoencoder (AUC 0.790) run client-side as ONNX, the ' +
-        'CNN-vs-baseline accuracy is under re-evaluation (the patch-level split leaks; issue #14); low-confidence / ' +
-        'out-of-distribution core is flagged, not forced.',
+        'separate heavy segmenter. A lithology CNN and an OOD autoencoder (AUC 0.729) run client-side as ONNX. The ' +
+        'CNN-vs-baseline accuracy uses a leakage-safe grouped-by-hole split (issue #14, fixed): ~0.99 on held-out ' +
+        'synthetic holes. On real DCID photos the models are out-of-distribution, so predictions are indicative; the ' +
+        'domain gap shows in low classifier confidence, the latent-space separation and the OOD reconstruction ratio ' +
+        '(reported with its measured value, called weak when it is). Low-confidence core is flagged, not forced.',
       body_es:
         'CoreLog Vision automatiza el logueo de litología de testigos: elige un caso sintético de bandeja y un CNN por ' +
         'parche + segmentación run-merge dan un strip-log de profundidad de litología + ' +
         'confianza, respondiendo "¿qué litología es cada metro de testigo?". Cambias el caso, el umbral de confianza o ' +
-        'el clasificador y toda la bandeja se re-segmenta en vivo. La carga de tu propia imagen de bandeja en la app ' +
-        'aún no está implementada.\n\n' +
+        'el clasificador y toda la bandeja se re-segmenta en vivo. Un selector de Fuente de primer nivel alterna entre el ' +
+        'generador sintético y un carril de MUESTRA real (fotos de core DCID, Li et al. 2025, CC BY-NC 4.0), y el carril ' +
+        'Real también acepta tu propia foto de core, decodificada y clasificada en el navegador.\n\n' +
         'Es un sistema real, no un demo. El motor CV (frontend/src/cv/) re-segmenta en el navegador con cada control; la ' +
         'segmentación emerge de un clasificador de parches deslizante (suavizado de 3 taps + run-merge), así que no hay ' +
-        'un segmentador pesado aparte. Un CNN de litología y un autoencoder OOD (AUC 0.790) corren en el cliente como ' +
-        'ONNX, la accuracy CNN-vs-baseline está en re-evaluación (el split por parche filtra información; issue #14); ' +
-        'el testigo de baja confianza / fuera de distribución se marca, no se fuerza.',
+        'un segmentador pesado aparte. Un CNN de litología y un autoencoder OOD (AUC 0.729) corren en el cliente como ' +
+        'ONNX. La accuracy CNN-vs-baseline usa un split agrupado por hoyo, seguro ante fugas (issue #14, corregido): ~0.99 ' +
+        'sobre hoyos sintéticos retenidos. Sobre fotos reales DCID los modelos quedan fuera de distribución, así que las ' +
+        'predicciones son indicativas; la brecha se ve en la baja confianza del clasificador, la separación latente y la ' +
+        'razón de reconstrucción OOD (reportada con su valor medido, llamada débil cuando lo es). El testigo de baja ' +
+        'confianza se marca, no se fuerza.',
     },
     {
       id: 'lanes',
@@ -91,10 +99,11 @@ export const architecture: ArchitectureConfig = {
         'predictions into segments (the depth boundaries EMERGE where the class changes); ⑤ the segments order by depth ' +
         'into the strip-log with confidence shading.\n\n' +
         'The classical baseline is always on and transparent, the honest reference the CNN is measured against. The ' +
-        'learned lane: a lithology CNN (RGB patch → 6-way softmax; its accuracy vs the baseline is under re-evaluation ' +
-        'because the patch-level split leaks, issue #14) and an ' +
-        'OOD autoencoder (reconstruction MSE = anomaly, AUC 0.790); both run client-side as ONNX, reported whichever way ' +
-        'the numbers land, never as a black box. The generator ground truth is always the authority.',
+        'learned lane: a lithology CNN (RGB patch → 6-way softmax; accuracy ~0.99 vs the baseline on a leakage-safe ' +
+        'grouped-by-hole split, issue #14 fixed) and an ' +
+        'OOD autoencoder (reconstruction MSE = anomaly, AUC 0.729); both run client-side as ONNX, reported whichever way ' +
+        'the numbers land, never as a black box. The generator ground truth is always the authority; on real DCID photos ' +
+        'both models are out-of-distribution and say so.',
       body_es:
         'El pipeline, paso a paso: ① el generador de bandejas pinta texturas procedurales por litología (color + grano ' +
         '+ bandeamiento/vetas) y emite los segmentos verdaderos; ② por parche computa momentos de color, varianza de ' +
@@ -103,10 +112,11 @@ export const architecture: ArchitectureConfig = {
         'convierten las predicciones por posición en segmentos (los límites de profundidad EMERGEN donde cambia la ' +
         'clase); ⑤ los segmentos se ordenan por profundidad en el strip-log con sombreado por confianza.\n\n' +
         'El baseline clásico está siempre activo y es transparente, la referencia honesta contra la que se mide el CNN. ' +
-        'El carril aprendido: un CNN de litología (parche RGB → softmax de 6 clases; su accuracy vs el baseline está en ' +
-        're-evaluación porque el split por parche filtra información, issue #14) y un autoencoder OOD (MSE de ' +
-        'reconstrucción = anomalía, AUC 0.790); ambos corren en el cliente ' +
-        'como ONNX, reportados como caigan los números, nunca como caja negra. La verdad del generador es siempre la autoridad.',
+        'El carril aprendido: un CNN de litología (parche RGB → softmax de 6 clases; accuracy ~0.99 vs el baseline en un ' +
+        'split agrupado por hoyo, seguro ante fugas, issue #14 corregido) y un autoencoder OOD (MSE de ' +
+        'reconstrucción = anomalía, AUC 0.729); ambos corren en el cliente ' +
+        'como ONNX, reportados como caigan los números, nunca como caja negra. La verdad del generador es siempre la ' +
+        'autoridad; sobre fotos reales DCID ambos modelos quedan fuera de distribución y lo dicen.',
     },
     {
       id: 'design',

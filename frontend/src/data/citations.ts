@@ -37,4 +37,10 @@ export const CITATIONS: Citation[] = [
     label: 'Hendrycks & Gimpel 2017',
     citation: 'Hendrycks, D. & Gimpel, K. (2017). A baseline for detecting misclassified and out-of-distribution examples in neural networks. ICLR.',
   },
+  {
+    id: 'li2025dcid',
+    label: 'Li et al. 2025 (DCID)',
+    citation: 'Li, J.-Y., Tang, J.-Z., Zhao, X.-Z., Fan, B., Jiang, W.-Y., Song, S.-Y., Li, J.-B., Chen, K.-D. & Zhao, Z.-G. (2025). A large-scale, high-quality dataset for lithology identification: Construction and applications. Petroleum Science, 22(8), 3207-3228. Data under CC BY-NC 4.0.',
+    doi: '10.1016/j.petsci.2025.04.013',
+  },
 ];

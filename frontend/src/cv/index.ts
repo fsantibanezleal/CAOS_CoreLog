@@ -12,5 +12,5 @@ export * from './types.ts';
 export { mulberry32, hashNoise, valueNoise } from './rng.ts';
 export { lithoPixel, applyQuality } from './textures.ts';
 export { makeTray, channelTop, extractPatch } from './tray.ts';
-export { patchFeatures, fitBaseline, makeBaselineClassifier, N_FEAT } from './features.ts';
+export { patchFeatures, fitBaseline, makeBaselineClassifier, lithoFeatureSamples, N_FEAT } from './features.ts';
 export { classifyChannel, classifyTray, scoreVsTruth, truthAt, type SegOpts, type TrayScore } from './segment.ts';

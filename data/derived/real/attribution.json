@@ -1,0 +1,383 @@
+{
+  "schema": "corelog.real/v1",
+  "dataset": "DCID (Drill Core Image Dataset)",
+  "variant": "DCID-512-7, test split, verbatim 512x512 RGB samples",
+  "authors": "Li, J.-Y., Tang, J.-Z., Zhao, X.-Z., Fan, B., Jiang, W.-Y., Song, S.-Y., Li, J.-B., Chen, K.-D., Zhao, Z.-G.",
+  "citation": "Li, J.-Y. et al. (2025). A large-scale, high-quality dataset for lithology identification: Construction and applications. Petroleum Science, 22(8), 3207-3228.",
+  "doi": "10.1016/j.petsci.2025.04.013",
+  "license": "CC BY-NC 4.0",
+  "license_note": "The GitHub repo README and the Hugging Face dataset card both state CC BY-NC 4.0; the journal article text states CC BY-NC-ND 4.0. To satisfy BOTH readings we ship only UNMODIFIED, verbatim 512x512 sample images with attribution, for non-commercial research/portfolio use (fasl-work.com is non-commercial).",
+  "source_repo": "https://github.com/JiayuLi1120/drill-core-image-dataset",
+  "source_hf": "https://huggingface.co/datasets/168sir/drill-core-image-dataset",
+  "dcid7_classes": [
+    "Red sandstone",
+    "Light sandstone",
+    "Gray siltstone",
+    "Mudstone",
+    "Granite",
+    "Basalt",
+    "Marble"
+  ],
+  "corelog_mapping_note": "DCID-7 has 7 classes; CoreLog's lithology enum has 6 (granite, basalt, sandstone, limestone, schist, ore). Each real patch keeps its true DCID label (dcid_class) AND a litho_label mapping to the nearest CoreLog class, used as the accuracy truth. The three clastic fines (siltstone, mudstone) and the red/light sandstones map to sandstone; marble (metamorphosed carbonate) maps to limestone; granite and basalt are exact. schist and ore have no real counterpart in DCID-7.",
+  "honesty": "The lithology-CNN and core-ood models were trained on CoreLog's SYNTHETIC procedural core generator. Running them on these real DCID photographs is out-of-distribution: class predictions are indicative only, and the novelty (OOD) detector firing on most real patches is correct behaviour, not a bug.",
+  "count": 21,
+  "patches": [
+    {
+      "id": "red-sandstone-1",
+      "image": "dcid-red-sandstone-1.jpg",
+      "dcid_class": "Red sandstone",
+      "litho_label": "sandstone",
+      "mapping_note": "clastic sandstone (red bed)",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/1.Red sandstone/1.Red sandstone_1.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "ee1bcde14b01f5d6",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "red-sandstone-2",
+      "image": "dcid-red-sandstone-2.jpg",
+      "dcid_class": "Red sandstone",
+      "litho_label": "sandstone",
+      "mapping_note": "clastic sandstone (red bed)",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/1.Red sandstone/1.Red sandstone_549.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "1e4db1a75c864ac4",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "red-sandstone-3",
+      "image": "dcid-red-sandstone-3.jpg",
+      "dcid_class": "Red sandstone",
+      "litho_label": "sandstone",
+      "mapping_note": "clastic sandstone (red bed)",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/1.Red sandstone/1.Red sandstone_999.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "0f43711b9f5374b6",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "light-sandstone-1",
+      "image": "dcid-light-sandstone-1.jpg",
+      "dcid_class": "Light sandstone",
+      "litho_label": "sandstone",
+      "mapping_note": "clastic sandstone",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/2.Light sandstone/2.Light sandstone_1.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "feab04af4bb551ab",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "light-sandstone-2",
+      "image": "dcid-light-sandstone-2.jpg",
+      "dcid_class": "Light sandstone",
+      "litho_label": "sandstone",
+      "mapping_note": "clastic sandstone",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/2.Light sandstone/2.Light sandstone_549.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "9b5833123188fac7",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "light-sandstone-3",
+      "image": "dcid-light-sandstone-3.jpg",
+      "dcid_class": "Light sandstone",
+      "litho_label": "sandstone",
+      "mapping_note": "clastic sandstone",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/2.Light sandstone/2.Light sandstone_999.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "fbd6ec95a9d4e519",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "gray-siltstone-1",
+      "image": "dcid-gray-siltstone-1.jpg",
+      "dcid_class": "Gray siltstone",
+      "litho_label": "sandstone",
+      "mapping_note": "fine clastic (siltstone) -> nearest CoreLog clastic = sandstone",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/3.Gray siltstone/3.Gray siltstone_1.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "68734c2983d0825f",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "gray-siltstone-2",
+      "image": "dcid-gray-siltstone-2.jpg",
+      "dcid_class": "Gray siltstone",
+      "litho_label": "sandstone",
+      "mapping_note": "fine clastic (siltstone) -> nearest CoreLog clastic = sandstone",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/3.Gray siltstone/3.Gray siltstone_549.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "496fae0716a2eafe",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "gray-siltstone-3",
+      "image": "dcid-gray-siltstone-3.jpg",
+      "dcid_class": "Gray siltstone",
+      "litho_label": "sandstone",
+      "mapping_note": "fine clastic (siltstone) -> nearest CoreLog clastic = sandstone",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/3.Gray siltstone/3.Gray siltstone_999.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "ffd17f9a8f60e402",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "mudstone-1",
+      "image": "dcid-mudstone-1.jpg",
+      "dcid_class": "Mudstone",
+      "litho_label": "sandstone",
+      "mapping_note": "very-fine clastic (mudstone) -> nearest CoreLog clastic = sandstone; no CoreLog mud/shale class",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/4.Mudstone/4.Mudstone_1.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "1bbad1851dacd324",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "mudstone-2",
+      "image": "dcid-mudstone-2.jpg",
+      "dcid_class": "Mudstone",
+      "litho_label": "sandstone",
+      "mapping_note": "very-fine clastic (mudstone) -> nearest CoreLog clastic = sandstone; no CoreLog mud/shale class",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/4.Mudstone/4.Mudstone_549.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "581f4cc0daa6a6a4",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "mudstone-3",
+      "image": "dcid-mudstone-3.jpg",
+      "dcid_class": "Mudstone",
+      "litho_label": "sandstone",
+      "mapping_note": "very-fine clastic (mudstone) -> nearest CoreLog clastic = sandstone; no CoreLog mud/shale class",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/4.Mudstone/4.Mudstone_999.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "9a51ff5acc4ac55b",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "granite-1",
+      "image": "dcid-granite-1.jpg",
+      "dcid_class": "Granite",
+      "litho_label": "granite",
+      "mapping_note": "granite (exact match)",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/5.Granite/5.Granite_1.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "fc83ac02388cfb3f",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "granite-2",
+      "image": "dcid-granite-2.jpg",
+      "dcid_class": "Granite",
+      "litho_label": "granite",
+      "mapping_note": "granite (exact match)",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/5.Granite/5.Granite_549.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "fcb097c4720b54b1",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "granite-3",
+      "image": "dcid-granite-3.jpg",
+      "dcid_class": "Granite",
+      "litho_label": "granite",
+      "mapping_note": "granite (exact match)",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/5.Granite/5.Granite_999.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "cb88c4521b131879",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "basalt-1",
+      "image": "dcid-basalt-1.jpg",
+      "dcid_class": "Basalt",
+      "litho_label": "basalt",
+      "mapping_note": "basalt (exact match)",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/6.Basalt/6.Basalt_1.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "25a3ef8eded266f3",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "basalt-2",
+      "image": "dcid-basalt-2.jpg",
+      "dcid_class": "Basalt",
+      "litho_label": "basalt",
+      "mapping_note": "basalt (exact match)",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/6.Basalt/6.Basalt_549.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "752ab949ab29bfb1",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "basalt-3",
+      "image": "dcid-basalt-3.jpg",
+      "dcid_class": "Basalt",
+      "litho_label": "basalt",
+      "mapping_note": "basalt (exact match)",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/6.Basalt/6.Basalt_999.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "c10971744f43895d",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "marble-1",
+      "image": "dcid-marble-1.jpg",
+      "dcid_class": "Marble",
+      "litho_label": "limestone",
+      "mapping_note": "marble (metamorphosed carbonate) -> nearest CoreLog carbonate = limestone",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/7.Marble/7.Marble_1.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "c6b7f5bc4db473ac",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "marble-2",
+      "image": "dcid-marble-2.jpg",
+      "dcid_class": "Marble",
+      "litho_label": "limestone",
+      "mapping_note": "marble (metamorphosed carbonate) -> nearest CoreLog carbonate = limestone",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/7.Marble/7.Marble_549.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "4f9611b36527bb45",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    },
+    {
+      "id": "marble-3",
+      "image": "dcid-marble-3.jpg",
+      "dcid_class": "Marble",
+      "litho_label": "limestone",
+      "mapping_note": "marble (metamorphosed carbonate) -> nearest CoreLog carbonate = limestone",
+      "src_path_in_dcid": "DCID/DCID-512-7/test/7.Marble/7.Marble_999.jpg",
+      "orig_px": [
+        512,
+        512
+      ],
+      "sha256_16": "8768b81733844a1d",
+      "source": "DCID",
+      "doi": "10.1016/j.petsci.2025.04.013",
+      "license": "CC BY-NC 4.0",
+      "provenance": "real cropped core patch"
+    }
+  ]
+}

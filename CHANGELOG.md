@@ -1,7 +1,45 @@
 # Changelog
 
 All notable changes to CAOS CoreLog Vision. Versions follow `X.XX.XXX` (display), see `cllab.__version__` and
-`frontend/package.json`. The project stays in `0.x` while the core-tray images are synthetic.
+`frontend/package.json`. The project stays in `0.x` while the synthetic core-tray images anchor the metrics.
+
+## [0.08.000], 2026-07-07
+
+### Added, the Synthetic | Real-sample source lane (the Faena source-selector rule)
+- A first-level **Source selector** (`Synthetic | Real sample`) at the top of the App sidebar. Real mode disables the
+  synthetic generator knobs and exposes a **DCID** real-core patch picker (grouped by lithology).
+- Integrated **DCID** (Drill Core Image Dataset, Li et al. 2025, Petroleum Science,
+  DOI 10.1016/j.petsci.2025.04.013, **CC BY-NC 4.0**): 21 verbatim 512x512 RGB sample patches (3 per DCID-7 class)
+  committed under `data/derived/real/` with `attribution.json` (schema `corelog.real/v1`, the data contract + the
+  DCID-7 to CoreLog class mapping) and an in-panel provenance chip (DOI + license). Samples are verbatim/unmodified so
+  they satisfy both the repo's CC BY-NC and the article's CC BY-NC-ND readings.
+- A real patch runs the SAME live pipeline on its real pixels: `extractPatch` sliding windows, then classical baseline
+  + lithology-CNN ONNX + core-ood ONNX. `extractPatch` now accepts any `RgbaImage` (synthetic tray or real photo).
+- New genuine learned-representation views (both lanes): **OOD/novelty map** (per-window reconstruction MSE),
+  **class-evidence map** (per-window occlusion saliency for the predicted class, honest, not Grad-CAM), and a
+  **latent scatter** (PCA of the colour/texture features: synthetic clouds + current-image windows, showing the domain
+  gap). The Real lane also adds a **per-session real confusion/recall** (truth = mapped DCID label) and a genuine
+  **Your image** upload path (decode + classify in-browser, nothing leaves the page).
+
+### Removed, the 4 forbidden meta-tabs
+- Deleted the App's `Learned models` metrics table, `Contract - gate` manifest tab, `Bring your own` "not implemented"
+  note and `Trace` JSON dump. Learned metrics live on Benchmark; the manifest/gate metadata is documented in
+  Implementation; `Bring your own` became the real upload path in the Real lane. The App now carries 10 genuine domain
+  views plus the lithology legend, no meta-tabs.
+
+### Fixed, honesty (claims vs the engine)
+- Removed the stale in-App note claiming split issue #14 is "under re-evaluation"; it was fixed in 0.07.000
+  (grouped-by-hole, ~0.99). Corrected the same stale claim on the Introduction page, the architecture modal and three
+  docs pages, plus the OOD AUC drift (0.790 -> 0.729, matching `cl-learned.json`).
+- The Real-lane OOD verdict is **measured, not asserted**: the reconstruction MSE is compared to a frame-free
+  synthetic-core reference and reported as a novelty ratio; when it does not exceed the reference the UI says so
+  plainly (the reconstruction-only detector is weak, AUC 0.729) and points to the low classifier confidence and the
+  latent-space gap as the real out-of-distribution evidence. No blanket "always fires".
+
+### Changed, version sync
+- All version surfaces aligned to **0.08.000** (`frontend/package.json` 0.8.0, `VERSION`, `pyproject.toml`,
+  `cllab.__version__`, regenerated manifests `engine_version`). The shell footer now derives the display version from
+  `package.json` via a vite `define`, so the footer can no longer drift.
 
 ## [0.07.001], 2026-07-04
 

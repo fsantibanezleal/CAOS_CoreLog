@@ -49,6 +49,22 @@ export function patchFeatures(patch: Float32Array): Float32Array {
   return new Float32Array([mr, mg, mb, Math.sqrt(lumaVar / n), gradMag / n, aniso, lumaMean, (mr - mb)]);
 }
 
+/** Sample raw 8-dim feature vectors from clean uniform patches of each lithology, the synthetic reference cloud the
+ * latent-scatter projects (real DCID patches are overlaid on the same axes to visualise the domain gap). */
+export function lithoFeatureSamples(perClass = 18, seed = 7): Array<{ litho: Lithology; feats: Float32Array[] }> {
+  return LITHOLOGIES.map((litho, li) => {
+    const spec: TraySpec = { id: `cal_${litho}`, nChannels: 1, chWidthPx: 220, chHeightPx: PATCH * 2,
+      depthFromM: 0, depthToM: 1, mmPerPx: 1, seed: seed + li * 17, suite: 'uniform', quality: 'clean' };
+    const tray = makeUniform(spec, litho);
+    const feats: Float32Array[] = [];
+    for (let k = 0; k < perClass; k++) {
+      const cx = 12 + Math.floor((k / perClass) * (tray.width - 24));
+      feats.push(patchFeatures(extractPatch(tray, cx, tray.height >> 1)));
+    }
+    return { litho, feats };
+  });
+}
+
 interface Baseline {
   centroids: Float32Array[]; // per lithology, length N_FEAT (standardised)
   mean: Float32Array;
