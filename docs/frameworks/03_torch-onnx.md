@@ -22,8 +22,9 @@ into ONE `run()` call, then run-merges; the OOD AE's reconstruction MSE marks un
 
 ## Honesty
 
-The lithology-cnn accuracy vs the classical baseline is **under re-evaluation**
-([issue #14](https://github.com/fsantibanezleal/CAOS_CoreLog/issues/14)): the current split is a random patch-level
-80/20, and overlapping sliding windows from the same trays leak between train and test (see
-[model evaluation](../architecture/06_model-evaluation.md)). core-ood scores **AUC 0.790** (a moderate frame-vs-core
+The lithology-cnn accuracy vs the classical baseline uses a **leakage-safe grouped-by-hole split**
+([issue #14](https://github.com/fsantibanezleal/CAOS_CoreLog/issues/14), fixed): every synthetic hole = (suite, seed)
+goes ENTIRELY to train or test, so overlapping sliding windows from the same trays can no longer leak between train and
+test (see [model evaluation](../architecture/06_model-evaluation.md)). Post-fix accuracy stays high (~0.99) because the
+synthetic lithology classes are texturally separable. core-ood scores **AUC 0.729** (a moderate frame-vs-core
 separation). Reported whichever way they land.

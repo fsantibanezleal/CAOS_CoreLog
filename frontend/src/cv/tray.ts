@@ -4,7 +4,7 @@
 
 import { mulberry32 } from './rng.ts';
 import { applyQuality, lithoPixel } from './textures.ts';
-import { type Lithology, PATCH, type Segment, type Suite, type Tray, type TraySpec } from './types.ts';
+import { type Lithology, PATCH, type RgbaImage, type Segment, type Suite, type Tray, type TraySpec } from './types.ts';
 
 // per-suite lithology palettes (the orebody/sequence each tray is drilled through)
 const SUITES: Record<Suite, Lithology[]> = {
@@ -93,9 +93,10 @@ export function channelTop(spec: TraySpec, ch: number): number {
 
 /**
  * Extract a PATCH×PATCH patch centred at (cx, cy) in image space, as CHW float32 in [0,1] (the CNN input layout
- * [3,PATCH,PATCH]). Out-of-bounds is clamped to the edge.
+ * [3,PATCH,PATCH]). Out-of-bounds is clamped to the edge. Accepts any RgbaImage (a synthetic tray OR a real photo),
+ * so the identical preprocessing feeds the classifier in both lanes.
  */
-export function extractPatch(tray: Tray, cx: number, cy: number): Float32Array {
+export function extractPatch(tray: RgbaImage, cx: number, cy: number): Float32Array {
   const P = PATCH;
   const out = new Float32Array(3 * P * P);
   const half = P >> 1;

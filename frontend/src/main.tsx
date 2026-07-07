@@ -16,6 +16,13 @@ import Benchmark from './pages/Benchmark.tsx';
 
 applyTheme(readTheme());
 
+// Display version X.XX.XXX derived from package.json (via the vite `define`), the single source of truth.
+declare const __APP_VERSION__: string;
+const displayVersion = (() => {
+  const [maj, min = '0', pat = '0'] = __APP_VERSION__.split('.');
+  return `${maj}.${min.padStart(2, '0')}.${pat.padStart(3, '0')}`;
+})();
+
 const config: ShellConfig = {
   product: { name: 'CoreLog Vision', mark: <Layers size={18} aria-hidden="true" /> },
   routes: [
@@ -27,7 +34,7 @@ const config: ShellConfig = {
     { path: '/benchmark', en: 'Benchmark', es: 'Benchmark' },
   ],
   links: { github: 'https://github.com/fsantibanezleal/CAOS_CoreLog' },
-  version: '0.07.000',
+  version: displayVersion,
   architecture,
 };
 
