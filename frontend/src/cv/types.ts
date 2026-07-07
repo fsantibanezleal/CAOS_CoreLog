@@ -34,13 +34,18 @@ export interface TraySpec {
   quality: Quality;
 }
 
-/** A rendered tray: the RGB image + the ground-truth segments. */
-export interface Tray {
-  spec: TraySpec;
+/** Any decoded RGBA image (the shared shape the patch extractor needs). A synthetic Tray and a real DCID photo both
+ * satisfy it, so the SAME sliding-window classifier runs on both. */
+export interface RgbaImage {
   width: number;
   height: number;
   /** RGBA, row-major, length width*height*4 (alpha always 255). */
   rgba: Uint8ClampedArray;
+}
+
+/** A rendered tray: the RGB image + the ground-truth segments. */
+export interface Tray extends RgbaImage {
+  spec: TraySpec;
   /** ground-truth segments (one list per channel, concatenated; each carries its channel). */
   truth: Segment[];
 }
