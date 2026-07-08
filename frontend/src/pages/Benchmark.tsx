@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Callout, useShellLang } from '@fasl-work/caos-app-shell';
-import { loadCaseResults, loadLearned, type LearnedFile } from '../lib/artifacts.ts';
+import { loadCaseResults, loadLearned, loadOodBench, type LearnedFile, type OodBenchFile } from '../lib/artifacts.ts';
 import type { CaseResultsFile } from '../lib/contract.types.ts';
 import { ConfusionMatrix } from '../viz/ConfusionMatrix.tsx';
+import { OodComparison } from '../viz/OodComparison.tsx';
 import { LITHOLOGIES } from '../cv/types.ts';
 
 export default function Benchmark() {
   const es = useShellLang() === 'es';
   const [data, setData] = useState<CaseResultsFile | null>(null);
   const [learned, setLearned] = useState<LearnedFile | null>(null);
+  const [ood, setOod] = useState<OodBenchFile | null>(null);
   useEffect(() => { loadCaseResults().then(setData).catch(() => setData(null)); }, []);
   useEffect(() => { loadLearned().then(setLearned).catch(() => setLearned(null)); }, []);
+  useEffect(() => { loadOodBench().then(setOod).catch(() => setOod(null)); }, []);
 
   // aggregate confusion across all cases (the cross-case view that does NOT belong in the App)
   const agg = (() => {
@@ -83,6 +86,8 @@ export default function Benchmark() {
             : 'cl-learned.json did not load in this session, the trained models (torch → ONNX) ship committed with the build; run `python -m cllab.pipeline all --retrain` to regenerate them. The generator ground truth is always the authority.'}
         </Callout>
       )}
+
+      <OodComparison ood={ood} es={es} />
 
       <h2>{es ? 'Lane de muestra real (DCID)' : 'Real-sample lane (DCID)'}</h2>
       <p>{es
