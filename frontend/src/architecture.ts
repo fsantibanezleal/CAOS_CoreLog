@@ -100,10 +100,12 @@ export const architecture: ArchitectureConfig = {
         'into the strip-log with confidence shading.\n\n' +
         'The classical baseline is always on and transparent, the honest reference the CNN is measured against. The ' +
         'learned lane: a lithology CNN (RGB patch → 6-way softmax; accuracy ~0.99 vs the baseline on a leakage-safe ' +
-        'grouped-by-hole split, issue #14 fixed) and an ' +
-        'OOD autoencoder (reconstruction MSE = anomaly, AUC 0.729); both run client-side as ONNX, reported whichever way ' +
-        'the numbers land, never as a black box. The generator ground truth is always the authority; on real DCID photos ' +
-        'both models are out-of-distribution and say so.',
+        'grouped-by-hole split, issue #14 fixed) and, since v0.09.000, a principled feature-space OOD score. The old ' +
+        'reconstruction-MSE novelty was weak (it fails on real core, AUROC 0.31 on the synthetic-vs-real task); the ' +
+        'replacement is a Mahalanobis distance over the CNN 64-d embedding (AUROC 0.95 live, MobileNetV3 ceiling 1.00), ' +
+        'plus a DCID-fine-tuned real head that classifies real DCID-7 core at 99% top-1. All run client-side as ONNX, ' +
+        'reported whichever way the numbers land, never as a black box. The generator ground truth is the authority on ' +
+        'synthetic core; on real DCID photos the synthetic CNN is out-of-distribution and the OOD detector says so.',
       body_es:
         'El pipeline, paso a paso: ① el generador de bandejas pinta texturas procedurales por litología (color + grano ' +
         '+ bandeamiento/vetas) y emite los segmentos verdaderos; ② por parche computa momentos de color, varianza de ' +
