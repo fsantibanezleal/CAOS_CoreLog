@@ -5,9 +5,12 @@ import { classifyTray, lithoFeatureSamples, makeBaselineClassifier, makeTray, sc
 import { LITHO_INFO, LITHOLOGIES, N_LITHO, type Lithology, type RgbaImage, type Segment } from '../cv/types.ts';
 import { classifyTrayCNN } from '../lib/cnn.ts';
 import {
-  analyzeWindows, decodeImage, loadRealIndex, realImageUrl, syntheticReferenceMse,
-  type PatchAnalysis, type RealDoc, type RealPatch,
+  analyzeWindows, decodeImage, DCID7, loadRealIndex, makeControlImage, realImageUrl, runDcidHead,
+  syntheticReferenceMse, type ControlKind, type PatchAnalysis, type RealDoc, type RealPatch,
 } from '../lib/realpatch.ts';
+import { realHeadAvailable } from '../lib/ort.ts';
+import { loadOodDetector, type OodDetector } from '../lib/ood.ts';
+import { loadOodBench } from '../lib/artifacts.ts';
 import { fitPca, project } from '../lib/pca.ts';
 import { TrayView } from '../viz/TrayView.tsx';
 import { StripLog } from '../viz/StripLog.tsx';
@@ -40,6 +43,19 @@ export default function Tool() {
   const [conf, setConf] = useState(0.45);
   const [useCnn, setUseCnn] = useState(false);
   const [overlay, setOverlay] = useState(true);
+  const [oodMode, setOodMode] = useState<'mahal' | 'recon'>('mahal');
+  const [useDcidHead, setUseDcidHead] = useState(false);
+  const [control, setControl] = useState<'none' | ControlKind>('none');
+  const [headDim, setHeadDim] = useState(24);
+  const [headAvail, setHeadAvail] = useState(false);
+  const [dcidProbs, setDcidProbs] = useState<Float32Array | null>(null);
+
+  const [det, setDet] = useState<OodDetector | null>(null);
+  useEffect(() => {
+    loadOodBench().then((b) => { if (b) setHeadDim(b.realHeadOnnxDim || 24); }).catch(() => {});
+    realHeadAvailable().then(setHeadAvail).catch(() => setHeadAvail(false));
+    loadOodDetector().then((d) => setDet(d?.shipped ?? null)).catch(() => setDet(null));
+  }, []);
 
   const clf = useMemo<PatchClassifier>(() => makeBaselineClassifier(7), []);
 
@@ -68,11 +84,22 @@ export default function Tool() {
   const realPatch = useMemo<RealPatch | null>(() => realDoc ? (realDoc.patches.find((p) => p.id === realId) ?? realDoc.patches[0]) : null, [realDoc, realId]);
   const [realImg, setRealImg] = useState<RgbaImage | null>(null);
   useEffect(() => {
-    if (source !== 'real' || !realPatch) { setRealImg(null); return; }
+    if (source !== 'real') { setRealImg(null); return; }
+    if (control !== 'none') { setRealImg(makeControlImage(control)); return; }
+    if (!realPatch) { setRealImg(null); return; }
     let cancel = false; setRealImg(null);
     decodeImage(realImageUrl(realPatch.image)).then((im) => { if (!cancel) setRealImg(im); }).catch(() => {});
     return () => { cancel = true; };
-  }, [source, realPatch]);
+  }, [source, realPatch, control]);
+
+  // DCID-fine-tuned real head (one inference per selected real patch; only for genuine DCID patches)
+  useEffect(() => {
+    if (source !== 'real' || control !== 'none' || !realPatch || !useDcidHead || !headAvail) { setDcidProbs(null); return; }
+    let cancel = false; setDcidProbs(null);
+    runDcidHead(realImageUrl(realPatch.image), headDim).then((p) => { if (!cancel) setDcidProbs(p); }).catch(() => {});
+    return () => { cancel = true; };
+  }, [source, control, realPatch, useDcidHead, headAvail, headDim]);
+  const dcidPred = dcidProbs ? Array.from(dcidProbs).reduce((b, v, i, a) => (v > a[b] ? i : b), 0) : -1;
 
   // ---- shared window analysis (drives OOD map / saliency / latent, for whichever image is active) ----
   const [analysis, setAnalysis] = useState<PatchAnalysis | null>(null);
@@ -97,12 +124,12 @@ export default function Tool() {
   // accumulate real classifications this session (dedup by patch + classifier) for the real confusion / recall
   const [realResults, setRealResults] = useState<Record<string, { truth: number; pred: number }>>({});
   useEffect(() => {
-    if (source !== 'real' || !realPatch || !analysis || !agg) return;
+    if (source !== 'real' || control !== 'none' || !realPatch || !analysis || !agg) return;
     const truth = LITHOLOGIES.indexOf(realPatch.litho_label as Lithology);
     if (truth < 0) return;
     const key = `${realPatch.id}:${useCnn && analysis.cnn.available ? 'cnn' : 'base'}`;
     setRealResults((prev) => (prev[key] && prev[key].pred === agg.pred ? prev : { ...prev, [key]: { truth, pred: agg.pred } }));
-  }, [source, realPatch, analysis, agg, useCnn]);
+  }, [source, control, realPatch, analysis, agg, useCnn]);
   const realItems = Object.values(realResults);
   const realConfusion = useMemo(() => buildConfusion(realItems), [realResults]);
   const realRecall = LITHOLOGIES.map((_, i) => { const row = realConfusion[i]; const sum = row.reduce((a, b) => a + b, 0); return sum ? row[i] / sum : null; });
@@ -127,6 +154,12 @@ export default function Tool() {
   const latentPoints = [...synthPoints, ...overlayPoints];
 
   const oodValues = analysis && analysis.ood.available ? analysis.cells.map((c) => c.oodMse) : null;
+  const mahalValues = analysis && analysis.mahal.available ? analysis.cells.map((c) => c.mahal) : null;
+  const showMahal = oodMode === 'mahal' && mahalValues != null;
+  const oodDisplayValues = showMahal ? mahalValues : oodValues;
+  const meanMahal = analysis && analysis.mahal.available ? analysis.mahal.meanMahal : null;
+  const mahalThresh = det ? (det.idQuantiles['0.95'] ?? det.idQuantiles['0.9'] ?? null) : null;
+  const mahalFires = meanMahal != null && mahalThresh != null ? meanMahal > mahalThresh : null;
   const salValues = analysis ? analysis.cells.map((c) => (c.cnnProbs ? c.cnnProbs[predIdx] : c.baseProbs[predIdx])) : null;
 
   const Kpi = ({ label, value }: { label: string; value: string }) => (
@@ -138,29 +171,51 @@ export default function Tool() {
     id: 'ood', label: es ? 'Mapa OOD' : 'OOD map',
     content: (
       <div className="pf-vizstack">
-        <div className="pf-plot-t">{es ? 'Novedad por ventana: error de reconstruccion del autoencoder OOD (mas caliente = mas fuera de distribucion)' : 'Per-window novelty: reconstruction error of the OOD autoencoder (hotter = more out-of-distribution)'}</div>
+        <div className="pf-plot-th">
+          <div className="pf-plot-t">{showMahal
+            ? (es ? 'Novedad por ventana: distancia de Mahalanobis en el espacio de features (detector embarcado; mas caliente = mas fuera de distribucion)' : 'Per-window novelty: Mahalanobis distance in feature space (shipped detector; hotter = more out-of-distribution)')
+            : (es ? 'Novedad por ventana: error de reconstruccion del autoencoder OOD incumbente (mas caliente = mas fuera de distribucion)' : 'Per-window novelty: reconstruction error of the incumbent OOD autoencoder (hotter = more out-of-distribution)')}</div>
+          <div className="pf-seg">
+            <button className={`chip ${oodMode === 'mahal' ? 'on' : ''}`} disabled={mahalValues == null} onClick={() => setOodMode('mahal')} title="feature-space Mahalanobis">Mahalanobis</button>
+            <button className={`chip ${oodMode === 'recon' ? 'on' : ''}`} onClick={() => setOodMode('recon')} title="reconstruction MSE">{es ? 'reconstruccion' : 'reconstruction'}</button>
+          </div>
+        </div>
         {aPending && <p className="pf-note">{es ? 'analizando ventanas (onnxruntime-web)...' : 'analysing windows (onnxruntime-web)...'}</p>}
-        {analysis && oodValues && (
+        {analysis && oodDisplayValues && (
           <>
             <HeatCanvas img={analysis.work} cols={analysis.cols} rows={analysis.rows} stride={analysis.stride} patch={analysis.patch}
-              values={oodValues} colormap={oodColormap} format={(v) => `MSE ${v.toFixed(4)}`} ariaLabel={es ? 'mapa OOD' : 'OOD map'} />
-            <div className="pf-kpis">
-              <Kpi label={es ? 'MSE medio' : 'mean MSE'} value={realMeanMse != null ? realMeanMse.toFixed(4) : 'n/a'} />
-              <Kpi label={es ? 'ref. sintetica' : 'synthetic ref.'} value={refMse != null ? refMse.toFixed(4) : 'n/a'} />
-              <Kpi label={es ? 'razon novedad' : 'novelty ratio'} value={oodRatio != null ? `${oodRatio.toFixed(2)}x` : 'n/a'} />
-            </div>
-            {source === 'real' && oodRatio != null && (
-              <p className="pf-note">{
-                oodRatio >= 1.3
-                  ? (es ? `El OOD DISPARA: el error de reconstruccion sobre este parche real es ~${oodRatio.toFixed(1)}x el del core sintetico en distribucion. El AE nunca vio textura de roca real, asi que marcarla como novedosa es correcto.` : `OOD FIRES: reconstruction error on this real patch is ~${oodRatio.toFixed(1)}x that of in-distribution synthetic core. The AE never saw real rock texture, so flagging it as novel is correct.`)
-                  : oodRatio >= 1.0
-                    ? (es ? `Senal OOD presente pero debil: el error de reconstruccion (~${oodRatio.toFixed(2)}x) esta apenas sobre la referencia de core sintetico. La evidencia mas clara de fuera-de-distribucion aqui es la baja confianza del clasificador y la brecha en el espacio latente.` : `OOD signal present but weak: reconstruction error (~${oodRatio.toFixed(2)}x) is only just above the synthetic-core reference. The clearer out-of-distribution evidence here is the low classifier confidence and the latent-space gap.`)
-                    : (es ? `Honesto: la senal OOD por reconstruccion NO marca este parche (se reconstruye tan facil como el core sintetico, ~${oodRatio.toFixed(2)}x). Este detector es debil (AUC 0.729) y esta dominado por el contraste frame-vs-core; la evidencia real de fuera-de-distribucion aqui es la baja confianza del clasificador y la brecha en el espacio latente.` : `Honest: the reconstruction-MSE OOD signal does NOT flag this patch (it reconstructs about as easily as synthetic core, ~${oodRatio.toFixed(2)}x). This detector is weak (AUC 0.729) and is dominated by frame-vs-core contrast; the real out-of-distribution evidence here is the low classifier confidence and the latent-space gap.`)
-              }</p>
+              values={oodDisplayValues} colormap={oodColormap}
+              format={(v) => (showMahal ? `M ${v.toFixed(1)}` : `MSE ${v.toFixed(4)}`)} ariaLabel={es ? 'mapa OOD' : 'OOD map'} />
+            {showMahal ? (
+              <>
+                <div className="pf-kpis">
+                  <Kpi label={es ? 'Mahalanobis medio' : 'mean Mahalanobis'} value={meanMahal != null ? meanMahal.toFixed(1) : 'n/a'} />
+                  <Kpi label={es ? 'umbral ID (p95)' : 'ID threshold (p95)'} value={mahalThresh != null ? mahalThresh.toFixed(1) : 'n/a'} />
+                  <Kpi label={es ? 'veredicto' : 'verdict'} value={mahalFires == null ? 'n/a' : (mahalFires ? (es ? 'DISPARA' : 'FIRES') : (es ? 'en distr.' : 'in-distr.'))} />
+                </div>
+                <p className="pf-note">{es
+                  ? 'Detector embarcado: Gaussiana por clase (Mahalanobis, Lee et al. 2018) ajustada sobre el core sintetico. Un parche real o no-core cae lejos de todo centroide sintetico, asi que su distancia es grande. Es el reemplazo principal del debil MSE de reconstruccion; compara ambos con el toggle de arriba y ve la tabla completa en Benchmark.'
+                  : 'Shipped detector: a class-conditional Gaussian (Mahalanobis, Lee et al. 2018) fit on synthetic core. A real or non-core patch lands far from every synthetic centroid, so its distance is large. This is the principled replacement for the weak reconstruction MSE; compare both with the toggle above and see the full table on Benchmark.'}</p>
+              </>
+            ) : (
+              <>
+                <div className="pf-kpis">
+                  <Kpi label={es ? 'MSE medio' : 'mean MSE'} value={realMeanMse != null ? realMeanMse.toFixed(4) : 'n/a'} />
+                  <Kpi label={es ? 'ref. sintetica' : 'synthetic ref.'} value={refMse != null ? refMse.toFixed(4) : 'n/a'} />
+                  <Kpi label={es ? 'razon novedad' : 'novelty ratio'} value={oodRatio != null ? `${oodRatio.toFixed(2)}x` : 'n/a'} />
+                </div>
+                {source === 'real' && oodRatio != null && (
+                  <p className="pf-note">{
+                    oodRatio >= 1.3
+                      ? (es ? `El OOD por reconstruccion dispara (~${oodRatio.toFixed(1)}x el core sintetico). Aun asi, el detector en espacio de features (Mahalanobis) es mas confiable; ve el toggle.` : `The reconstruction OOD fires (~${oodRatio.toFixed(1)}x synthetic core). Even so, the feature-space detector (Mahalanobis) is more reliable; see the toggle.`)
+                      : (es ? `Honesto: la senal OOD por reconstruccion es debil aqui (~${oodRatio.toFixed(2)}x, AUC 0.729, dominada por el contraste frame-vs-core). Por eso el detector embarcado es Mahalanobis en el espacio de features, no la reconstruccion.` : `Honest: the reconstruction-MSE OOD signal is weak here (~${oodRatio.toFixed(2)}x, AUC 0.729, dominated by frame-vs-core contrast). This is exactly why the shipped detector is feature-space Mahalanobis, not reconstruction.`)
+                  }</p>
+                )}
+              </>
             )}
           </>
         )}
-        {analysis && !oodValues && <p className="pf-note">{es ? 'El modelo OOD no cargo en esta sesion (core-ood.onnx).' : 'The OOD model did not load in this session (core-ood.onnx).'}</p>}
+        {analysis && !oodDisplayValues && <p className="pf-note">{es ? 'Los modelos OOD no cargaron en esta sesion (lithology-cnn.onnx / core-ood.onnx).' : 'The OOD models did not load this session (lithology-cnn.onnx / core-ood.onnx).'}</p>}
       </div>
     ),
   };
@@ -274,26 +329,61 @@ export default function Tool() {
   const realTabs = realPatch && realDoc ? [
     {
       id: 'patch', label: es ? 'Parche' : 'Patch',
-      content: (
+      content: control !== 'none' ? (
+        <div className="cl-split">
+          <div className="cl-split-main">
+            <div className="pf-plot-t">{es ? 'Control no-core (debe disparar el OOD mas fuerte)' : 'Non-core control (must trip OOD hardest)'}</div>
+            {analysis && oodDisplayValues ? (
+              <HeatCanvas img={analysis.work} cols={analysis.cols} rows={analysis.rows} stride={analysis.stride} patch={analysis.patch}
+                values={oodDisplayValues} colormap={oodColormap} format={(v) => (showMahal ? `M ${v.toFixed(1)}` : `MSE ${v.toFixed(4)}`)} ariaLabel="control OOD" />
+            ) : <p className="pf-note">{es ? 'analizando...' : 'analysing...'}</p>}
+            <div className="pf-kpis">
+              <Kpi label={es ? 'entrada' : 'input'} value={control === 'noise' ? (es ? 'ruido' : 'noise') : (es ? 'gradiente' : 'gradient')} />
+              <Kpi label={es ? 'Mahalanobis medio' : 'mean Mahalanobis'} value={meanMahal != null ? meanMahal.toFixed(1) : (aPending ? '...' : 'n/a')} />
+              <Kpi label={es ? 'veredicto' : 'verdict'} value={mahalFires == null ? 'n/a' : (mahalFires ? (es ? 'DISPARA' : 'FIRES') : (es ? 'en distr.' : 'in-distr.'))} />
+            </div>
+          </div>
+          <div className="cl-split-side">
+            <div className="pf-plot-t">{es ? 'Control negativo' : 'Negative control'}</div>
+            <p className="pf-cap pf-muted">{es
+              ? 'Una imagen que no es core (ruido o un gradiente liso) debe marcarse como fuera de distribucion MAS fuerte que cualquier parche real. Es el control honesto del detector OOD: uno que deja pasar el no-core no sirve. Ve el mapa OOD.'
+              : 'A non-core image (noise or a smooth gradient) must be flagged as out-of-distribution HARDER than any real patch. It is the honest control for the OOD detector: one that lets non-core through is meaningless. See the OOD map.'}</p>
+          </div>
+        </div>
+      ) : (
         <div className="cl-split">
           <div className="cl-split-main">
             <div className="pf-plot-t">{es ? 'Parche de core real (no una bandeja de campo)' : 'Single real core patch (not a field tray)'}</div>
             <img className="cl-realimg" src={realImageUrl(realPatch.image)} alt={`DCID ${realPatch.dcid_class}`} />
             <Provenance p={realPatch} />
-            <div className="pf-kpis">
-              <Kpi label={es ? 'etiqueta DCID' : 'DCID label'} value={realPatch.dcid_class} />
-              <Kpi label={es ? 'verdad (mapeada)' : 'truth (mapped)'} value={es ? LITHO_INFO[realPatch.litho_label as Lithology].es : LITHO_INFO[realPatch.litho_label as Lithology].en} />
-              <Kpi label={es ? 'prediccion' : 'prediction'} value={agg ? (es ? LITHO_INFO[LITHOLOGIES[agg.pred]].es : LITHO_INFO[LITHOLOGIES[agg.pred]].en) : (aPending ? '...' : 'n/a')} />
-              <Kpi label={es ? 'confianza' : 'confidence'} value={agg ? `${(agg.conf * 100).toFixed(0)}%` : 'n/a'} />
-            </div>
+            {useDcidHead && headAvail ? (
+              <div className="pf-kpis">
+                <Kpi label={es ? 'etiqueta DCID' : 'DCID label'} value={realPatch.dcid_class} />
+                <Kpi label={es ? 'cabeza DCID-7' : 'DCID-7 head'} value={dcidPred >= 0 ? DCID7[dcidPred] : (aPending || dcidProbs === null ? '...' : 'n/a')} />
+                <Kpi label={es ? 'correcto' : 'correct'} value={dcidPred >= 0 ? (DCID7[dcidPred] === realPatch.dcid_class ? (es ? 'si' : 'yes') : 'no') : 'n/a'} />
+                <Kpi label={es ? 'confianza' : 'confidence'} value={dcidProbs && dcidPred >= 0 ? `${(dcidProbs[dcidPred] * 100).toFixed(0)}%` : 'n/a'} />
+              </div>
+            ) : (
+              <div className="pf-kpis">
+                <Kpi label={es ? 'etiqueta DCID' : 'DCID label'} value={realPatch.dcid_class} />
+                <Kpi label={es ? 'verdad (mapeada)' : 'truth (mapped)'} value={es ? LITHO_INFO[realPatch.litho_label as Lithology].es : LITHO_INFO[realPatch.litho_label as Lithology].en} />
+                <Kpi label={es ? 'prediccion' : 'prediction'} value={agg ? (es ? LITHO_INFO[LITHOLOGIES[agg.pred]].es : LITHO_INFO[LITHOLOGIES[agg.pred]].en) : (aPending ? '...' : 'n/a')} />
+                <Kpi label={es ? 'confianza' : 'confidence'} value={agg ? `${(agg.conf * 100).toFixed(0)}%` : 'n/a'} />
+              </div>
+            )}
             <p className="pf-cap pf-muted">{realPatch.mapping_note}</p>
           </div>
           <div className="cl-split-side">
-            <div className="pf-plot-t">{es ? 'Clasificador' : 'Classifier'}</div>
-            <p className="pf-cap">{agg && agg === analysis?.base && useCnn ? (es ? 'CNN no cargado, baseline en vivo' : 'CNN not loaded, baseline live') : (useCnn ? 'CNN (onnxruntime-web)' : 'baseline color/textura')}</p>
-            <p className="pf-cap pf-muted">{es
-              ? 'La prediccion es indicativa: el modelo se entreno con textura SINTETICA, este es un parche real (fuera de distribucion). Ver el mapa OOD.'
-              : 'The prediction is indicative: the model was trained on SYNTHETIC texture, this is a real (out-of-distribution) patch. See the OOD map.'}</p>
+            <div className="pf-plot-t">{es ? 'Cabeza de clasificacion' : 'Classification head'}</div>
+            {useDcidHead && headAvail ? (
+              <p className="pf-cap pf-muted">{es
+                ? 'Cabeza DCID entrenada sobre core REAL (DCID-7). A diferencia del CNN sintetico, esta prediccion NO es fuera de distribucion: se entreno sobre roca real, y su exactitud retenida esta en Benchmark.'
+                : 'DCID head trained on REAL core (DCID-7). Unlike the synthetic CNN, this prediction is NOT out-of-distribution: it was trained on real rock, and its held-out accuracy is on Benchmark.'}</p>
+            ) : (
+              <p className="pf-cap pf-muted">{es
+                ? 'Cabeza sintetica (CNN de CoreLog-6): entrenada con textura SINTETICA, asi que sobre core real queda FUERA DE DISTRIBUCION y la prediccion es solo indicativa. Activa la cabeza DCID-7 para clasificar con un modelo entrenado sobre roca real.'
+                : 'Synthetic head (CoreLog-6 CNN): trained on SYNTHETIC texture, so on real core it is OUT-OF-DISTRIBUTION and the prediction is indicative only. Switch on the DCID-7 head to classify with a model trained on real rock.'}</p>
+            )}
           </div>
         </div>
       ),
@@ -361,6 +451,13 @@ export default function Tool() {
               </div>
             )) : <p className="pf-cap">{es ? 'cargando...' : 'loading...'}</p>}
             {realPatch && <div className="pf-cap pf-muted">{es ? 'DCID · Li et al. 2025 · CC BY-NC 4.0' : 'DCID · Li et al. 2025 · CC BY-NC 4.0'}</div>}
+            <div className="pf-catlabel">{es ? 'control no-core' : 'non-core control'}</div>
+            <div className="pf-chips">
+              <button className={`chip ${control === 'none' ? 'on' : ''}`} onClick={() => setControl('none')}>{es ? 'off' : 'off'}</button>
+              <button className={`chip ${control === 'noise' ? 'on' : ''}`} onClick={() => setControl('noise')}>{es ? 'ruido' : 'noise'}</button>
+              <button className={`chip ${control === 'smooth' ? 'on' : ''}`} onClick={() => setControl('smooth')}>{es ? 'gradiente' : 'gradient'}</button>
+            </div>
+            <div className="pf-cap pf-muted">{es ? 'una imagen no-core debe disparar el OOD mas fuerte que cualquier parche real' : 'a non-core image must trip OOD harder than any real patch'}</div>
           </div>
         )}
 
@@ -374,6 +471,18 @@ export default function Tool() {
             <button className={`chip ${!useCnn ? 'on' : ''}`} onClick={() => setUseCnn(false)}>baseline</button>
             <button className={`chip ${useCnn ? 'on' : ''}`} onClick={() => setUseCnn(true)} title={cnnPending ? (es ? 'CNN pendiente' : 'CNN pending') : 'CNN'}>CNN{useCnn && source === 'synthetic' && cnnPending ? ' ...' : ''}</button>
           </div>
+          {source === 'real' && headAvail && (
+            <>
+              <div className="pf-catlabel">{es ? 'cabeza de litologia' : 'lithology head'}</div>
+              <div className="pf-chips">
+                <button className={`chip ${!useDcidHead ? 'on' : ''}`} onClick={() => setUseDcidHead(false)} title={es ? 'CNN sintetico (fuera de distribucion sobre real)' : 'synthetic CNN (OOD on real)'}>{es ? 'sintetica' : 'synthetic'}</button>
+                <button className={`chip ${useDcidHead ? 'on' : ''}`} onClick={() => setUseDcidHead(true)} title={es ? 'entrenada sobre DCID-7 real' : 'trained on real DCID-7'}>DCID-7</button>
+              </div>
+              <div className="pf-cap pf-muted">{useDcidHead
+                ? (es ? 'entrenada sobre roca real (en distribucion)' : 'trained on real rock (in-distribution)')
+                : (es ? 'entrenada sobre sintetico (OOD sobre real)' : 'trained on synthetic (OOD on real)')}</div>
+            </>
+          )}
         </div>
       </aside>
 
@@ -385,7 +494,7 @@ export default function Tool() {
               : 'The lithology CNN and the OOD detector were trained on CoreLog\'s SYNTHETIC core generator, so on real DCID photos they are out-of-distribution: the predicted class is indicative only. The gap shows in three honest signals: low classifier confidence, the latent-space separation, and the OOD reconstruction error (reported with its measured value, and we say when it is weak rather than a blanket "always fires").'}
           </Callout>
         )}
-        <Tabs tabs={tabs} ariaLabel={es ? 'vistas' : 'views'} />
+        <Tabs key={source} tabs={tabs} ariaLabel={es ? 'vistas' : 'views'} />
       </main>
     </div>
   );

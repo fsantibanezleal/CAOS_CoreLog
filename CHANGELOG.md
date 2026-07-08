@@ -3,6 +3,50 @@
 All notable changes to CAOS CoreLog Vision. Versions follow `X.XX.XXX` (display), see `cllab.__version__` and
 `frontend/package.json`. The project stays in `0.x` while the synthetic core-tray images anchor the metrics.
 
+## [0.09.000], 2026-07-07
+
+### Added, feature-space OOD + a DCID-fine-tuned real head (the beyond-current-ladder step)
+- **Principled feature-space OOD** replacing the weak reconstruction-MSE novelty. Offline benchmark
+  (`data-pipeline/cllab/science/ood_bench.py`, `.venv-precompute` + torch) fits a class-conditional Gaussian
+  (Mahalanobis, Lee et al. 2018) and a kNN bank (Sun et al. 2022) on the synthetic training distribution and
+  compares them against energy (Liu et al. 2020), MSP (Hendrycks and Gimpel 2017) and the incumbent reconstruction
+  score, on the honest same-task test (in-distribution = synthetic, OOD = real DCID, both funnelled through 24 px to
+  control resolution). **Measured AUROC**: reconstruction 0.308 (fails, real reconstructs easier), MSP 0.888,
+  energy 0.854, LithoCNN-Mahalanobis **0.946** (shipped live), LithoCNN-kNN 0.955, ResNet18 0.985-0.988,
+  MobileNetV3-Small Mahalanobis **0.9995** (offline ceiling). The shipped live detector is LithoCNN-Mahalanobis
+  (reuses the classifier embedding, runs per window in the browser, no extra download); it clears the at-bar
+  threshold (AUROC >= 0.85 AND FPR@95 0.282 < reconstruction 1.000).
+- **DCID-fine-tuned real head** (`real-litho-cnn.onnx`, ~3.7 MB): a frozen MobileNetV3-Small backbone + a linear head
+  trained on the real DCID-7 train split, classifying real core at **top-1 99.2% / macro-F1 99.2%** on a held-out
+  real split (829 patches). The App's Real lane adds a **synthetic vs DCID-7 head** toggle with honest framing (the
+  synthetic CNN is out-of-distribution on real core; the DCID head is trained on real).
+- **Negative controls**: label-permutation null collapses to chance (13.9% vs 14.3%); a non-core control (noise /
+  gradient) is flagged OOD hardest by median (non-core 3799 > real 202 > synthetic 21) and every non-core patch fires
+  above the ID p95 threshold. Honest caveat: the strictest reading (every non-core above the single most extreme real
+  patch) does NOT hold, because an extreme real DCID patch is as far from the synthetic distribution as noise is. A
+  **non-core control scenario** is wired into the App (Real lane).
+- **App**: the OOD map now defaults to the shipped feature-space Mahalanobis with a Mahalanobis vs reconstruction
+  toggle and an honest verdict; the augmented `lithology-cnn.onnx` emits a 64-d feature output `f` for the live score.
+
+### Added, deeper docs + web
+- Two new **Methodology** families: "OOD and domain shift" (softmax/entropy, energy, MSP, Mahalanobis, kNN, plus a
+  CORAL/DANN domain-adaptation SOTA-map note) and "Self-supervised representations" (SimCLR, DINO, DINOv2, MAE), with
+  KaTeX equations and verified DOIs/arXiv refs.
+- **Benchmark**: a detector-comparison table (reconstruction vs Mahalanobis/kNN/energy/MSP over LithoCNN/MobileNet/
+  ResNet spaces), a ROC overlay, score histograms, the negative-control chips and the DCID-7 head confusion.
+- **Experiments**: the leakage-safe DCID split, the perceptual-hash dedupe and the label-permutation null protocol.
+- **Implementation**: the frozen-backbone -> embedding -> {Mahalanobis JSON, kNN bank, head} artifact contract + ONNX
+  sizes. New wiki unit `docs/architecture/09_feature-space-ood.md`; `06_model-evaluation.md` updated.
+- New references (verified): Lee 2018 (1807.03888), Sun 2022 (PMLR 162), Liu 2020 (2010.03759), CORAL 2016
+  (1607.01719), DANN 2016 (1505.07818), SimCLR (2002.05709), DINO (2104.14294), DINOv2 (2304.07193), MAE
+  (2111.06377), ResNet (10.1109/CVPR.2016.90), MobileNetV3 (1905.02244), U-Net (10.1007/978-3-319-24574-4_28),
+  SAM (2304.02643). The two dossier UNVERIFIED refs (a 2026 tray-release host/license; DCID per-sample split IDs)
+  are dropped/resolved: no fabricated DOI, and the leakage-safe split uses DCID's own train/test split + pHash dedupe.
+
+### Data
+- `data-pipeline/cllab/science/fetch_dcid.py`: a reproducible fetch of a leakage-safe DCID-512-7 subset (300 train /
+  120 test per class) into `data/raw/dcid` (gitignored); the RWDA `noise-*` folders are excluded.
+
 ## [0.08.000], 2026-07-07
 
 ### Added, the Synthetic | Real-sample source lane (the Faena source-selector rule)

@@ -94,3 +94,15 @@
 .cmp-table { border-collapse: collapse; width: 100%; font-size: 0.84rem; margin-top: 0.6rem; }
 .cmp-table th, .cmp-table td { padding: 0.4rem 0.55rem; text-align: center; border-bottom: 1px solid var(--color-border); }
 .cmp-table thead th { color: var(--color-fg-faint); font-weight: 600; font-size: 0.78rem; }
+
+/* --- feature-space OOD benchmark (Benchmark page) --- */
+.cl-oodbench { margin-top: 1.4rem; }
+.cl-oodgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 0.8rem 0; }
+.cl-roc, .cl-hist { width: 100%; height: auto; background: var(--color-surface-2, var(--color-surface)); border: 1px solid var(--color-border); border-radius: 8px; }
+.cl-axl { fill: var(--color-fg-faint); font-size: 9px; }
+.cl-row-ship td { background: color-mix(in srgb, var(--color-accent) 14%, transparent); font-weight: 600; }
+.cl-row-base td { color: var(--color-fg-subtle); }
+.cl-ctrls { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.6rem 0; }
+.cl-ctrl-chip { display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 999px; padding: 0.28rem 0.7rem; font-size: 0.78rem; border: 1px solid var(--color-border); }
+.cl-ctrl-chip.pass { color: #2ea043; border-color: color-mix(in srgb, #2ea043 45%, var(--color-border)); }
+.cl-ctrl-chip.fail { color: #f85149; border-color: color-mix(in srgb, #f85149 45%, var(--color-border)); }

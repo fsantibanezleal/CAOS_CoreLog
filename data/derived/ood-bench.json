@@ -1,0 +1,896 @@
+{
+  "schema": "corelog.oodbench/v1",
+  "task": "Feature-space OOD, ID = synthetic core patches (held-out synthetic holes), OOD = real DCID-7 core patches. Both funnelled through 24 px (the live window resolution) so no detector can exploit a raw resolution/blur difference.",
+  "detectors": {
+    "recon_mse": {
+      "auroc": 0.3078,
+      "aupr": 0.2778,
+      "fpr95": 1.0,
+      "nId": 1344,
+      "nOod": 829,
+      "family": "reconstruction (incumbent)",
+      "space": "pixel AE"
+    },
+    "litho_mahalanobis": {
+      "auroc": 0.9463,
+      "aupr": 0.9215,
+      "fpr95": 0.282,
+      "nId": 1344,
+      "nOod": 829,
+      "family": "Mahalanobis",
+      "space": "LithoCNN 64-d"
+    },
+    "litho_knn": {
+      "auroc": 0.9554,
+      "aupr": 0.9219,
+      "fpr95": 0.1644,
+      "nId": 1344,
+      "nOod": 829,
+      "family": "kNN (k=10)",
+      "space": "LithoCNN 64-d"
+    },
+    "energy": {
+      "auroc": 0.8542,
+      "aupr": 0.7364,
+      "fpr95": 0.5737,
+      "nId": 1344,
+      "nOod": 829,
+      "family": "energy",
+      "space": "LithoCNN logits"
+    },
+    "msp": {
+      "auroc": 0.8875,
+      "aupr": 0.8336,
+      "fpr95": 0.4807,
+      "nId": 1344,
+      "nOod": 829,
+      "family": "MSP (1 - max softmax)",
+      "space": "LithoCNN logits"
+    },
+    "mobilenet_v3_small_mahalanobis": {
+      "auroc": 0.9995,
+      "aupr": 0.9992,
+      "fpr95": 0.0022,
+      "nId": 1344,
+      "nOod": 829,
+      "family": "Mahalanobis",
+      "space": "mobilenet_v3_small (funnel-24, frozen ImageNet)"
+    },
+    "mobilenet_v3_small_knn": {
+      "auroc": 0.9985,
+      "aupr": 0.9975,
+      "fpr95": 0.0089,
+      "nId": 1344,
+      "nOod": 829,
+      "family": "kNN (k=10)",
+      "space": "mobilenet_v3_small (funnel-24, frozen ImageNet)"
+    },
+    "resnet18_mahalanobis": {
+      "auroc": 0.9851,
+      "aupr": 0.9755,
+      "fpr95": 0.0826,
+      "nId": 1344,
+      "nOod": 829,
+      "family": "Mahalanobis",
+      "space": "resnet18 (funnel-24, frozen ImageNet)"
+    },
+    "resnet18_knn": {
+      "auroc": 0.9876,
+      "aupr": 0.9773,
+      "fpr95": 0.0499,
+      "nId": 1344,
+      "nOod": 829,
+      "family": "kNN (k=10)",
+      "space": "resnet18 (funnel-24, frozen ImageNet)"
+    }
+  },
+  "winner": {
+    "name": "mobilenet_v3_small_mahalanobis",
+    "auroc": 0.9995,
+    "reconMseAuroc": 0.3078,
+    "atBarAuroc085AndLowerFpr95": true
+  },
+  "shippedDetector": {
+    "name": "litho_mahalanobis",
+    "auroc": 0.9463,
+    "aupr": 0.9215,
+    "fpr95": 0.282,
+    "nId": 1344,
+    "nOod": 829,
+    "family": "Mahalanobis",
+    "space": "LithoCNN 64-d",
+    "roc": [
+      [
+        0.0,
+        0.0012
+      ],
+      [
+        0.0,
+        0.0422
+      ],
+      [
+        0.0,
+        0.0832
+      ],
+      [
+        0.0,
+        0.1255
+      ],
+      [
+        0.0,
+        0.1665
+      ],
+      [
+        0.0,
+        0.2087
+      ],
+      [
+        0.0,
+        0.2497
+      ],
+      [
+        0.0,
+        0.2919
+      ],
+      [
+        0.0007,
+        0.3317
+      ],
+      [
+        0.0007,
+        0.3739
+      ],
+      [
+        0.0015,
+        0.4138
+      ],
+      [
+        0.003,
+        0.4536
+      ],
+      [
+        0.0067,
+        0.4885
+      ],
+      [
+        0.0104,
+        0.5247
+      ],
+      [
+        0.0156,
+        0.5573
+      ],
+      [
+        0.0231,
+        0.5875
+      ],
+      [
+        0.0312,
+        0.6152
+      ],
+      [
+        0.0379,
+        0.6466
+      ],
+      [
+        0.0446,
+        0.6767
+      ],
+      [
+        0.0506,
+        0.7093
+      ],
+      [
+        0.0588,
+        0.737
+      ],
+      [
+        0.0707,
+        0.76
+      ],
+      [
+        0.0781,
+        0.7889
+      ],
+      [
+        0.0923,
+        0.807
+      ],
+      [
+        0.1049,
+        0.8287
+      ],
+      [
+        0.1176,
+        0.8492
+      ],
+      [
+        0.1332,
+        0.8661
+      ],
+      [
+        0.1488,
+        0.8818
+      ],
+      [
+        0.1689,
+        0.8914
+      ],
+      [
+        0.1882,
+        0.9011
+      ],
+      [
+        0.2091,
+        0.9095
+      ],
+      [
+        0.2292,
+        0.918
+      ],
+      [
+        0.2515,
+        0.924
+      ],
+      [
+        0.2664,
+        0.9409
+      ],
+      [
+        0.2857,
+        0.9517
+      ],
+      [
+        0.3028,
+        0.965
+      ],
+      [
+        0.3222,
+        0.9759
+      ],
+      [
+        0.3438,
+        0.9819
+      ],
+      [
+        0.3676,
+        0.9855
+      ],
+      [
+        0.3869,
+        0.9952
+      ],
+      [
+        0.4122,
+        0.9964
+      ],
+      [
+        0.4375,
+        0.9964
+      ],
+      [
+        0.4613,
+        1.0
+      ],
+      [
+        0.4866,
+        1.0
+      ],
+      [
+        0.5119,
+        1.0
+      ],
+      [
+        0.5379,
+        1.0
+      ],
+      [
+        0.5632,
+        1.0
+      ],
+      [
+        0.5893,
+        1.0
+      ],
+      [
+        0.6146,
+        1.0
+      ],
+      [
+        0.6406,
+        1.0
+      ],
+      [
+        0.6659,
+        1.0
+      ],
+      [
+        0.692,
+        1.0
+      ],
+      [
+        0.7173,
+        1.0
+      ],
+      [
+        0.7433,
+        1.0
+      ],
+      [
+        0.7686,
+        1.0
+      ],
+      [
+        0.7946,
+        1.0
+      ],
+      [
+        0.8199,
+        1.0
+      ],
+      [
+        0.846,
+        1.0
+      ],
+      [
+        0.8713,
+        1.0
+      ],
+      [
+        0.8973,
+        1.0
+      ],
+      [
+        0.9226,
+        1.0
+      ],
+      [
+        0.9487,
+        1.0
+      ],
+      [
+        0.974,
+        1.0
+      ],
+      [
+        1.0,
+        1.0
+      ]
+    ],
+    "hist": {
+      "edges": [
+        4.4527,
+        61.516,
+        118.5792,
+        175.6424,
+        232.7057,
+        289.7689,
+        346.8322,
+        403.8954,
+        460.9586,
+        518.0219,
+        575.0851,
+        632.1483,
+        689.2116,
+        746.2748,
+        803.3381,
+        860.4013,
+        917.4645,
+        974.5278,
+        1031.591,
+        1088.6543,
+        1145.7175,
+        1202.7807,
+        1259.844,
+        1316.9072,
+        1373.9704
+      ],
+      "id": [
+        1067,
+        193,
+        60,
+        22,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ood": [
+        78,
+        132,
+        150,
+        111,
+        98,
+        51,
+        39,
+        42,
+        29,
+        25,
+        28,
+        8,
+        10,
+        11,
+        4,
+        7,
+        1,
+        3,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1
+      ]
+    }
+  },
+  "reconRoc": [
+    [
+      0.0007,
+      0.0
+    ],
+    [
+      0.026,
+      0.0
+    ],
+    [
+      0.0506,
+      0.0012
+    ],
+    [
+      0.0759,
+      0.0024
+    ],
+    [
+      0.0997,
+      0.0048
+    ],
+    [
+      0.1235,
+      0.0084
+    ],
+    [
+      0.1473,
+      0.0109
+    ],
+    [
+      0.1704,
+      0.0157
+    ],
+    [
+      0.1957,
+      0.0157
+    ],
+    [
+      0.2188,
+      0.0205
+    ],
+    [
+      0.2396,
+      0.0277
+    ],
+    [
+      0.2626,
+      0.0326
+    ],
+    [
+      0.2812,
+      0.0434
+    ],
+    [
+      0.2984,
+      0.0579
+    ],
+    [
+      0.3192,
+      0.0651
+    ],
+    [
+      0.3393,
+      0.0748
+    ],
+    [
+      0.3557,
+      0.0893
+    ],
+    [
+      0.3698,
+      0.1086
+    ],
+    [
+      0.3854,
+      0.1242
+    ],
+    [
+      0.3936,
+      0.1532
+    ],
+    [
+      0.4055,
+      0.1749
+    ],
+    [
+      0.4263,
+      0.1834
+    ],
+    [
+      0.442,
+      0.199
+    ],
+    [
+      0.4613,
+      0.2087
+    ],
+    [
+      0.4695,
+      0.2376
+    ],
+    [
+      0.4829,
+      0.2569
+    ],
+    [
+      0.4903,
+      0.2871
+    ],
+    [
+      0.5022,
+      0.3088
+    ],
+    [
+      0.5134,
+      0.3329
+    ],
+    [
+      0.5268,
+      0.3522
+    ],
+    [
+      0.5424,
+      0.3691
+    ],
+    [
+      0.5565,
+      0.3872
+    ],
+    [
+      0.5707,
+      0.4065
+    ],
+    [
+      0.5863,
+      0.4222
+    ],
+    [
+      0.5997,
+      0.4427
+    ],
+    [
+      0.6146,
+      0.4596
+    ],
+    [
+      0.6347,
+      0.4692
+    ],
+    [
+      0.6548,
+      0.4777
+    ],
+    [
+      0.6756,
+      0.4861
+    ],
+    [
+      0.692,
+      0.5006
+    ],
+    [
+      0.7143,
+      0.5066
+    ],
+    [
+      0.7321,
+      0.5187
+    ],
+    [
+      0.7507,
+      0.5308
+    ],
+    [
+      0.7649,
+      0.5489
+    ],
+    [
+      0.782,
+      0.5621
+    ],
+    [
+      0.7976,
+      0.579
+    ],
+    [
+      0.817,
+      0.5887
+    ],
+    [
+      0.84,
+      0.5935
+    ],
+    [
+      0.8609,
+      0.6007
+    ],
+    [
+      0.8802,
+      0.6116
+    ],
+    [
+      0.8929,
+      0.6321
+    ],
+    [
+      0.9003,
+      0.6622
+    ],
+    [
+      0.9107,
+      0.6864
+    ],
+    [
+      0.9241,
+      0.7069
+    ],
+    [
+      0.939,
+      0.7238
+    ],
+    [
+      0.9561,
+      0.7382
+    ],
+    [
+      0.9702,
+      0.7563
+    ],
+    [
+      0.9874,
+      0.7708
+    ],
+    [
+      0.9993,
+      0.7925
+    ],
+    [
+      1.0,
+      0.8335
+    ],
+    [
+      1.0,
+      0.8745
+    ],
+    [
+      1.0,
+      0.9168
+    ],
+    [
+      1.0,
+      0.9578
+    ],
+    [
+      1.0,
+      1.0
+    ]
+  ],
+  "controls": {
+    "labelPermutationNullTop1": 0.1387,
+    "chance": 0.1429,
+    "nullCollapsedToChance": true,
+    "nonCoreScoresHardest": true,
+    "nonCoreAllFire": true,
+    "nearFarMonotonic": true,
+    "idP95Threshold": 130.44,
+    "nonCoreMinScore": 431.24,
+    "realMaxScore": 1373.97,
+    "nonCoreStrictLithoSpace": false,
+    "nonCoreStrictWinnerSpace": false,
+    "medianId": 20.86,
+    "medianOod": 201.77,
+    "medianNonCore": 3798.64
+  },
+  "realHead": {
+    "shipped": "mobilenet",
+    "classesDcid7": [
+      "Red sandstone",
+      "Light sandstone",
+      "Gray siltstone",
+      "Mudstone",
+      "Granite",
+      "Basalt",
+      "Marble"
+    ],
+    "candidates": {
+      "litho64": {
+        "top1": 0.8878,
+        "macroF1": 0.8869,
+        "confusion": [
+          [
+            116,
+            2,
+            0,
+            0,
+            0,
+            2,
+            0
+          ],
+          [
+            3,
+            108,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            105,
+            0,
+            0,
+            0,
+            12
+          ],
+          [
+            0,
+            0,
+            0,
+            113,
+            0,
+            5,
+            2
+          ],
+          [
+            2,
+            0,
+            0,
+            0,
+            117,
+            0,
+            1
+          ],
+          [
+            3,
+            0,
+            0,
+            25,
+            0,
+            90,
+            2
+          ],
+          [
+            0,
+            0,
+            17,
+            6,
+            9,
+            1,
+            87
+          ]
+        ],
+        "nTrain": 2062,
+        "nEval": 829,
+        "backbone": "LithoCNN 64-d (synthetic-trained, frozen)"
+      },
+      "mobilenet": {
+        "top1": 0.9916,
+        "macroF1": 0.9916,
+        "confusion": [
+          [
+            120,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            111,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            117,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            118,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            119,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            2,
+            117,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            120
+          ]
+        ],
+        "nTrain": 2062,
+        "nEval": 829,
+        "backbone": "MobileNetV3-Small (frozen ImageNet, 224 px)"
+      }
+    },
+    "dcid7ToCorelog": {
+      "Red sandstone": "sandstone",
+      "Light sandstone": "sandstone",
+      "Gray siltstone": "sandstone",
+      "Mudstone": "sandstone",
+      "Granite": "granite",
+      "Basalt": "basalt",
+      "Marble": "limestone"
+    },
+    "syntheticHeadNote": "The synthetic-trained LithoCNN is out-of-distribution on real DCID core; its real top-1 is reported in the App confusion (domain mismatch). The DCID head is trained on real DCID-7 and reported here on a held-out real split."
+  },
+  "data": {
+    "synthTrain": 4704,
+    "synthIdEval": 1344,
+    "dcidTrain": 2062,
+    "dcidTest": 829,
+    "dedupeDropped": 49,
+    "split": "DCID-native train/test + pHash dedupe"
+  },
+  "realHeadOnnxDim": 224,
+  "realHeadScaler": {
+    "note": "input 224x224 RGB [0,1]; ImageNet norm folded into the ONNX"
+  }
+}

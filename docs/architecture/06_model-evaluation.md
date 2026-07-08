@@ -41,12 +41,24 @@ The generator ground truth is always the authority.
 
 The App's Source selector adds a **Real sample** lane over the **DCID** drill-core image dataset (Li et al. 2025,
 Petroleum Science, DOI 10.1016/j.petsci.2025.04.013, CC BY-NC 4.0). A real patch is a single cropped rock photo, so it
-feeds the pipeline as one interval: decode, then the classical baseline + the lithology-CNN + the core-ood all run live
-on the real pixels. Because both learned models were trained on the SYNTHETIC generator, real DCID pixels are
-**out-of-distribution**: the predicted class is indicative only. The domain gap shows in three honest signals: the low
-classifier confidence, the latent-space separation, and the OOD reconstruction ratio (mean reconstruction MSE measured
-against a frame-free synthetic-core reference). The reconstruction-only OOD is a weak detector (AUC 0.729, dominated by
-frame-vs-core contrast), so the novelty ratio is reported with its measured value and called weak when it does not
-exceed the reference, rather than asserting a blanket "always fires". The real confusion
-matrix accumulates per session and measures domain mismatch, not model skill. See `docs/guides/02_bring-your-own-data.md`
-and `data/derived/real/attribution.json` for the data contract and the DCID-7 to CoreLog class mapping.
+feeds the pipeline as one interval: decode, then the classical baseline + the lithology-CNN + the OOD detectors run
+live on the real pixels. The synthetic-trained CoreLog CNN is **out-of-distribution** on real core, so its class
+prediction is indicative only; the App exposes a **synthetic vs DCID-7 head** toggle so a real patch can also be
+classified by a head trained on real rock (see below).
+
+**Feature-space OOD (the beyond-current-ladder step, v0.09.000).** The reconstruction-MSE novelty score is weak: on
+the honest same-task test (in-distribution = synthetic, OOD = real DCID) it reaches only AUROC 0.308 (real core
+reconstructs MORE easily than synthetic). The replacement is a **feature-space Mahalanobis** score (Lee et al. 2018)
+over the lithology CNN's 64-d penultimate embedding, fit on the synthetic training distribution and shipped as
+`data/derived/ood-detector.json`; it runs live on every sliding window (the augmented `lithology-cnn.onnx` now emits
+the feature `f`). Measured AUROC 0.946, FPR@95 0.282, clearing the at-bar threshold (>= 0.85 and a lower FPR@95 than
+reconstruction). The offline benchmark also reports a frozen MobileNetV3-Small Mahalanobis ceiling (AUROC 0.9995) and
+kNN, energy and MSP scores; the full table, the ROC overlay, the score histograms and the negative controls are on
+the Benchmark page and in `docs/architecture/09_feature-space-ood.md`.
+
+**DCID-fine-tuned real head.** A frozen MobileNetV3-Small backbone plus a linear head, trained on the real DCID-7
+train split, classifies real core at **top-1 99.2% / macro-F1 99.2%** on a held-out real split (829 patches), shipped
+as `real-litho-cnn.onnx`. The label-permutation null collapses to chance (13.9% vs 14.3%), confirming no leakage.
+This is an empirical, real-data contribution, not a new algorithm. See `docs/architecture/09_feature-space-ood.md`,
+`docs/guides/02_bring-your-own-data.md` and `data/derived/real/attribution.json` for the protocol, the data contract
+and the DCID-7 to CoreLog class mapping.

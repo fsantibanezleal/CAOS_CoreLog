@@ -8,5 +8,6 @@
 - [06, model evaluation (the oracles + the two learned models)](architecture/06_model-evaluation.md)
 - [07, deploy](architecture/07_deploy.md)
 - [08, the two data contracts](architecture/08_data-contracts.md)
+- [09, feature-space OOD + the DCID-fine-tuned real head](architecture/09_feature-space-ood.md)
 
 Binding decision: [ADR-0057](../../conventions/architecture/0-archetype/ADR-0057-product-repo-archetype.md).

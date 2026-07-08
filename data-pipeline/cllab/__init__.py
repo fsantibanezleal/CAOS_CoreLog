@@ -6,4 +6,4 @@ manifest/trace, and the cases-by-category registry. The default pipeline is nump
 case-results.json into replay traces); `--retrain` regenerates the learned models (torch -> ONNX), see cllab/science/.
 """
 
-__version__ = "0.08.000"  # display X.XX.XXX; PEP 440 form in pyproject.toml (0.8.0)
+__version__ = "0.09.000"  # display X.XX.XXX; PEP 440 form in pyproject.toml (0.9.0)
