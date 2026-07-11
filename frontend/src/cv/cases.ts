@@ -48,7 +48,7 @@ export const CASES: CoreCase[] = [
     validationAnchor: 'accuracy ≤ the clean case (a known robustness drop)' },
   { id: 'Q-WET', name: 'Wet vs dry core', category: CAT_QUALITY, suite: 'porphyry', quality: 'wet',
     nChannels: 3, seed: 21, realOrSynthetic: 'synthetic',
-    expectedBand: 'wet core is darker/more saturated; the colour baseline shifts, texture helps',
+    expectedBand: 'wet core is darker with a slight specular sheen; the colour baseline shifts, texture helps',
     validationAnchor: 'accuracy ≤ the clean case' },
   { id: 'C-UNIFORM', name: 'Oracle, single-lithology tray', category: CAT_ORACLE, suite: 'uniform', quality: 'clean',
     nChannels: 2, seed: 31, realOrSynthetic: 'analytic control',
