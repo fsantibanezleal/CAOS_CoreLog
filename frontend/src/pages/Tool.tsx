@@ -18,6 +18,7 @@ import { ConfusionMatrix } from '../viz/ConfusionMatrix.tsx';
 import { HeatCanvas, oodColormap, evidenceColormap } from '../viz/HeatCanvas.tsx';
 import { LatentScatter, type ScatterPoint } from '../viz/LatentScatter.tsx';
 import type { PatchClassifier } from '../cv/types.ts';
+import { PanelBoundary } from '../viz/PanelBoundary.tsx';
 
 const CATS = [
   'lithology suite (the drilled sequence)',
@@ -494,7 +495,7 @@ export default function Tool() {
               : 'The lithology CNN and the OOD detector were trained on CoreLog\'s SYNTHETIC core generator, so on real DCID photos they are out-of-distribution: the predicted class is indicative only. The gap shows in three honest signals: low classifier confidence, the latent-space separation, and the OOD reconstruction error (reported with its measured value, and we say when it is weak rather than a blanket "always fires").'}
           </Callout>
         )}
-        <Tabs key={source} tabs={tabs} ariaLabel={es ? 'vistas' : 'views'} />
+        <Tabs key={source} tabs={tabs.map((t) => ({ ...t, content: <PanelBoundary key={`${source}-${caseId}-${t.id}`} lang={es ? 'es' : 'en'}>{t.content}</PanelBoundary> }))} ariaLabel={es ? 'vistas' : 'views'} />
       </main>
     </div>
   );
