@@ -67,7 +67,7 @@ export function applyQuality(rgb: RGB, quality: 'clean' | 'shadow' | 'wet', fx: 
     return [clamp(rgb[0] * k), clamp(rgb[1] * k), clamp(rgb[2] * k)];
   }
   if (quality === 'wet') {
-    // wet core is darker + more saturated + a slight specular sheen
+    // wet core is darker (uniform RGB scale-down ~0.78) + a slight specular sheen near the top
     const sheen = fy < 0.2 ? 18 : 0;
     return [clamp(rgb[0] * 0.78 + sheen), clamp(rgb[1] * 0.78 + sheen), clamp(rgb[2] * 0.8 + sheen)];
   }

@@ -3,6 +3,16 @@
 All notable changes to CAOS CoreLog Vision. Versions follow `X.XX.XXX` (display), see `cllab.__version__` and
 `frontend/package.json`. The project stays in `0.x` while the synthetic core-tray images anchor the metrics.
 
+## [0.09.001], 2026-07-11
+
+### Fixed
+- Honesty vs the engine: the Q-WET case said the wet core is "darker/more saturated", but the texture engine
+  (cv/textures.ts) only scales RGB down (~0.78) plus a slight specular sheen, i.e. it is darker, not more
+  saturated. Corrected the case expectedBand and the code comment to match.
+
+### Added
+- Per-panel error boundary (viz/PanelBoundary.tsx, mirroring RotorVitals) so one view crash cannot blank the App.
+
 ## [0.09.000], 2026-07-07
 
 ### Added, feature-space OOD + a DCID-fine-tuned real head (the beyond-current-ladder step)
