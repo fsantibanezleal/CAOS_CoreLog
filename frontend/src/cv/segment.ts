@@ -1,5 +1,5 @@
 // Run-merge segmentation, slide the patch classifier along each channel, then merge adjacent same-class positions
-// into segments (a confidence-weighted majority run). The segmentation EMERGES from the patch classifier, so there is
+// into segments (a confidence-weighted majority run). The segmentation emerges from the patch classifier, so there is
 // no separate heavy segmenter ONNX, browser-fast + honest. Plus truth-scoring for the oracle + the benchmark.
 
 import { channelTop, extractPatch } from './tray.ts';

@@ -1,6 +1,6 @@
 // Feature-space out-of-distribution (OOD) scoring in the browser. The offline benchmark
 // (data-pipeline/cllab/science/ood_bench.py) fit a class-conditional Gaussian (Mahalanobis, Lee et al. 2018)
-// and a kNN bank (Sun et al. 2022) on the SYNTHETIC training distribution, in the 64-d penultimate feature
+// and a kNN bank (Sun et al. 2022) on the synthetic training distribution, in the 64-d penultimate feature
 // space of the lithology CNN. This is the principled replacement for the weak reconstruction-MSE OOD: a real
 // patch lands far from every synthetic class centroid, so its Mahalanobis distance is large. The compact
 // statistics ship in data/derived/ood-detector.json; the 64-d feature `f` is a new output of lithology-cnn.onnx.

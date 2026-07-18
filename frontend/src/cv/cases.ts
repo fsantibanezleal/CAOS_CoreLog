@@ -1,7 +1,7 @@
 // The canonical case set, shared by the offline bake (data-pipeline/cllab/science/bake_cases.mjs) and the SPA. Cases
-// are grouped by CATEGORY (lithology suite / image quality / oracle control). The App shows ONE selected case;
-// Experiments/Benchmark show cross-case summaries. All trays are SYNTHETIC (procedural textures), stated openly;
-// C-UNIFORM and C-SHARP are the closed-form ORACLE controls.
+// are grouped by category (lithology suite / image quality / oracle control). The App shows one selected case;
+// Experiments/Benchmark show cross-case summaries. All trays are synthetic (procedural textures), stated openly;
+// C-UNIFORM and C-SHARP are the closed-form oracle controls.
 
 import { type Quality, type Suite, type TraySpec } from './types.ts';
 
