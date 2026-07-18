@@ -30,7 +30,7 @@ export default function Benchmark() {
     <article className="page-body prose">
       <h1>Benchmark</h1>
       <p className="lede">{es
-        ? 'Comparaciones cruzadas, las que NO dependen de un solo caso van aquí (no en la App). Todas salen del horneado del engine TS.'
+        ? 'Comparaciones cruzadas, las que NO dependen de un solo caso van aquí (no en la App). Todas salen del precálculo del engine TS.'
         : 'Cross-case comparisons, the ones that do NOT depend on a single case live here (not in the App). All come from the TS-engine bake.'}</p>
 
       {!data ? <p className="pf-note">{es ? 'cargando…' : 'loading…'}</p> : (

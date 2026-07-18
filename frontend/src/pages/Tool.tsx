@@ -557,7 +557,7 @@ function UploadPanel({ clf, es }: { clf: PatchClassifier; es: boolean }) {
     <div className="pf-vizstack">
       <div className="pf-plot-t">{es ? 'Tu propia foto de core (misma tuberia real)' : 'Your own core photo (same real pipeline)'}</div>
       <p className="pf-cap">{es
-        ? 'Sube una imagen (jpg/png). Se decodifica en el navegador y corre la MISMA tuberia (ventanas + baseline + lithology-CNN + core-ood). Nada se sube a un servidor.'
+        ? 'Subir una imagen (jpg/png). Se decodifica en el navegador y corre la MISMA tuberia (ventanas + baseline + lithology-CNN + core-ood). Nada se sube a un servidor.'
         : 'Upload an image (jpg/png). It is decoded in the browser and runs the SAME pipeline (windows + baseline + lithology-CNN + core-ood). Nothing is sent to a server.'}</p>
       <input type="file" accept="image/*" onChange={onFile} />
       {busy && <p className="pf-note">{es ? 'analizando...' : 'analysing...'}</p>}
