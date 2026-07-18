@@ -1,7 +1,7 @@
 // In-app Architecture / "How it works" modal config (ADR-0058) for CoreLog Vision.
 // Passed to <AppShell config={{ ...config, architecture }}>. The ⓘ header button
 // (provided by @fasl-work/caos-app-shell >= 0.1.2) opens the modal. Each tab pairs
-// one hand-authored THEMED SVG (frontend/public/svg/tech/, shell CSS-var tokens →
+// one hand-authored themed SVG (frontend/public/svg/tech/, shell CSS-var tokens →
 // repaints with the active theme, fetched + inlined) with a bilingual ES/EN body.
 import type { ArchitectureConfig } from '@fasl-work/caos-app-shell';
 
@@ -15,10 +15,10 @@ export const architecture: ArchitectureConfig = {
       body_en:
         'CoreLog Vision automates drill-core lithology logging: pick a synthetic tray case and a ' +
         'per-patch CNN + run-merge segmentation give a depth strip-log of lithology + confidence, answering "which ' +
-        'lithology is each metre of core?". You change the case, the confidence threshold or the classifier and the ' +
-        'whole tray re-segments live. A first-level Source selector switches between the synthetic generator and a ' +
-        'REAL-sample lane (DCID drill-core photos, Li et al. 2025, CC BY-NC 4.0), and the Real lane also accepts your own ' +
-        'uploaded core photo, decoded and classified in the browser.\n\n' +
+        'lithology is each metre of core?". Changing the case, the confidence threshold or the classifier re-segments ' +
+        'the whole tray live. A first-level Source selector switches between the synthetic generator and a ' +
+        'real-sample lane (DCID drill-core photos, Li et al. 2025, CC BY-NC 4.0), and the Real lane also accepts a ' +
+        'user-uploaded core photo, decoded and classified in the browser.\n\n' +
         'It is a real system, not a demo. The CV engine (frontend/src/cv/) re-segments in the browser on every control; ' +
         'the segmentation emerges from a sliding patch classifier (3-tap smoothing + run-merge), so there is no ' +
         'separate heavy segmenter. A lithology CNN and an OOD autoencoder (AUC 0.729) run client-side as ONNX. The ' +
@@ -27,15 +27,15 @@ export const architecture: ArchitectureConfig = {
         'domain gap shows in low classifier confidence, the latent-space separation and the OOD reconstruction ratio ' +
         '(reported with its measured value, called weak when it is). Low-confidence core is flagged, not forced.',
       body_es:
-        'CoreLog Vision automatiza el logueo de litología de testigos: elige un caso sintético de bandeja y un CNN por ' +
+        'CoreLog Vision automatiza el logueo de litología de testigos: al elegir un caso sintético de bandeja, un CNN por ' +
         'parche + segmentación run-merge dan un strip-log de profundidad de litología + ' +
-        'confianza, respondiendo "¿qué litología es cada metro de testigo?". Cambias el caso, el umbral de confianza o ' +
-        'el clasificador y toda la bandeja se re-segmenta en vivo. Un selector de Fuente de primer nivel alterna entre el ' +
-        'generador sintético y un carril de MUESTRA real (fotos de core DCID, Li et al. 2025, CC BY-NC 4.0), y el carril ' +
-        'Real también acepta tu propia foto de core, decodificada y clasificada en el navegador.\n\n' +
+        'confianza, respondiendo "¿qué litología es cada metro de testigo?". Al cambiar el caso, el umbral de confianza ' +
+        'o el clasificador, toda la bandeja se re-segmenta en vivo. Un selector de Fuente de primer nivel alterna entre el ' +
+        'generador sintético y un carril de muestra real (fotos de core DCID, Li et al. 2025, CC BY-NC 4.0), y el carril ' +
+        'Real también acepta una foto de core propia, decodificada y clasificada en el navegador.\n\n' +
         'Es un sistema real, no un demo. El motor CV (frontend/src/cv/) re-segmenta en el navegador con cada control; la ' +
         'segmentación emerge de un clasificador de parches deslizante (suavizado de 3 taps + run-merge), así que no hay ' +
-        'un segmentador pesado aparte. Un CNN de litología y un autoencoder OOD (AUC 0.729) corren en el cliente como ' +
+        'un segmentador pesado aparte. Un CNN de litología y un autoencoder OOD (AUC 0.729) se ejecutan en el cliente como ' +
         'ONNX. La accuracy CNN-vs-baseline usa un split agrupado por hoyo, seguro ante fugas (issue #14, corregido): ~0.99 ' +
         'sobre hoyos sintéticos retenidos. Sobre fotos reales DCID los modelos quedan fuera de distribución, así que las ' +
         'predicciones son indicativas; la brecha se ve en la baja confianza del clasificador, la separación latente y la ' +
@@ -48,19 +48,19 @@ export const architecture: ArchitectureConfig = {
       es: 'Carriles, web / offline / cómputo',
       svg: 'svg/tech/02-lanes.svg',
       body_en:
-        'Three lanes, and the split is the point. WEB (live, in the browser): the TypeScript CV engine ' +
+        'Three lanes, split by where they run. Web (live, in the browser): the TypeScript CV engine ' +
         '(frontend/src/cv/) re-segments on every control and onnxruntime-web runs lithology-cnn.onnx + core-ood.onnx, ' +
-        'no server. offline / COMPUTE (your machine, isolated .venv): the Python pipeline bakes the canonical case ' +
+        'no server. Offline / compute (the local machine, isolated .venv): the Python pipeline bakes the canonical case ' +
         'artifacts (the segmentations + metrics) and the heavy lane (--retrain, .venv-precompute, torch) trains the ' +
-        'lithology CNN + the OOD autoencoder and exports them to ONNX. REPLAY: the small, committed artifacts in ' +
+        'lithology CNN + the OOD autoencoder and exports them to ONNX. Replay: the small, committed artifacts in ' +
         'data/derived are overlaid into the SPA by copy-data.mjs and loaded live; the typed mirror (contract.types.ts) ' +
         'fails the build if the web and the pipeline shapes ever diverge.',
       body_es:
-        'Tres carriles, y la división es lo central. WEB (en vivo, en el navegador): el motor CV en TypeScript ' +
+        'Tres carriles, separados por dónde se ejecutan. Web (en vivo, en el navegador): el motor CV en TypeScript ' +
         '(frontend/src/cv/) re-segmenta con cada control y onnxruntime-web ejecuta lithology-cnn.onnx + core-ood.onnx, ' +
-        'sin servidor. offline / CÓMPUTO (tu máquina, .venv aislado): el pipeline Python hornea los artefactos canónicos ' +
+        'sin servidor. offline / cómputo (la máquina local, .venv aislado): el pipeline Python precalcula los artefactos canónicos ' +
         'por caso (las segmentaciones + métricas) y el carril pesado (--retrain, .venv-precompute, torch) entrena el CNN ' +
-        'de litología + el autoencoder OOD y los exporta a ONNX. REPLAY: los artefactos pequeños y versionados en ' +
+        'de litología + el autoencoder OOD y los exporta a ONNX. Replay: los artefactos pequeños y versionados en ' +
         'data/derived se superponen al SPA con copy-data.mjs y se cargan en vivo; el espejo tipado (contract.types.ts) ' +
         'rompe el build si la web y el pipeline divergen.',
     },
@@ -95,8 +95,8 @@ export const architecture: ArchitectureConfig = {
         'The pipeline, step by step: ① the tray generator paints procedural per-lithology textures (colour + grain + ' +
         'banding/veining) and emits the ground-truth segments; ② per patch it computes colour moments, luma variance ' +
         'and gradient anisotropy (which captures bedding/foliation); ③ a classifier, the classical nearest-centroid ' +
-        'baseline OR the lithology CNN, predicts a 6-way softmax; ④ 3-tap smoothing + run-merge turn the per-position ' +
-        'predictions into segments (the depth boundaries EMERGE where the class changes); ⑤ the segments order by depth ' +
+        'baseline or the lithology CNN, predicts a 6-way softmax; ④ 3-tap smoothing + run-merge turn the per-position ' +
+        'predictions into segments (the depth boundaries emerge where the class changes); ⑤ the segments order by depth ' +
         'into the strip-log with confidence shading.\n\n' +
         'The classical baseline is always on and transparent, the honest reference the CNN is measured against. The ' +
         'learned lane: a lithology CNN (RGB patch → 6-way softmax; accuracy ~0.99 vs the baseline on a leakage-safe ' +
@@ -110,13 +110,13 @@ export const architecture: ArchitectureConfig = {
         'El pipeline, paso a paso: ① el generador de bandejas pinta texturas procedurales por litología (color + grano ' +
         '+ bandeamiento/vetas) y emite los segmentos verdaderos; ② por parche computa momentos de color, varianza de ' +
         'luma y anisotropía de gradiente (que captura bedding/foliación); ③ un clasificador, el baseline clásico de ' +
-        'centroide más cercano O el CNN de litología, predice un softmax de 6 clases; ④ suavizado de 3 taps + run-merge ' +
-        'convierten las predicciones por posición en segmentos (los límites de profundidad EMERGEN donde cambia la ' +
+        'centroide más cercano o el CNN de litología, predice un softmax de 6 clases; ④ suavizado de 3 taps + run-merge ' +
+        'convierten las predicciones por posición en segmentos (los límites de profundidad emergen donde cambia la ' +
         'clase); ⑤ los segmentos se ordenan por profundidad en el strip-log con sombreado por confianza.\n\n' +
         'El baseline clásico está siempre activo y es transparente, la referencia honesta contra la que se mide el CNN. ' +
         'El carril aprendido: un CNN de litología (parche RGB → softmax de 6 clases; accuracy ~0.99 vs el baseline en un ' +
         'split agrupado por hoyo, seguro ante fugas, issue #14 corregido) y un autoencoder OOD (MSE de ' +
-        'reconstrucción = anomalía, AUC 0.729); ambos corren en el cliente ' +
+        'reconstrucción = anomalía, AUC 0.729); ambos se ejecutan en el cliente ' +
         'como ONNX, reportados como caigan los números, nunca como caja negra. La verdad del generador es siempre la ' +
         'autoridad; sobre fotos reales DCID ambos modelos quedan fuera de distribución y lo dicen.',
     },
@@ -139,7 +139,7 @@ export const architecture: ArchitectureConfig = {
         'rango/NaN, validado hoy en el pipeline Python (la app aún no tiene carga de bandejas). El Contrato 2 (artefacto) define la ' +
         'salida que lee la web (los segmentos por caso + pixel-accuracy + confusión, el strip-log de profundidad, las ' +
         'métricas aprendidas, el índice de modelos), espejada exactamente por contract.types.ts. Entre ambos, el ' +
-        'pipeline por etapas y determinista corre el lane gate (numpy-light por defecto, --retrain para el carril pesado ' +
+        'pipeline por etapas y determinista ejecuta el lane gate (numpy-light por defecto, --retrain para el carril pesado ' +
         'de torch) y escribe un manifest de procedencia, de modo que cada resultado es reproducible y la web nunca ' +
         'diverge en silencio.',
     },

@@ -1,7 +1,7 @@
 // Live in-browser inference of the lithology CNN (onnxruntime-web). GRACEFUL: the trained model
 // (science/train_litho.py → lithology-cnn.onnx) ships committed; if the file is ever absent or fails to load, the
 // loader resolves to null and the App falls back to the classical baseline + says so. The npm package and the CDN wasmPaths
-// are pinned to the SAME version. WASM EP, single-threaded (GitHub Pages has no COOP/COEP for threads).
+// are pinned to the same version. WASM EP, single-threaded (GitHub Pages has no COOP/COEP for threads).
 import * as ort from 'onnxruntime-web';
 import { N_LITHO, PATCH } from '../cv/types.ts';
 

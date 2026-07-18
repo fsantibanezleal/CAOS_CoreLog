@@ -1,6 +1,6 @@
 # The two data contracts
 
-## CONTRACT 1, ingestion (`io/contract.py`)
+## Contract 1, ingestion (`io/contract.py`)
 
 The *bring-your-own-tray* gate. Two entry points, one policy: a record is **accepted** iff it passes; ill-formed
 records are **rejected** with a reason (never silently coerced); plausible-but-extreme records are **flagged**
@@ -25,15 +25,15 @@ image drop/upload flow yet.
 
 Committed sample that must pass: `data/examples/trays.csv` (a CI test asserts it).
 
-## CONTRACT 2, artifact (`core/{trace,manifest}.py`)
+## Contract 2, artifact (`core/{trace,manifest}.py`)
 
-The pipeline → web contract. The web loads ONLY manifests + traces + the shared artifacts.
+The pipeline → web contract. The web loads only manifests + traces + the shared artifacts.
 
 - **`corelog.trace/v1`** (per case): the tray spec, the **ground-truth** segments, the **baseline** segments +
   pixel-accuracy + confusion, the depth **strip-log**, the lithology legend, and the learned-model metrics
   (`status: trained | pending-training`).
 - **`corelog.manifest/v2`** (per case): category, seed, engine + version, the **shared artifacts** (the two ONNX +
-  `cl-learned.json` + `case-results.json`), the trace pointer + byte size, the lane/gate verdict, the CONTRACT-1
+  `cl-learned.json` + `case-results.json`), the trace pointer + byte size, the lane/gate verdict, the Contract-1
   flags, the metrics, and an honesty note.
 - **`corelog.index/v1`**: the flat inventory of all 8 cases.
 

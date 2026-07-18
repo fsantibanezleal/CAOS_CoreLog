@@ -4,7 +4,7 @@ This unit documents CoreLog's beyond-current-ladder step: replacing the weak rec
 with a principled **feature-space** out-of-distribution (OOD) detector, and training a lithology head on **real**
 DCID-7 core so the Real lane can actually classify real rock. It is an empirical, real-data contribution, not a
 new algorithm. Mahalanobis (Lee et al. 2018), kNN-OOD (Sun et al. 2022), energy (Liu et al. 2020) and MSP
-(Hendrycks and Gimpel 2017) are established; the work here is selecting and MEASURING the score that separates
+(Hendrycks and Gimpel 2017) are established; the work here is selecting and measuring the score that separates
 CoreLog's synthetic to real gap, with rigorous controls, and reporting the honest numbers including any null.
 
 The offline benchmark is `data-pipeline/cllab/science/ood_bench.py` (run in `.venv-precompute`, torch). Its outputs
@@ -15,7 +15,7 @@ feature output `f`) and `real-litho-cnn.onnx` (the DCID-7 head).
 ## 1. Why reconstruction-MSE is the wrong score
 
 The incumbent OOD is a small patch autoencoder; its reconstruction MSE is the novelty score. A small AE trained
-on simple synthetic textures reconstructs ANY smooth patch well, so real core photos reconstruct MORE easily than
+on simple synthetic textures reconstructs any smooth patch well, so real core photos reconstruct more easily than
 some synthetic patches. On the honest same-task test (in-distribution = synthetic, OOD = real DCID), the
 reconstruction score reaches only **AUROC 0.308** (below chance, because the ordering inverts) with
 **FPR@95TPR 1.000**. This is the gap the feature-space score closes.
@@ -65,9 +65,9 @@ OOD detection, in-distribution = synthetic held-out, OOD = real DCID-7 (higher A
 | Reconstruction-MSE (incumbent) | pixel AE | 0.3078 | 1.000 |
 
 **Reading.** Every feature-space and logit-space score beats the reconstruction incumbent. The offline ceiling is
-MobileNetV3-Small Mahalanobis (AUROC 0.9995). The detector shipped LIVE per window is LithoCNN Mahalanobis
+MobileNetV3-Small Mahalanobis (AUROC 0.9995). The detector shipped live per window is LithoCNN Mahalanobis
 (AUROC 0.9463, FPR@95 0.282), chosen because it reuses the classifier's own embedding and runs on every sliding
-window in the browser at no extra model download. It clears the at-bar threshold: AUROC >= 0.85 AND a lower
+window in the browser at no extra model download. It clears the at-bar threshold: AUROC >= 0.85 and a lower
 FPR@95 than reconstruction.
 
 **Real DCID-7 head.** A frozen MobileNetV3-Small backbone plus a linear head, trained on the real DCID-7 train
@@ -82,7 +82,7 @@ its real accuracy is the domain-mismatch confusion shown in the App.
   **13.9%**, at chance (1/7 = 14.3%). No leakage.
 - **Non-core control.** Pure noise and a smooth gradient are flagged OOD: every non-core patch exceeds the
   synthetic-ID 95th-percentile threshold, and the medians are monotone (non-core 3799 > real 202 > synthetic 21).
-  Honest caveat: the strictest reading (every non-core patch above the single most extreme real patch) does NOT
+  Honest caveat: the strictest reading (every non-core patch above the single most extreme real patch) does not
   hold, in either the LithoCNN or the MobileNet space, because an extreme real DCID patch is as far from the
   synthetic distribution as noise is. That is a genuine property of a synthetic-trained model, not a defect.
 - **Near-vs-far monotonicity.** Holds on the medians as above.
@@ -91,7 +91,7 @@ its real accuracy is the domain-mismatch confusion shown in the App.
 
 This closes the synthetic to one-real-dataset (DCID) gap with a principled score and a real-trained head. It does
 not prove field readiness on other core datasets; a second dataset would test transfer. Domain-adaptation methods
-that would CLOSE (not just detect) the gap, Deep CORAL (Sun and Saenko 2016) and DANN (Ganin et al. 2016), and
+that would close (not just detect) the gap, Deep CORAL (Sun and Saenko 2016) and DANN (Ganin et al. 2016), and
 foundation backbones DINOv2 (Oquab et al. 2023) and MAE (He et al. 2022), are documented on the Methodology page
 as the SOTA map but are not run here (too heavy for the browser).
 
