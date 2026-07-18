@@ -148,7 +148,7 @@ export default function Tool() {
     for (let i = 0; i < analysis.cells.length; i += step) {
       const c = analysis.cells[i]; const [x, y] = project(c.feat, pca);
       if (source === 'real') out.push({ x, y, real: true, label: `${es ? 'parche real' : 'real patch'}: ${realPatch?.dcid_class ?? ''}` });
-      else { const li = c.cnnProbs ? c.cnnCls : c.baseCls; out.push({ x, y, litho: LITHOLOGIES[li], label: `${es ? 'ventana sintetica' : 'synthetic window'}: ${LITHOLOGIES[li]}` }); }
+      else { const li = c.cnnProbs ? c.cnnCls : c.baseCls; out.push({ x, y, litho: LITHOLOGIES[li], label: `${es ? 'ventana sintética' : 'synthetic window'}: ${LITHOLOGIES[li]}` }); }
     }
     return out;
   }, [analysis, pca, source, realPatch, es]);
@@ -174,11 +174,11 @@ export default function Tool() {
       <div className="pf-vizstack">
         <div className="pf-plot-th">
           <div className="pf-plot-t">{showMahal
-            ? (es ? 'Novedad por ventana: distancia de Mahalanobis en el espacio de features (detector embarcado; mas caliente = mas fuera de distribucion)' : 'Per-window novelty: Mahalanobis distance in feature space (shipped detector; hotter = more out-of-distribution)')
-            : (es ? 'Novedad por ventana: error de reconstruccion del autoencoder OOD incumbente (mas caliente = mas fuera de distribucion)' : 'Per-window novelty: reconstruction error of the incumbent OOD autoencoder (hotter = more out-of-distribution)')}</div>
+            ? (es ? 'Novedad por ventana: distancia de Mahalanobis en el espacio de features (detector embarcado; mas caliente = mas fuera de distribución)' : 'Per-window novelty: Mahalanobis distance in feature space (shipped detector; hotter = more out-of-distribution)')
+            : (es ? 'Novedad por ventana: error de reconstrucción del autoencoder OOD incumbente (mas caliente = mas fuera de distribución)' : 'Per-window novelty: reconstruction error of the incumbent OOD autoencoder (hotter = more out-of-distribution)')}</div>
           <div className="pf-seg">
             <button className={`chip ${oodMode === 'mahal' ? 'on' : ''}`} disabled={mahalValues == null} onClick={() => setOodMode('mahal')} title="feature-space Mahalanobis">Mahalanobis</button>
-            <button className={`chip ${oodMode === 'recon' ? 'on' : ''}`} onClick={() => setOodMode('recon')} title="reconstruction MSE">{es ? 'reconstruccion' : 'reconstruction'}</button>
+            <button className={`chip ${oodMode === 'recon' ? 'on' : ''}`} onClick={() => setOodMode('recon')} title="reconstruction MSE">{es ? 'reconstrucción' : 'reconstruction'}</button>
           </div>
         </div>
         {aPending && <p className="pf-note">{es ? 'analizando ventanas (onnxruntime-web)...' : 'analysing windows (onnxruntime-web)...'}</p>}
@@ -195,21 +195,21 @@ export default function Tool() {
                   <Kpi label={es ? 'veredicto' : 'verdict'} value={mahalFires == null ? 'n/a' : (mahalFires ? (es ? 'DISPARA' : 'FIRES') : (es ? 'en distr.' : 'in-distr.'))} />
                 </div>
                 <p className="pf-note">{es
-                  ? 'Detector embarcado: Gaussiana por clase (Mahalanobis, Lee et al. 2018) ajustada sobre el core sintetico. Un parche real o no-core cae lejos de todo centroide sintetico, asi que su distancia es grande. Es el reemplazo principal del debil MSE de reconstruccion; compara ambos con el toggle de arriba y ve la tabla completa en Benchmark.'
+                  ? 'Detector embarcado: Gaussiana por clase (Mahalanobis, Lee et al. 2018) ajustada sobre el core sintético. Un parche real o no-core cae lejos de todo centroide sintético, así que su distancia es grande. Es el reemplazo principal del debil MSE de reconstrucción; compara ambos con el toggle de arriba y ve la tabla completa en Benchmark.'
                   : 'Shipped detector: a class-conditional Gaussian (Mahalanobis, Lee et al. 2018) fit on synthetic core. A real or non-core patch lands far from every synthetic centroid, so its distance is large. This is the principled replacement for the weak reconstruction MSE; compare both with the toggle above and see the full table on Benchmark.'}</p>
               </>
             ) : (
               <>
                 <div className="pf-kpis">
                   <Kpi label={es ? 'MSE medio' : 'mean MSE'} value={realMeanMse != null ? realMeanMse.toFixed(4) : 'n/a'} />
-                  <Kpi label={es ? 'ref. sintetica' : 'synthetic ref.'} value={refMse != null ? refMse.toFixed(4) : 'n/a'} />
+                  <Kpi label={es ? 'ref. sintética' : 'synthetic ref.'} value={refMse != null ? refMse.toFixed(4) : 'n/a'} />
                   <Kpi label={es ? 'razon novedad' : 'novelty ratio'} value={oodRatio != null ? `${oodRatio.toFixed(2)}x` : 'n/a'} />
                 </div>
                 {source === 'real' && oodRatio != null && (
                   <p className="pf-note">{
                     oodRatio >= 1.3
-                      ? (es ? `El OOD por reconstruccion dispara (~${oodRatio.toFixed(1)}x el core sintetico). Aun asi, el detector en espacio de features (Mahalanobis) es mas confiable; ve el toggle.` : `The reconstruction OOD fires (~${oodRatio.toFixed(1)}x synthetic core). Even so, the feature-space detector (Mahalanobis) is more reliable; see the toggle.`)
-                      : (es ? `Honesto: la senal OOD por reconstruccion es debil aqui (~${oodRatio.toFixed(2)}x, AUC 0.729, dominada por el contraste frame-vs-core). Por eso el detector embarcado es Mahalanobis en el espacio de features, no la reconstruccion.` : `Honest: the reconstruction-MSE OOD signal is weak here (~${oodRatio.toFixed(2)}x, AUC 0.729, dominated by frame-vs-core contrast). This is exactly why the shipped detector is feature-space Mahalanobis, not reconstruction.`)
+                      ? (es ? `El OOD por reconstrucción dispara (~${oodRatio.toFixed(1)}x el core sintético). Aun así, el detector en espacio de features (Mahalanobis) es mas confiable; ve el toggle.` : `The reconstruction OOD fires (~${oodRatio.toFixed(1)}x synthetic core). Even so, the feature-space detector (Mahalanobis) is more reliable; see the toggle.`)
+                      : (es ? `Honesto: la señal OOD por reconstrucción es debil aquí (~${oodRatio.toFixed(2)}x, AUC 0.729, dominada por el contraste frame-vs-core). Por eso el detector embarcado es Mahalanobis en el espacio de features, no la reconstrucción.` : `Honest: the reconstruction-MSE OOD signal is weak here (~${oodRatio.toFixed(2)}x, AUC 0.729, dominated by frame-vs-core contrast). This is exactly why the shipped detector is feature-space Mahalanobis, not reconstruction.`)
                   }</p>
                 )}
               </>
@@ -246,11 +246,11 @@ export default function Tool() {
     id: 'latent', label: es ? 'Latente' : 'Latent',
     content: (
       <div className="pf-vizstack">
-        <div className="pf-plot-t">{es ? 'Proyeccion PCA de las features color/textura: nubes sinteticas por litologia + ventanas de la imagen actual' : 'PCA projection of the colour/texture features: synthetic per-lithology clouds + windows of the current image'}</div>
+        <div className="pf-plot-t">{es ? 'Proyeccion PCA de las features color/textura: nubes sintéticas por litologia + ventanas de la imagen actual' : 'PCA projection of the colour/texture features: synthetic per-lithology clouds + windows of the current image'}</div>
         <LatentScatter points={latentPoints} lang={lang} />
         <p className="pf-cap">{source === 'real'
-          ? (es ? 'Los rombos son ventanas del parche real. Cuando caen lejos de toda nube sintetica, esa distancia ES la brecha de dominio (out-of-distribution).' : 'The diamonds are windows of the real patch. When they land away from every synthetic cloud, that distance IS the domain gap (out-of-distribution).')
-          : (es ? 'Los rombos son ventanas de la bandeja sintetica actual, deberian caer sobre sus nubes de litologia.' : 'The diamonds are windows of the current synthetic tray; they should land on their lithology clouds.')}</p>
+          ? (es ? 'Los rombos son ventanas del parche real. Cuando caen lejos de toda nube sintética, esa distancia ES la brecha de dominio (out-of-distribution).' : 'The diamonds are windows of the real patch. When they land away from every synthetic cloud, that distance IS the domain gap (out-of-distribution).')
+          : (es ? 'Los rombos son ventanas de la bandeja sintética actual, deberian caer sobre sus nubes de litologia.' : 'The diamonds are windows of the current synthetic tray; they should land on their lithology clouds.')}</p>
       </div>
     ),
   };
@@ -265,7 +265,7 @@ export default function Tool() {
         <div className="cl-split">
           <div className="cl-split-main">
             <div className="pf-plot-th">
-              <div className="pf-plot-t">{es ? 'Bandeja + segmentacion en vivo (pasa el cursor)' : 'Tray + live segmentation (hover)'}</div>
+              <div className="pf-plot-t">{es ? 'Bandeja + segmentación en vivo (pasa el cursor)' : 'Tray + live segmentation (hover)'}</div>
               <div className="pf-seg"><button className={`chip ${overlay ? 'on' : ''}`} onClick={() => setOverlay((v) => !v)}>overlay</button></div>
             </div>
             <TrayView tray={tray} segments={segs} showOverlay={overlay} lang={lang} />
@@ -347,7 +347,7 @@ export default function Tool() {
           <div className="cl-split-side">
             <div className="pf-plot-t">{es ? 'Control negativo' : 'Negative control'}</div>
             <p className="pf-cap pf-muted">{es
-              ? 'Una imagen que no es core (ruido o un gradiente liso) debe marcarse como fuera de distribucion MAS fuerte que cualquier parche real. Es el control honesto del detector OOD: uno que deja pasar el no-core no sirve. Ve el mapa OOD.'
+              ? 'Una imagen que no es core (ruido o un gradiente liso) debe marcarse como fuera de distribución MAS fuerte que cualquier parche real. Es el control honesto del detector OOD: uno que deja pasar el no-core no sirve. Ve el mapa OOD.'
               : 'A non-core image (noise or a smooth gradient) must be flagged as out-of-distribution HARDER than any real patch. It is the honest control for the OOD detector: one that lets non-core through is meaningless. See the OOD map.'}</p>
           </div>
         </div>
@@ -375,14 +375,14 @@ export default function Tool() {
             <p className="pf-cap pf-muted">{realPatch.mapping_note}</p>
           </div>
           <div className="cl-split-side">
-            <div className="pf-plot-t">{es ? 'Cabeza de clasificacion' : 'Classification head'}</div>
+            <div className="pf-plot-t">{es ? 'Cabeza de clasificación' : 'Classification head'}</div>
             {useDcidHead && headAvail ? (
               <p className="pf-cap pf-muted">{es
-                ? 'Cabeza DCID entrenada sobre core REAL (DCID-7). A diferencia del CNN sintetico, esta prediccion NO es fuera de distribucion: se entreno sobre roca real, y su exactitud retenida esta en Benchmark.'
+                ? 'Cabeza DCID entrenada sobre core REAL (DCID-7). A diferencia del CNN sintético, esta prediccion NO es fuera de distribución: se entreno sobre roca real, y su exactitud retenida esta en Benchmark.'
                 : 'DCID head trained on REAL core (DCID-7). Unlike the synthetic CNN, this prediction is NOT out-of-distribution: it was trained on real rock, and its held-out accuracy is on Benchmark.'}</p>
             ) : (
               <p className="pf-cap pf-muted">{es
-                ? 'Cabeza sintetica (CNN de CoreLog-6): entrenada con textura SINTETICA, asi que sobre core real queda FUERA DE DISTRIBUCION y la prediccion es solo indicativa. Activa la cabeza DCID-7 para clasificar con un modelo entrenado sobre roca real.'
+                ? 'Cabeza sintética (CNN de CoreLog-6): entrenada con textura SINTETICA, así que sobre core real queda FUERA DE DISTRIBUCION y la prediccion es solo indicativa. Activa la cabeza DCID-7 para clasificar con un modelo entrenado sobre roca real.'
                 : 'Synthetic head (CoreLog-6 CNN): trained on SYNTHETIC texture, so on real core it is OUT-OF-DISTRIBUTION and the prediction is indicative only. Switch on the DCID-7 head to classify with a model trained on real rock.'}</p>
             )}
           </div>
@@ -397,7 +397,7 @@ export default function Tool() {
           <div className="pf-plot-t">{es ? `Confusion sobre los parches reales que clasificaste esta sesion (${realItems.length})` : `Confusion over the real patches you classified this session (${realItems.length})`}</div>
           {realItems.length ? <ConfusionMatrix confusion={realConfusion} lang={lang} /> : <p className="pf-note">{es ? 'Selecciona parches reales para acumular la matriz (verdad = etiqueta DCID mapeada).' : 'Select real patches to accumulate the matrix (truth = mapped DCID label).'}</p>}
           <button className="chip" onClick={() => setRealResults({})}>{es ? 'reiniciar' : 'reset'}</button>
-          <p className="pf-cap pf-muted">{es ? 'Recuerda: como es fuera de distribucion, esta matriz mide desalineacion de dominio, no la habilidad real del modelo.' : 'Remember: as this is out-of-distribution, this matrix measures domain mismatch, not the model\'s true skill.'}</p>
+          <p className="pf-cap pf-muted">{es ? 'Recuerda: como es fuera de distribución, esta matriz mide desalineacion de dominio, no la habilidad real del modelo.' : 'Remember: as this is out-of-distribution, this matrix measures domain mismatch, not the model\'s true skill.'}</p>
         </div>
       ),
     },
@@ -418,7 +418,7 @@ export default function Tool() {
             <button className={`chip ${source === 'real' ? 'on' : ''}`} onClick={() => setSource('real')}>{es ? 'Muestra real' : 'Real sample'}</button>
           </div>
           <div className="pf-cap pf-muted">{source === 'synthetic'
-            ? (es ? 'Generador de bandejas sintetico (perillas activas).' : 'Synthetic tray generator (knobs live).')
+            ? (es ? 'Generador de bandejas sintético (perillas activas).' : 'Synthetic tray generator (knobs live).')
             : (es ? 'Foto de core real DCID (perillas del generador desactivadas).' : 'Real DCID core photo (generator knobs disabled).')}</div>
         </div>
 
@@ -476,12 +476,12 @@ export default function Tool() {
             <>
               <div className="pf-catlabel">{es ? 'cabeza de litologia' : 'lithology head'}</div>
               <div className="pf-chips">
-                <button className={`chip ${!useDcidHead ? 'on' : ''}`} onClick={() => setUseDcidHead(false)} title={es ? 'CNN sintetico (fuera de distribucion sobre real)' : 'synthetic CNN (OOD on real)'}>{es ? 'sintetica' : 'synthetic'}</button>
+                <button className={`chip ${!useDcidHead ? 'on' : ''}`} onClick={() => setUseDcidHead(false)} title={es ? 'CNN sintético (fuera de distribución sobre real)' : 'synthetic CNN (OOD on real)'}>{es ? 'sintética' : 'synthetic'}</button>
                 <button className={`chip ${useDcidHead ? 'on' : ''}`} onClick={() => setUseDcidHead(true)} title={es ? 'entrenada sobre DCID-7 real' : 'trained on real DCID-7'}>DCID-7</button>
               </div>
               <div className="pf-cap pf-muted">{useDcidHead
-                ? (es ? 'entrenada sobre roca real (en distribucion)' : 'trained on real rock (in-distribution)')
-                : (es ? 'entrenada sobre sintetico (OOD sobre real)' : 'trained on synthetic (OOD on real)')}</div>
+                ? (es ? 'entrenada sobre roca real (en distribución)' : 'trained on real rock (in-distribution)')
+                : (es ? 'entrenada sobre sintético (OOD sobre real)' : 'trained on synthetic (OOD on real)')}</div>
             </>
           )}
         </div>
@@ -489,9 +489,9 @@ export default function Tool() {
 
       <main className="pf-main">
         {source === 'real' && (
-          <Callout variant="honest" title={es ? 'Modelos sinteticos sobre datos reales (fuera de distribucion)' : 'Synthetic-trained models on real data (out-of-distribution)'}>
+          <Callout variant="honest" title={es ? 'Modelos sintéticos sobre datos reales (fuera de distribución)' : 'Synthetic-trained models on real data (out-of-distribution)'}>
             {es
-              ? 'El CNN de litologia y el detector OOD se entrenaron con el generador de core SINTETICO de CoreLog, asi que sobre fotos reales DCID quedan fuera de distribucion: la clase predicha es solo indicativa. La brecha se ve en tres senales honestas: baja confianza del clasificador, la separacion en el espacio latente y el error de reconstruccion OOD (que reportamos con su valor medido, y decimos cuando es debil, no un simple "dispara siempre").'
+              ? 'El CNN de litologia y el detector OOD se entrenaron con el generador de core SINTETICO de CoreLog, así que sobre fotos reales DCID quedan fuera de distribución: la clase predicha es solo indicativa. La brecha se ve en tres señales honestas: baja confianza del clasificador, la separacion en el espacio latente y el error de reconstrucción OOD (que reportamos con su valor medido, y decimos cuando es debil, no un simple "dispara siempre").'
               : 'The lithology CNN and the OOD detector were trained on CoreLog\'s SYNTHETIC core generator, so on real DCID photos they are out-of-distribution: the predicted class is indicative only. The gap shows in three honest signals: low classifier confidence, the latent-space separation, and the OOD reconstruction error (reported with its measured value, and we say when it is weak rather than a blanket "always fires").'}
           </Callout>
         )}
@@ -569,7 +569,7 @@ function UploadPanel({ clf, es }: { clf: PatchClassifier; es: boolean }) {
           <Kpi2 label={es ? 'MSE OOD medio' : 'mean OOD MSE'} value={a && a.ood.available ? a.ood.meanMse.toFixed(4) : 'n/a'} />
         </div>
       )}
-      {img && <p className="pf-cap pf-muted">{es ? 'Prediccion indicativa: el modelo se entreno con textura sintetica; tu imagen es fuera de distribucion.' : 'Indicative prediction: the model was trained on synthetic texture; your image is out-of-distribution.'}</p>}
+      {img && <p className="pf-cap pf-muted">{es ? 'Prediccion indicativa: el modelo se entreno con textura sintética; tu imagen es fuera de distribución.' : 'Indicative prediction: the model was trained on synthetic texture; your image is out-of-distribution.'}</p>}
     </div>
   );
 }
