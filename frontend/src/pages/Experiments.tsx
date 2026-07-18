@@ -53,7 +53,7 @@ export default function Experiments() {
           ? 'la cabeza real se evalua en las 7 clases nativas de DCID (sin mapeo), para que la confusion no sea artefacto del mapeo a 6 clases de CoreLog.'
           : 'the real head is evaluated in DCID\'s 7 native classes (no mapping), so the confusion is not an artefact of the mapping to CoreLog\'s 6 classes.'}</li>
         <li><b>{es ? 'Resolucion controlada' : 'Controlled resolution'}</b>: {es
-          ? 'para el OOD, ambas fuentes pasan por 24 px (la resolucion de ventana en vivo), asi ningun backbone separa por desenfoque en vez de por dominio.'
+          ? 'para el OOD, ambas fuentes pasan por 24 px (la resolucion de ventana en vivo), así ningun backbone separa por desenfoque en vez de por dominio.'
           : 'for OOD, both sources funnel through 24 px (the live window resolution), so no backbone separates on blur instead of domain.'}</li>
       </ul>
       {ood ? (
