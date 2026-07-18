@@ -7,9 +7,9 @@ generator's own ground truth) and **two learned models** (a CNN + an OOD autoenc
 
 The generator emits the ground-truth segments for free, so the segmentation is checked for **correctness**:
 
-- **The UNIFORM oracle**, a single-lithology tray (limestone) must classify as that lithology with > 0.85 pixel
+- **The uniform oracle**, a single-lithology tray (limestone) must classify as that lithology with > 0.85 pixel
   accuracy (`frontend/test/cv.test.ts`).
-- **The SHARP oracle**, a tray with a known sharp boundary between two lithologies: the run-merge segmentation must
+- **The sharp oracle**, a tray with a known sharp boundary between two lithologies: the run-merge segmentation must
   recover a segment boundary within 20 px of the known cut, and both lithologies must be predicted.
 - **Image-quality robustness**, clean ≥ shadow ≥ wet (a monotone accuracy drop as the lighting degrades), a sanity
   property of the whole pipeline, checked in the bake.
@@ -25,9 +25,9 @@ learned tools appear as genuine views: the OOD map, the class-evidence map and t
 | `lithology-cnn` | RGB patch → 6-way lithology | classical colour/texture nearest-centroid | accuracy **~0.99** on held-out holes (grouped-by-hole split, [issue #14](https://github.com/fsantibanezleal/CAOS_CoreLog/issues/14) fixed) |
 | `core-ood` | patch → reconstruction (MSE = OOD score) |, (separates frame vs core) | **AUC 0.729** |
 
-**Honesty.** The CNN is compared against the SAME classical baseline on the SAME test patches (gen_train.mjs bakes
+**Honesty.** The CNN is compared against the same classical baseline on the same test patches (gen_train.mjs bakes
 the baseline's prediction into the training table), so the comparison itself is apples-to-apples. The split is
-**grouped by synthetic HOLE = (suite, seed)** (`science/train_litho.py`): every hole goes ENTIRELY to train or to
+**grouped by synthetic hole = (suite, seed)** (`science/train_litho.py`): every hole goes entirely to train or to
 test, so the overlapping stride-10 sliding windows of a tray can never straddle the split, and a hole's lithology
 sequence photographed at another quality cannot leak either. This replaces the earlier random patch-level 80/20 that
 inflated the accuracy ([issue #14](https://github.com/fsantibanezleal/CAOS_CoreLog/issues/14)). The gen_train table
@@ -48,7 +48,7 @@ classified by a head trained on real rock (see below).
 
 **Feature-space OOD (the beyond-current-ladder step, v0.09.000).** The reconstruction-MSE novelty score is weak: on
 the honest same-task test (in-distribution = synthetic, OOD = real DCID) it reaches only AUROC 0.308 (real core
-reconstructs MORE easily than synthetic). The replacement is a **feature-space Mahalanobis** score (Lee et al. 2018)
+reconstructs more easily than synthetic). The replacement is a **feature-space Mahalanobis** score (Lee et al. 2018)
 over the lithology CNN's 64-d penultimate embedding, fit on the synthetic training distribution and shipped as
 `data/derived/ood-detector.json`; it runs live on every sliding window (the augmented `lithology-cnn.onnx` now emits
 the feature `f`). Measured AUROC 0.946, FPR@95 0.282, clearing the at-bar threshold (>= 0.85 and a lower FPR@95 than

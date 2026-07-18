@@ -19,11 +19,11 @@ A CAOS/Faena mining web-app instantiated on the **product-repo archetype** ([ADR
 - **Per-patch lithology CNN**, a small CNN classifies a sliding window along each core channel into one of 6
   lithologies (granite · basalt · sandstone · limestone · schist · ore) with a softmax confidence. Trained offline
   (torch → ONNX), run **live** (onnxruntime-web). Benchmarked vs a classical colour/texture baseline.
-- **Run-merge segmentation**, adjacent same-class patches merge into segments; the segmentation EMERGES from the
+- **Run-merge segmentation**, adjacent same-class patches merge into segments; the segmentation emerges from the
   classifier, so there is no separate heavy segmenter.
 - **Depth strip log**, segments map to depth → a vertical lithology log with confidence shading; low-confidence /
   out-of-distribution core is flagged (an OOD autoencoder), not forced into a class.
-- **Tray-descriptor contract**, CONTRACT 1 (Python pipeline) validates a tray descriptor `{tray_id, n_channels,
+- **Tray-descriptor contract**, Contract 1 (Python pipeline) validates a tray descriptor `{tray_id, n_channels,
   px dims, depth, mm/px}`. There is no in-app ingestion of a real tray image yet, the app runs on the synthetic
   cases only.
 

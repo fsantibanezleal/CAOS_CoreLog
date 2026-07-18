@@ -61,7 +61,7 @@ export function LatentScatter({ points, lang = 'en', height = 340 }: { points: S
       <UPlotChart data={data} build={build} height={height} />
       <p className="pf-cap pf-muted" style={{ marginTop: '0.2rem' }}>
         {es
-          ? 'Un punto por parche en el plano PC1/PC2. Clic en la leyenda para aislar una clase; arrastra para hacer zoom; doble clic para restablecer.'
+          ? 'Un punto por parche en el plano PC1/PC2. Clic en la leyenda para aislar una clase; arrastrar para hacer zoom; doble clic para restablecer.'
           : 'One point per patch on the PC1/PC2 plane. Click a legend entry to isolate a class; drag to zoom; double-click to reset.'}
       </p>
     </div>

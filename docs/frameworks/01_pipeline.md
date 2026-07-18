@@ -21,9 +21,9 @@ measured against.
 
 ## 3. Run-merge segmentation (`segment.ts`)
 
-Slide a PATCH×PATCH window along the channel; classify each patch (baseline or CNN); 3-tap majority smoothing kills
+Slide a P×P window along the channel; classify each patch (baseline or CNN); 3-tap majority smoothing kills
 single-position flips; adjacent same-class positions merge into **segments** with a mean confidence. The depth of each
-segment is the linear x → depth map within the channel's slice. The segmentation EMERGES from the patch classifier , 
+segment is the linear x → depth map within the channel's slice. The segmentation emerges from the patch classifier , 
 no separate heavy segmenter.
 
 ## 4. Depth stitching → strip-log

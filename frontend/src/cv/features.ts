@@ -1,4 +1,4 @@
-// The CLASSICAL baseline classifier, hand-crafted colour + texture features + a nearest-centroid model. This is what
+// The classical baseline classifier, hand-crafted colour + texture features + a nearest-centroid model. This is what
 // the learned CNN is measured against (the honest "does ML beat hand-crafted features?" comparison). Pure TS, no
 // training: the per-lithology centroids are estimated from clean synthetic patches of each rock type.
 
@@ -77,7 +77,7 @@ export function fitBaseline(seed = 7): Baseline {
   LITHOLOGIES.forEach((litho, li) => {
     const spec: TraySpec = { id: `cal_${litho}`, nChannels: 1, chWidthPx: 200, chHeightPx: PATCH * 2,
       depthFromM: 0, depthToM: 1, mmPerPx: 1, seed: seed + li * 17, suite: 'uniform', quality: 'clean' };
-    // a uniform tray of THIS lithology (override the layout by drawing the litho directly)
+    // a uniform tray of this lithology (override the layout by drawing the litho directly)
     const tray = makeUniform(spec, litho);
     for (let k = 0; k < 24; k++) {
       const cx = 12 + Math.floor((k / 24) * (tray.width - 24));

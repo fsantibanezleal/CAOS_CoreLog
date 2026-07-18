@@ -15,7 +15,7 @@ export default function Benchmark() {
   useEffect(() => { loadLearned().then(setLearned).catch(() => setLearned(null)); }, []);
   useEffect(() => { loadOodBench().then(setOod).catch(() => setOod(null)); }, []);
 
-  // aggregate confusion across all cases (the cross-case view that does NOT belong in the App)
+  // aggregate confusion across all cases (the cross-case view that does not belong in the App)
   const agg = (() => {
     if (!data) return null;
     const K = LITHOLOGIES.length;
@@ -76,13 +76,13 @@ export default function Benchmark() {
             </tbody>
           </table>
           <p className="pf-note">{es
-            ? `Protocolo: split AGRUPADO POR HOYO sintético (suite+seed), ${learned.lithoCNN.split ?? 'grouped-by-hole'}: los hoyos de test nunca se ven en entrenamiento, a ninguna calidad, así que las ventanas deslizantes solapadas de una bandeja no pueden filtrar entre train y test (issue #14, la corrección del split aleatorio por parche). La accuracy se mantiene alta porque las clases litológicas sintéticas son texturalmente separables, no por memorización, evaluada sobre ${learned.lithoCNN.nEval} parches de hoyos retenidos. El ground-truth del generador es la autoridad.`
-            : `Protocol: split GROUPED BY synthetic HOLE (suite+seed), ${learned.lithoCNN.split ?? 'grouped-by-hole'}: test holes are never seen in training, at any quality, so overlapping sliding windows from a tray cannot leak between train and test (issue #14, the fix for the random patch split). The accuracy stays high because the synthetic lithology classes are texturally separable, not through memorisation, evaluated on ${learned.lithoCNN.nEval} patches from held-out holes. The generator ground truth is the authority.`}</p>
+            ? `Protocolo: split agrupado por hoyo sintético (suite+seed), ${learned.lithoCNN.split ?? 'grouped-by-hole'}: los hoyos de test nunca se ven en entrenamiento, a ninguna calidad, así que las ventanas deslizantes solapadas de una bandeja no pueden filtrar entre train y test (issue #14, la corrección del split aleatorio por parche). La accuracy se mantiene alta porque las clases litológicas sintéticas son texturalmente separables, no por memorización, evaluada sobre ${learned.lithoCNN.nEval} parches de hoyos retenidos. El ground-truth del generador es la autoridad.`
+            : `Protocol: split grouped by synthetic hole (suite+seed), ${learned.lithoCNN.split ?? 'grouped-by-hole'}: test holes are never seen in training, at any quality, so overlapping sliding windows from a tray cannot leak between train and test (issue #14, the fix for the random patch split). The accuracy stays high because the synthetic lithology classes are texturally separable, not through memorisation, evaluated on ${learned.lithoCNN.nEval} patches from held-out holes. The generator ground truth is the authority.`}</p>
         </>
       ) : (
         <Callout variant="honest" title={es ? 'Métricas aprendidas no disponibles' : 'Learned metrics unavailable'}>
           {es
-            ? 'cl-learned.json no cargó en esta sesión, los modelos entrenados (torch · ONNX) vienen versionados con el build; corre `python -m cllab.pipeline all --retrain` para regenerarlos. El ground-truth del generador es siempre la verdad de terreno.'
+            ? 'cl-learned.json no cargó en esta sesión, los modelos entrenados (torch · ONNX) vienen versionados con el build; ejecutar `python -m cllab.pipeline all --retrain` para regenerarlos. El ground-truth del generador es siempre la verdad de terreno.'
             : 'cl-learned.json did not load in this session, the trained models (torch · ONNX) ship committed with the build; run `python -m cllab.pipeline all --retrain` to regenerate them. The generator ground truth is always the authority.'}
         </Callout>
       )}
@@ -91,12 +91,12 @@ export default function Benchmark() {
 
       <h2>{es ? 'Lane de muestra real (DCID)' : 'Real-sample lane (DCID)'}</h2>
       <p>{es
-        ? 'La App tiene un selector de fuente Sintetico | Muestra real. La muestra real usa el Drill Core Image Dataset (DCID-7, Li et al. 2025, CC BY-NC 4.0): parches RGB 512x512 de roca real, verbatim, con atribucion. La MISMA tuberia (ventanas + baseline + lithology-CNN + core-ood) corre en vivo sobre los pixeles reales.'
-        : 'The App has a Synthetic | Real-sample source selector. The real sample uses the Drill Core Image Dataset (DCID-7, Li et al. 2025, CC BY-NC 4.0): verbatim 512x512 RGB patches of real rock, with attribution. The SAME pipeline (windows + baseline + lithology-CNN + core-ood) runs live on the real pixels.'}</p>
-      <Callout variant="honest" title={es ? 'Fuera de distribucion, por diseno' : 'Out-of-distribution, by design'}>
+        ? 'La App tiene un selector de fuente Sintético | Muestra real. La muestra real usa el Drill Core Image Dataset (DCID-7, Li et al. 2025, CC BY-NC 4.0): parches RGB 512x512 de roca real, verbatim, con atribución. El mismo pipeline (ventanas + baseline + lithology-CNN + core-ood) se ejecuta en vivo sobre los píxeles reales.'
+        : 'The App has a Synthetic | Real-sample source selector. The real sample uses the Drill Core Image Dataset (DCID-7, Li et al. 2025, CC BY-NC 4.0): verbatim 512x512 RGB patches of real rock, with attribution. The same pipeline (windows + baseline + lithology-CNN + core-ood) runs live on the real pixels.'}</p>
+      <Callout variant="honest" title={es ? 'Fuera de distribución, por diseño' : 'Out-of-distribution, by design'}>
         {es
-          ? 'El CNN y el OOD se entrenaron con el generador SINTETICO, asi que un parche DCID real es fuera de distribucion: la clase predicha es indicativa. La brecha de dominio se ve en la baja confianza del clasificador y en la separacion latente; el detector OOD por reconstruccion se reporta con su razon de novedad medida (y decimos cuando es debil, no un "dispara siempre"). La matriz de confusion real se acumula por sesion en la App y mide desalineacion de dominio, no la habilidad del modelo. DCID-7 tiene 7 clases (arenisca roja/clara, limolita gris, lutita, granito, basalto, marmol) mapeadas a las 6 litologias de CoreLog como verdad de accuracy; ver la nota de mapeo en attribution.json.'
-          : 'The CNN and OOD were trained on the SYNTHETIC generator, so a real DCID patch is out-of-distribution: the predicted class is indicative. The domain gap shows in the low classifier confidence and the latent separation; the reconstruction-based OOD detector is reported with its measured novelty ratio (and we say when it is weak, not a blanket "always fires"). The real confusion matrix accumulates per session in the App and measures domain mismatch, not model skill. DCID-7 has 7 classes (red/light sandstone, gray siltstone, mudstone, granite, basalt, marble) mapped to CoreLog\'s 6 lithologies as the accuracy truth; see the mapping note in attribution.json.'}
+          ? 'El CNN y el OOD se entrenaron con el generador sintético, así que un parche DCID real es fuera de distribución: la clase predicha es indicativa. La brecha de dominio se ve en la baja confianza del clasificador y en la separación latente; el detector OOD por reconstrucción se reporta con su razón de novedad medida (y se indica cuando es débil, no un "dispara siempre"). La matriz de confusión real se acumula por sesión en la App y mide desalineación de dominio, no la habilidad del modelo. DCID-7 tiene 7 clases (arenisca roja/clara, limolita gris, lutita, granito, basalto, mármol) mapeadas a las 6 litologías de CoreLog como verdad de accuracy; ver la nota de mapeo en attribution.json.'
+          : 'The CNN and OOD were trained on the synthetic generator, so a real DCID patch is out-of-distribution: the predicted class is indicative. The domain gap shows in the low classifier confidence and the latent separation; the reconstruction-based OOD detector is reported with its measured novelty ratio (and called weak when it is, not a blanket "always fires"). The real confusion matrix accumulates per session in the App and measures domain mismatch, not model skill. DCID-7 has 7 classes (red/light sandstone, gray siltstone, mudstone, granite, basalt, marble) mapped to CoreLog\'s 6 lithologies as the accuracy truth; see the mapping note in attribution.json.'}
       </Callout>
     </article>
   );

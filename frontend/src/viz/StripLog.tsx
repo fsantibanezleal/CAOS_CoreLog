@@ -68,7 +68,7 @@ export function StripLog({ bands, depthFrom, depthTo, height = 360, lang = 'en' 
             <b>{lang === 'es' ? LITHO_INFO[hover.litho as Lithology].es : LITHO_INFO[hover.litho as Lithology].en}</b>
             <div className="pf-cap">{hover.depthFrom.toFixed(2)}–{hover.depthTo.toFixed(2)} m · {(hover.conf * 100).toFixed(0)}%{hover.ood ? (lang === 'es' ? ' · incierto' : ' · uncertain') : ''}</div>
           </>
-        ) : <div className="pf-cap pf-muted">{lang === 'es' ? 'pasa el cursor por el log' : 'hover the log'}</div>}
+        ) : <div className="pf-cap pf-muted">{lang === 'es' ? 'cursor sobre el log' : 'hover the log'}</div>}
       </div>
     </div>
   );

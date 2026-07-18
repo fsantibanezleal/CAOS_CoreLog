@@ -2,7 +2,7 @@
 //
 // A tray holds `nChannels` parallel core channels stacked vertically; each channel is a horizontal run of core
 // covering a depth interval, made of segments of different lithologies along x. The generator renders the RGB image
-// AND the ground-truth segments, so the classifier + segmentation can be scored against truth (the oracle anchor).
+// and the ground-truth segments, so the classifier + segmentation can be scored against truth (the oracle anchor).
 
 export const LITHOLOGIES = ['granite', 'basalt', 'sandstone', 'limestone', 'schist', 'ore'] as const;
 export type Lithology = (typeof LITHOLOGIES)[number];

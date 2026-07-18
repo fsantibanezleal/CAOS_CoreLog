@@ -1,5 +1,5 @@
 // Procedural per-lithology textures, each rock type gets a distinct, geologically-suggestive appearance built from a
-// base colour + grain + speckle + banding/veining. SYNTHETIC and clearly so; the point is a set of patterns that are
+// base colour + grain + speckle + banding/veining. Synthetic and clearly so; the point is a set of patterns that are
 // (a) visually plausible, (b) separable enough that a classical colour/texture baseline scores well, and (c) leave
 // headroom for a CNN to do better on the noisy/ambiguous cases. Deterministic given (x, y, seed).
 

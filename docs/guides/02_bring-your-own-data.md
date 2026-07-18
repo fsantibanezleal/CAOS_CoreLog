@@ -11,7 +11,7 @@ CoreLog logs **real** core, not just the synthetic cases. The App's first-level 
   accuracy truth (the mapping note is in `attribution.json`).
 
 Inside the Real lane, the **Your image** tab is a genuine upload path: drop any core photo (jpg/png), it is decoded in
-the browser and the SAME pipeline (sliding windows + baseline + lithology-CNN + core-ood ONNX) runs on your pixels.
+the browser and the same pipeline (sliding windows + baseline + lithology-CNN + core-ood ONNX) runs on your pixels.
 Nothing is sent to a server.
 
 **Honesty.** The learned models were trained on the synthetic generator, so real photos are out-of-distribution: the
@@ -21,7 +21,7 @@ the reconstruction-based OOD signal is reported as a measured novelty ratio vers
 frame-vs-core contrast, AUC 0.729).
 
 For batch/offline ingestion of a real **multi-channel tray descriptor** (depth stitching, channel splitting), the
-CONTRACT 1 validation gate below (`cllab/io/contract.py`, Python-side) is the entry point; the schema + outlier policy
+Contract 1 validation gate below (`cllab/io/contract.py`, Python-side) is the entry point; the schema + outlier policy
 are documented in [data-contracts](../architecture/08_data-contracts.md) and `data/README.md`.
 
 ## The tray-descriptor schema

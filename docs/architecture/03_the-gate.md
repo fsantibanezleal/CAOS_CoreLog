@@ -15,5 +15,5 @@ A case is **live** iff it is client-side, its runtimes are a subset of the deplo
 `{ts-cv, onnxruntime-web}`, a full segmentation completes within the interaction budget (`RUN_MS_GATE = 1500 ms`), and
 its replay trace stays small (`TRACE_BYTES_GATE = 256 KB`). At teaching scale (a few channels × ~300 px) a full
 sliding-window segmentation + CNN inference is tens of milliseconds and the trace is a few KB, so **every case is
-LIVE**. The verdict + budgets go into the manifest; the raw wall-clock is used for the decision but never stored (it
+live**. The verdict + budgets go into the manifest; the raw wall-clock is used for the decision but never stored (it
 would dirty git on re-run, see [determinism](02_determinism-and-trace.md)).
