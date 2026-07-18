@@ -50,7 +50,7 @@ export const architecture: ArchitectureConfig = {
       body_en:
         'Three lanes, and the split is the point. WEB (live, in the browser): the TypeScript CV engine ' +
         '(frontend/src/cv/) re-segments on every control and onnxruntime-web runs lithology-cnn.onnx + core-ood.onnx, ' +
-        'no server. OFFLINE / COMPUTE (your machine, isolated .venv): the Python pipeline bakes the canonical case ' +
+        'no server. offline / COMPUTE (your machine, isolated .venv): the Python pipeline bakes the canonical case ' +
         'artifacts (the segmentations + metrics) and the heavy lane (--retrain, .venv-precompute, torch) trains the ' +
         'lithology CNN + the OOD autoencoder and exports them to ONNX. REPLAY: the small, committed artifacts in ' +
         'data/derived are overlaid into the SPA by copy-data.mjs and loaded live; the typed mirror (contract.types.ts) ' +
@@ -58,7 +58,7 @@ export const architecture: ArchitectureConfig = {
       body_es:
         'Tres carriles, y la división es lo central. WEB (en vivo, en el navegador): el motor CV en TypeScript ' +
         '(frontend/src/cv/) re-segmenta con cada control y onnxruntime-web ejecuta lithology-cnn.onnx + core-ood.onnx, ' +
-        'sin servidor. OFFLINE / CÓMPUTO (tu máquina, .venv aislado): el pipeline Python hornea los artefactos canónicos ' +
+        'sin servidor. offline / CÓMPUTO (tu máquina, .venv aislado): el pipeline Python hornea los artefactos canónicos ' +
         'por caso (las segmentaciones + métricas) y el carril pesado (--retrain, .venv-precompute, torch) entrena el CNN ' +
         'de litología + el autoencoder OOD y los exporta a ONNX. REPLAY: los artefactos pequeños y versionados en ' +
         'data/derived se superponen al SPA con copy-data.mjs y se cargan en vivo; el espejo tipado (contract.types.ts) ' +
