@@ -82,8 +82,8 @@ export default function Benchmark() {
       ) : (
         <Callout variant="honest" title={es ? 'Métricas aprendidas no disponibles' : 'Learned metrics unavailable'}>
           {es
-            ? 'cl-learned.json no cargó en esta sesión, los modelos entrenados (torch → ONNX) vienen versionados con el build; corre `python -m cllab.pipeline all --retrain` para regenerarlos. El ground-truth del generador es siempre la verdad de terreno.'
-            : 'cl-learned.json did not load in this session, the trained models (torch → ONNX) ship committed with the build; run `python -m cllab.pipeline all --retrain` to regenerate them. The generator ground truth is always the authority.'}
+            ? 'cl-learned.json no cargó en esta sesión, los modelos entrenados (torch · ONNX) vienen versionados con el build; corre `python -m cllab.pipeline all --retrain` para regenerarlos. El ground-truth del generador es siempre la verdad de terreno.'
+            : 'cl-learned.json did not load in this session, the trained models (torch · ONNX) ship committed with the build; run `python -m cllab.pipeline all --retrain` to regenerate them. The generator ground truth is always the authority.'}
         </Callout>
       )}
 

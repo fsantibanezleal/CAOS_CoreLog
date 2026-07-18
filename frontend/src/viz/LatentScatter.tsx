@@ -1,55 +1,69 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
+import type uPlot from 'uplot';
 import { LITHO_INFO, LITHOLOGIES, type Lithology } from '../cv/types.ts';
+import { UPlotChart, themeColors } from './UPlotChart.tsx';
 
 export interface ScatterPoint { x: number; y: number; litho?: Lithology; real?: boolean; label: string; }
 
-/** A 2D PCA scatter of colour/texture features: the synthetic lithology clouds (filled dots, rock-coloured) plus the
- * real DCID patch windows (hollow diamonds). When the real points land away from every synthetic cloud, that gap IS
- * the out-of-distribution story. Pure SVG, theme-aware via currentColor, hover readout. */
+/** A 2D PCA scatter of colour/texture features, INTERACTIVE (uPlot Tier-A): the synthetic lithology clouds
+ * (rock-coloured points, one series per class, toggle/solo from the legend) plus the real DCID patch windows
+ * (their own series). When the real points land away from every synthetic cloud, that gap IS the
+ * out-of-distribution story. Crosshair + live PC1/PC2 readout, drag-zoom, double-click reset, theme-aware.
+ * All points share one sorted-x axis; each series carries nulls outside its own points (uPlot aligned data). */
 export function LatentScatter({ points, lang = 'en', height = 340 }: { points: ScatterPoint[]; lang?: 'en' | 'es'; height?: number }) {
-  const [hover, setHover] = useState<{ x: number; y: number; text: string } | null>(null);
-  const W = 560;
-  const H = height;
-  const pad = 26;
+  const es = lang === 'es';
 
-  const { sx, sy } = useMemo(() => {
-    const xs = points.map((p) => p.x);
-    const ys = points.map((p) => p.y);
-    const x0 = Math.min(...xs); const x1 = Math.max(...xs);
-    const y0 = Math.min(...ys); const y1 = Math.max(...ys);
-    const sx = (x: number) => pad + ((x - x0) / (x1 - x0 || 1)) * (W - 2 * pad);
-    const sy = (y: number) => H - pad - ((y - y0) / (y1 - y0 || 1)) * (H - 2 * pad);
-    return { sx, sy };
-  }, [points, H]);
+  const data = useMemo(() => {
+    const sorted = [...points].sort((a, b) => a.x - b.x);
+    const xs = sorted.map((p) => p.x);
+    const cols: (number | null)[][] = [];
+    for (const l of LITHOLOGIES) cols.push(sorted.map((p) => (!p.real && p.litho === l ? p.y : null)));
+    cols.push(sorted.map((p) => (p.real ? p.y : null)));            // the real DCID series, last
+    return [xs, ...cols] as uPlot.AlignedData;
+  }, [points]);
+
+  const build = useCallback((width: number, h: number): uPlot.Options => {
+    const c = themeColors();
+    const fmt = (v: number | null) => (v == null ? '--' : v.toFixed(2));
+    return {
+      width, height: h,
+      scales: { x: { time: false } },
+      axes: [
+        { stroke: c.subtle, grid: { stroke: c.border }, ticks: { stroke: c.border }, label: 'PC1', labelSize: 12 },
+        { stroke: c.subtle, grid: { stroke: c.border }, ticks: { stroke: c.border }, label: 'PC2', labelSize: 12 },
+      ],
+      series: [
+        { label: 'PC1', value: (_u, v) => fmt(v) },
+        ...LITHOLOGIES.map((l) => {
+          const [r, g, b] = LITHO_INFO[l].rgb;
+          const col = `rgb(${r},${g},${b})`;
+          return {
+            label: es ? LITHO_INFO[l].es : LITHO_INFO[l].en,
+            stroke: col, width: 0, paths: () => null,
+            points: { show: true, size: 6, fill: col, stroke: col },
+            value: (_u: uPlot, v: number | null) => fmt(v),
+          };
+        }),
+        {
+          label: es ? 'parche real (DCID)' : 'real patch (DCID)',
+          stroke: c.fg, width: 0, paths: () => null,
+          points: { show: true, size: 8, fill: 'transparent', stroke: c.fg, width: 1.8 },
+          value: (_u: uPlot, v: number | null) => fmt(v),
+        },
+      ],
+      cursor: { drag: { x: true, y: true } },
+      legend: { live: true },
+    };
+  }, [es]);
 
   return (
-    <div className="cl-scatter" style={{ position: 'relative' }}>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={lang === 'es' ? 'dispersion latente' : 'latent scatter'}>
-        <rect x={0} y={0} width={W} height={H} fill="none" stroke="var(--color-border)" rx={8} />
-        <text x={pad} y={H - 6} fontSize={11} fill="var(--color-fg-subtle)">PC1</text>
-        <text x={6} y={pad} fontSize={11} fill="var(--color-fg-subtle)">PC2</text>
-        {points.map((p, i) => {
-          const cx = sx(p.x); const cy = sy(p.y);
-          const onEnter = (e: React.MouseEvent) => setHover({ x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY, text: p.label });
-          if (p.real) {
-            return <path key={i} d={`M ${cx} ${cy - 5} L ${cx + 5} ${cy} L ${cx} ${cy + 5} L ${cx - 5} ${cy} Z`}
-              fill="none" stroke="var(--color-fg)" strokeWidth={1.8} onMouseEnter={onEnter} onMouseLeave={() => setHover(null)} />;
-          }
-          const [r, g, b] = LITHO_INFO[p.litho as Lithology].rgb;
-          return <circle key={i} cx={cx} cy={cy} r={3.2} fill={`rgb(${r},${g},${b})`} fillOpacity={0.75}
-            onMouseEnter={onEnter} onMouseLeave={() => setHover(null)} />;
-        })}
-      </svg>
-      <div className="cl-scatter-legend">
-        {LITHOLOGIES.map((l) => (
-          <span key={l} className="cl-scatter-key">
-            <span className="cl-sw" style={{ background: `rgb(${LITHO_INFO[l].rgb.join(',')})` }} />
-            {lang === 'es' ? LITHO_INFO[l].es : LITHO_INFO[l].en}
-          </span>
-        ))}
-        <span className="cl-scatter-key"><span className="cl-sw cl-sw-real" /> {lang === 'es' ? 'parche real (DCID)' : 'real patch (DCID)'}</span>
-      </div>
-      {hover && <div className="heatmap-readout" style={{ left: Math.min(hover.x + 10, W - 60), top: hover.y + 10 }}>{hover.text}</div>}
+    <div className="cl-scatter">
+      <UPlotChart data={data} build={build} height={height} />
+      <p className="pf-cap pf-muted" style={{ marginTop: '0.2rem' }}>
+        {es
+          ? 'Un punto por parche en el plano PC1/PC2. Clic en la leyenda para aislar una clase; arrastra para hacer zoom; doble clic para restablecer.'
+          : 'One point per patch on the PC1/PC2 plane. Click a legend entry to isolate a class; drag to zoom; double-click to reset.'}
+      </p>
     </div>
   );
 }

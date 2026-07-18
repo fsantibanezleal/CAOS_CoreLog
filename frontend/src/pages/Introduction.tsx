@@ -21,8 +21,8 @@ export default function Introduction() {
           content: (
             <div className="pf-doc-sec">
               <p>{es
-                ? 'Una bandeja de testigos contiene varios canales paralelos de roca recuperada, cada uno cubriendo un intervalo de profundidad. El geólogo loguea la litología segmento por segmento. CoreLog lo hace con CV: clasifica parches a lo largo de cada canal con un CNN, fusiona los parches del mismo tipo en segmentos, y mapea a profundidad → un strip-log.'
-                : 'A core tray holds several parallel channels of recovered rock, each covering a depth interval. A geologist logs lithology segment by segment. CoreLog does it with CV: it classifies patches along each channel with a CNN, merges same-class patches into segments, and maps to depth → a strip-log.'}</p>
+                ? 'Una bandeja de testigos contiene varios canales paralelos de roca recuperada, cada uno cubriendo un intervalo de profundidad. El geólogo loguea la litología segmento por segmento. CoreLog lo hace con CV: clasifica parches a lo largo de cada canal con un CNN, fusiona los parches del mismo tipo en segmentos, y mapea a profundidad · un strip-log.'
+                : 'A core tray holds several parallel channels of recovered rock, each covering a depth interval. A geologist logs lithology segment by segment. CoreLog does it with CV: it classifies patches along each channel with a CNN, merges same-class patches into segments, and maps to depth · a strip-log.'}</p>
               <p>{es
                 ? 'Incluye 6 litologías (granito, basalto, arenisca, caliza, esquisto, mineral), 3 secuencias (pórfido, sedimentaria, volcánica), escenarios de calidad de imagen, y controles oráculo verificables a mano.'
                 : 'It ships 6 lithologies (granite, basalt, sandstone, limestone, schist, ore), 3 sequences (porphyry, sedimentary, volcanic), image-quality scenarios, and hand-verifiable oracle controls.'}</p>
