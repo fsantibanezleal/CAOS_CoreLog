@@ -16,8 +16,8 @@ export default function Implementation() {
             <div className="pf-doc-sec">
               <ul className="pf-list">
                 <li><b>{es ? 'Live (cliente)' : 'Live (client)'}</b>, {es ? 'el generador de bandejas + la segmentación run-merge en TypeScript (frontend/src/cv/) + el CNN vía onnxruntime-web; re-segmenta al mover el caso o el umbral de confianza.' : 'the tray generator + run-merge segmentation in TypeScript (frontend/src/cv/) + the CNN via onnxruntime-web; re-segments as the case or the confidence threshold change.'}</li>
-                <li><b>{es ? 'Offline (precompute)' : 'Offline (precompute)'}</b>, {es ? 'un horneado Node corre el MISMO engine TS sobre los casos · data/derived/case-results.json; torch entrena el CNN + el AE OOD · ONNX.' : 'a Node bake runs the SAME TS engine over the cases · data/derived/case-results.json; torch trains the CNN + the OOD AE · ONNX.'}</li>
-                <li><b>{es ? 'Replay (liviano)' : 'Replay (light)'}</b>, {es ? 'el pipeline Python numpy-only reformatea el horneado en trazas + manifiestos por caso (CONTRATO 2). Sin torch ni Node · CI/verificación rápida.' : 'the numpy-only Python pipeline reshapes the bake into per-case traces + manifests (CONTRACT 2). No torch/Node · fast CI/verify.'}</li>
+                <li><b>{es ? 'Offline (precompute)' : 'Offline (precompute)'}</b>, {es ? 'un precálculo Node corre el MISMO engine TS sobre los casos · data/derived/case-results.json; torch entrena el CNN + el AE OOD · ONNX.' : 'a Node bake runs the SAME TS engine over the cases · data/derived/case-results.json; torch trains the CNN + the OOD AE · ONNX.'}</li>
+                <li><b>{es ? 'Replay (liviano)' : 'Replay (light)'}</b>, {es ? 'el pipeline Python numpy-only reformatea el precálculo en trazas + manifiestos por caso (CONTRATO 2). Sin torch ni Node · CI/verificación rápida.' : 'the numpy-only Python pipeline reshapes the bake into per-case traces + manifests (CONTRACT 2). No torch/Node · fast CI/verify.'}</li>
               </ul>
               <Callout variant="note" title={es ? 'El gate decide el lane' : 'The gate decides the lane'}>
                 {es ? 'LIVE si es client-side, runtimes ⊆ {ts-cv, onnxruntime-web} y la segmentación + la traza caben en presupuesto. A escala didáctica todo pasa a LIVE.' : 'LIVE if client-side, runtimes ⊆ {ts-cv, onnxruntime-web} and the segmentation + trace fit budget. At teaching scale everything is LIVE.'}
@@ -52,7 +52,7 @@ export default function Implementation() {
           content: (
             <div className="pf-doc-sec">
               <p>{es
-                ? 'El detector OOD en espacio de features y la cabeza real DCID-7 se hornean offline (data-pipeline/cllab/science/ood_bench.py, .venv-precompute + torch) y embarcan como artefactos compactos. El contrato es: backbone congelado · embedding · {estadisticos de Mahalanobis, banco kNN, cabeza lineal}.'
+                ? 'El detector OOD en espacio de features y la cabeza real DCID-7 se precalculan offline (data-pipeline/cllab/science/ood_bench.py, .venv-precompute + torch) y embarcan como artefactos compactos. El contrato es: backbone congelado · embedding · {estadisticos de Mahalanobis, banco kNN, cabeza lineal}.'
                 : 'The feature-space OOD detector and the DCID-7 real head are baked offline (data-pipeline/cllab/science/ood_bench.py, .venv-precompute + torch) and shipped as compact artifacts. The contract is: frozen backbone · embedding · {Mahalanobis statistics, kNN bank, linear head}.'}</p>
               <ul className="pf-list">
                 <li><b>lithology-cnn.onnx</b> (~0.31 MB), {es ? 'ahora con DOS salidas' : 'now with TWO outputs'}: <code>p</code> (softmax 6) + <code>f</code> ({es ? 'embedding de 64-d que alimenta el Mahalanobis en vivo por ventana' : 'the 64-d embedding feeding the live per-window Mahalanobis'}).</li>
