@@ -37,8 +37,8 @@ export default function Experiments() {
 
       <Callout variant="strong" title={es ? 'Los oráculos' : 'The oracles'}>
         {es
-          ? 'C-UNIFORM es una bandeja de una sola litología (caliza) → el clasificador debe acertar ~todo (>0.85). C-SHARP tiene dos litologías con un límite agudo conocido → la segmentación run-merge debe recuperar ese límite (±20 px). Son las anclas de exactitud del pipeline.'
-          : 'C-UNIFORM is a single-lithology tray (limestone) → the classifier must get ~everything right (>0.85). C-SHARP has two lithologies with a known sharp boundary → the run-merge segmentation must recover it (±20 px). These are the pipeline’s exactness anchors.'}
+          ? 'C-UNIFORM es una bandeja de una sola litología (caliza) · el clasificador debe acertar ~todo (>0.85). C-SHARP tiene dos litologías con un límite agudo conocido · la segmentación run-merge debe recuperar ese límite (±20 px). Son las anclas de exactitud del pipeline.'
+          : 'C-UNIFORM is a single-lithology tray (limestone) · the classifier must get ~everything right (>0.85). C-SHARP has two lithologies with a known sharp boundary · the run-merge segmentation must recover it (±20 px). These are the pipeline’s exactness anchors.'}
       </Callout>
 
       <h2>{es ? 'Protocolo OOD: split seguro ante fugas, dedupe y control nulo' : 'OOD protocol: leakage-safe split, dedupe and null control'}</h2>

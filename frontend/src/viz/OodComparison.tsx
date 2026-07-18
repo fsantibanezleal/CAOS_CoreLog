@@ -2,31 +2,52 @@
 // Mahalanobis / kNN / energy / MSP), a ROC overlay, the score histograms, the negative controls and the
 // DCID-7 real-head confusion. All values come from data/derived/ood-bench.json (the offline benchmark); nothing
 // is hard-coded, so the honest measured numbers, including any null, render as produced.
+import { useCallback, useMemo } from 'react';
+import type uPlot from 'uplot';
 import { Callout, Cite } from '@fasl-work/caos-app-shell';
 import type { OodBenchFile } from '../lib/artifacts.ts';
+import { UPlotChart, themeColors } from './UPlotChart.tsx';
 
+/** ROC overlay, INTERACTIVE (uPlot Tier-A): both detector curves resampled onto a common FPR grid so the live
+ *  legend reads TPR at the cursor's FPR for each; dashed chance diagonal; drag-zoom; theme-aware. */
 function Roc({ curves, es }: { curves: { label: string; color: string; pts: [number, number][] }[]; es: boolean }) {
-  const W = 320, H = 260, pad = 34;
-  const sx = (x: number) => pad + x * (W - 2 * pad);
-  const sy = (y: number) => H - pad - y * (H - 2 * pad);
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="cl-roc" role="img" aria-label={es ? 'curva ROC' : 'ROC curve'}>
-      <rect x={pad} y={pad} width={W - 2 * pad} height={H - 2 * pad} fill="none" stroke="var(--color-border)" />
-      <line x1={sx(0)} y1={sy(0)} x2={sx(1)} y2={sy(1)} stroke="var(--color-fg-subtle)" strokeDasharray="3 3" opacity={0.5} />
-      {curves.map((c) => (
-        <polyline key={c.label} fill="none" stroke={c.color} strokeWidth={2}
-          points={c.pts.map(([fpr, tpr]) => `${sx(fpr)},${sy(tpr)}`).join(' ')} />
-      ))}
-      <text x={W / 2} y={H - 6} textAnchor="middle" className="cl-axl">FPR</text>
-      <text x={12} y={H / 2} textAnchor="middle" className="cl-axl" transform={`rotate(-90 12 ${H / 2})`}>TPR</text>
-      {curves.map((c, i) => (
-        <g key={c.label}>
-          <rect x={pad + 6} y={pad + 6 + i * 16} width={10} height={10} fill={c.color} />
-          <text x={pad + 20} y={pad + 15 + i * 16} className="cl-axl">{c.label}</text>
-        </g>
-      ))}
-    </svg>
-  );
+  const data = useMemo(() => {
+    const N = 101;
+    const grid = Array.from({ length: N }, (_, i) => i / (N - 1));
+    const sample = (pts: [number, number][]) => {
+      const s = [...pts].sort((a, b) => a[0] - b[0]);
+      return grid.map((f) => {
+        // linear interpolation of the staircase at FPR = f
+        let lo = s[0], hi = s[s.length - 1];
+        for (let i = 0; i < s.length; i++) { if (s[i][0] <= f) lo = s[i]; if (s[i][0] >= f) { hi = s[i]; break; } }
+        if (hi[0] === lo[0]) return lo[1];
+        return lo[1] + ((f - lo[0]) / (hi[0] - lo[0])) * (hi[1] - lo[1]);
+      });
+    };
+    return [grid, ...curves.map((c) => sample(c.pts)), grid] as uPlot.AlignedData;  // last series = the diagonal
+  }, [curves]);
+
+  const build = useCallback((width: number, height: number): uPlot.Options => {
+    const c = themeColors();
+    const fmt = (v: number | null) => (v == null ? '--' : v.toFixed(3));
+    return {
+      width, height,
+      scales: { x: { time: false, range: [0, 1] }, y: { range: [0, 1] } },
+      axes: [
+        { stroke: c.subtle, grid: { stroke: c.border }, ticks: { stroke: c.border }, label: 'FPR', labelSize: 12 },
+        { stroke: c.subtle, grid: { stroke: c.border }, ticks: { stroke: c.border }, label: 'TPR', labelSize: 12 },
+      ],
+      series: [
+        { label: 'FPR', value: (_u, v) => fmt(v) },
+        ...curves.map((cv) => ({ label: cv.label, stroke: cv.color, width: 2, value: (_u: uPlot, v: number | null) => fmt(v) })),
+        { label: es ? 'azar' : 'chance', stroke: c.faint, width: 1, dash: [3, 3], value: (_u: uPlot, v: number | null) => fmt(v) },
+      ],
+      cursor: { drag: { x: true, y: false } },
+      legend: { live: true },
+    };
+  }, [es]);
+
+  return <UPlotChart data={data} build={build} height={260} />;
 }
 
 function Hist({ hist, es }: { hist: { edges: number[]; id: number[]; ood: number[] }; es: boolean }) {
@@ -134,7 +155,7 @@ export function OodComparison({ ood, es }: { ood: OodBenchFile | null; es: boole
 
       <h2>{es ? 'Controles negativos' : 'Negative controls'}</h2>
       <div className="cl-ctrls">
-        <Chip ok={c.nullCollapsedToChance}>{es ? `permutacion de etiquetas -> ${pct(c.labelPermutationNullTop1)} (colapsa al azar ${pct(c.chance)})` : `label permutation -> ${pct(c.labelPermutationNullTop1)} (collapses to chance ${pct(c.chance)})`}</Chip>
+        <Chip ok={c.nullCollapsedToChance}>{es ? `permutacion de etiquetas · ${pct(c.labelPermutationNullTop1)} (colapsa al azar ${pct(c.chance)})` : `label permutation · ${pct(c.labelPermutationNullTop1)} (collapses to chance ${pct(c.chance)})`}</Chip>
         <Chip ok={c.nonCoreAllFire}>{es ? `no-core dispara: todos > umbral ID p95 (${c.idP95Threshold})` : `non-core fires: all > ID p95 threshold (${c.idP95Threshold})`}</Chip>
         <Chip ok={c.nearFarMonotonic}>{es ? `monotonia: no-core ${c.medianNonCore} > real ${c.medianOod} > sintetico ${c.medianId}` : `monotonic: non-core ${c.medianNonCore} > real ${c.medianOod} > synthetic ${c.medianId}`}</Chip>
       </div>
@@ -166,8 +187,8 @@ export function OodComparison({ ood, es }: { ood: OodBenchFile | null; es: boole
       )}
       <Callout variant="honest" title={es ? 'No es un algoritmo nuevo' : 'Not a new algorithm'}>
         {es
-          ? 'Mahalanobis (2018), kNN (2022) y energia (2020) son metodos establecidos. La contribucion aqui es EMPIRICA: elegir y MEDIR el puntaje OOD que separa la brecha sintetico->real de CoreLog reemplazando un detector debil, y entrenar una cabeza que de verdad clasifica core real DCID, con controles rigurosos. No se afirma superar el estado del arte.'
-          : 'Mahalanobis (2018), kNN (2022) and energy (2020) are established. The contribution here is EMPIRICAL: selecting and MEASURING the OOD score that separates CoreLog\'s synthetic->real gap, replacing a weak detector, and training a head that actually classifies real DCID core, with rigorous controls. No claim to beat the state of the art.'}
+          ? 'Mahalanobis (2018), kNN (2022) y energia (2020) son metodos establecidos. La contribucion aqui es EMPIRICA: elegir y MEDIR el puntaje OOD que separa la brecha sintetico·real de CoreLog reemplazando un detector debil, y entrenar una cabeza que de verdad clasifica core real DCID, con controles rigurosos. No se afirma superar el estado del arte.'
+          : 'Mahalanobis (2018), kNN (2022) and energy (2020) are established. The contribution here is EMPIRICAL: selecting and MEASURING the OOD score that separates CoreLog\'s synthetic·real gap, replacing a weak detector, and training a head that actually classifies real DCID core, with rigorous controls. No claim to beat the state of the art.'}
         {' '}<Cite id="lee2018" paren /> <Cite id="sun2022" paren /> <Cite id="liu2020" paren />
       </Callout>
     </div>

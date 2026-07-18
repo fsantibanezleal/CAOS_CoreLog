@@ -3,6 +3,17 @@
 All notable changes to CAOS CoreLog Vision. Versions follow `X.XX.XXX` (display), see `cllab.__version__` and
 `frontend/package.json`. The project stays in `0.x` while the synthetic core-tray images anchor the metrics.
 
+## [0.09.002], 2026-07-11
+
+### Changed
+- Interactive-viz rubric (issue #29): LatentScatter (2D PCA feature scatter) and the Benchmark ROC overlay are
+  now INTERACTIVE uPlot charts, crosshair with live legend readout, per-class legend toggle/solo on the scatter,
+  drag-zoom + double-click reset, theme-aware. uplot was an installed-but-unused dependency; the shared UPlotChart
+  wrapper (ChargeCascade/TailWatch pattern) is now ported and used. The ROC resamples both detector curves onto a
+  common FPR grid so the legend reads each TPR at the cursor's FPR; the chance diagonal is a dashed series.
+- Swept 26 '·'-replacing arrows ('->' / U+2192) from rendered prose across Implementation, Benchmark,
+  Experiments, Introduction and the OOD panel (AI-tell cleanup; code blocks untouched).
+
 ## [0.09.001], 2026-07-11
 
 ### Fixed
