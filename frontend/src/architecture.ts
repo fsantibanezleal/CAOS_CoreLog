@@ -58,7 +58,7 @@ export const architecture: ArchitectureConfig = {
       body_es:
         'Tres carriles, separados por dónde se ejecutan. Web (en vivo, en el navegador): el motor CV en TypeScript ' +
         '(frontend/src/cv/) re-segmenta con cada control y onnxruntime-web ejecuta lithology-cnn.onnx + core-ood.onnx, ' +
-        'sin servidor. offline / cómputo (la máquina local, .venv aislado): el pipeline Python precalcula los artefactos canónicos ' +
+        'sin servidor. Offline / cómputo (la máquina local, .venv aislado): el pipeline Python precalcula los artefactos canónicos ' +
         'por caso (las segmentaciones + métricas) y el carril pesado (--retrain, .venv-precompute, torch) entrena el CNN ' +
         'de litología + el autoencoder OOD y los exporta a ONNX. Replay: los artefactos pequeños y versionados en ' +
         'data/derived se superponen al SPA con copy-data.mjs y se cargan en vivo; el espejo tipado (contract.types.ts) ' +
@@ -115,10 +115,13 @@ export const architecture: ArchitectureConfig = {
         'clase); ⑤ los segmentos se ordenan por profundidad en el strip-log con sombreado por confianza.\n\n' +
         'El baseline clásico está siempre activo y es transparente, la referencia honesta contra la que se mide el CNN. ' +
         'El carril aprendido: un CNN de litología (parche RGB → softmax de 6 clases; accuracy ~0.99 vs el baseline en un ' +
-        'split agrupado por hoyo, seguro ante fugas, issue #14 corregido) y un autoencoder OOD (MSE de ' +
-        'reconstrucción = anomalía, AUC 0.729); ambos se ejecutan en el cliente ' +
-        'como ONNX, reportados como caigan los números, nunca como caja negra. La verdad del generador es siempre la ' +
-        'autoridad; sobre fotos reales DCID ambos modelos quedan fuera de distribución y lo dicen.',
+        'split agrupado por hoyo, seguro ante fugas, issue #14 corregido) y, desde v0.09.000, un puntaje OOD principiado ' +
+        'en el espacio de features. La antigua novedad por MSE de reconstrucción era débil (falla en core real, AUROC 0.31 ' +
+        'en la tarea sintético-vs-real); el reemplazo es una distancia de Mahalanobis sobre el embedding de 64-d del CNN ' +
+        '(AUROC 0.95 en vivo, techo MobileNetV3 1.00), más una cabeza real afinada por DCID que clasifica core DCID-7 real ' +
+        'al 99% top-1. Todos se ejecutan en el cliente como ONNX, reportados como caigan los números, nunca como caja ' +
+        'negra. La verdad del generador es la autoridad sobre core sintético; sobre fotos reales DCID el CNN sintético ' +
+        'queda fuera de distribución y el detector OOD lo dice.',
     },
     {
       id: 'design',
