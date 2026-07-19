@@ -23,7 +23,7 @@ learned tools appear as genuine views: the OOD map, the class-evidence map and t
 | Model | Task | Baseline | Metric (this build) |
 |---|---|---|---|
 | `lithology-cnn` | RGB patch → 6-way lithology | classical colour/texture nearest-centroid | accuracy **~0.99** on held-out holes (grouped-by-hole split, [issue #14](https://github.com/fsantibanezleal/CAOS_CoreLog/issues/14) fixed) |
-| `core-ood` | patch → reconstruction (MSE = OOD score) |, (separates frame vs core) | **AUC 0.729** |
+| `core-ood` | patch → reconstruction (MSE = OOD score), separates frame vs core | reconstruction-MSE baseline | **AUC 0.729** |
 
 **Honesty.** The CNN is compared against the same classical baseline on the same test patches (gen_train.mjs bakes
 the baseline's prediction into the training table), so the comparison itself is apples-to-apples. The split is

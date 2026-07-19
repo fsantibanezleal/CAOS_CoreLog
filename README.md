@@ -7,10 +7,11 @@
 [![CI](https://github.com/fsantibanezleal/CAOS_CoreLog/actions/workflows/ci.yml/badge.svg)](https://github.com/fsantibanezleal/CAOS_CoreLog/actions)
 **Live:** https://corelog.fasl-work.com
 
-CoreLog Vision automates drill-core lithology logging: pick a synthetic tray case and get
-**per-segment lithology classification with confidence** + a **depth-stitched strip log**. The whole CV pipeline , 
-the synthetic tray generator, the run-merge segmentation, and the lithology CNN, runs **live in your browser**.
-In-app upload of your own tray image is **not implemented yet** (see "Tray-descriptor contract" below).
+CoreLog Vision automates drill-core lithology logging: pick a tray case and get
+**per-segment lithology classification with confidence** + a **depth-stitched strip log**. The whole CV pipeline,
+the synthetic tray generator, the run-merge segmentation, and the lithology CNN, runs **live in the browser**.
+The App has a Synthetic / Real source selector: the synthetic lane runs on procedural tray cases, and the real
+lane runs the DCID lithology head on real core-tray patches (see "Tray-descriptor contract" below).
 
 A CAOS/Faena mining web-app instantiated on the **product-repo archetype** ([ADR-0057](docs/architecture/01_overview.md)).
 
@@ -24,18 +25,19 @@ A CAOS/Faena mining web-app instantiated on the **product-repo archetype** ([ADR
 - **Depth strip log**, segments map to depth → a vertical lithology log with confidence shading; low-confidence /
   out-of-distribution core is flagged (an OOD autoencoder), not forced into a class.
 - **Tray-descriptor contract**, Contract 1 (Python pipeline) validates a tray descriptor `{tray_id, n_channels,
-  px dims, depth, mm/px}`. There is no in-app ingestion of a real tray image yet, the app runs on the synthetic
-  cases only.
+  px dims, depth, mm/px}`. The App's real lane runs the DCID lithology head on indexed real core-tray patches;
+  the synthetic lane runs the procedural cases.
 
 ## Honesty
 
-The tray images are **synthetic** (procedural per-lithology textures), there are no real core photos. The
-segmentation + metrics are real (scored against the generator ground truth). `C-UNIFORM`/`C-SHARP` are closed-form
-analytic controls. The CNN is compared against the classical baseline on the same test patches, but the current
-split is a random patch-level 80/20, overlapping sliding windows from the same trays leak between train and test , 
-so the headline CNN accuracy is **under re-evaluation with a grouped split**
-([issue #14](https://github.com/fsantibanezleal/CAOS_CoreLog/issues/14)). The OOD AE scores **AUC 0.790** (a
-moderate frame-vs-core separation, and we say so).
+The synthetic-lane tray images are **synthetic** (procedural per-lithology textures); the real lane runs on real
+core-tray patches through the DCID head. The segmentation + metrics are real (scored against the generator ground
+truth). `C-UNIFORM`/`C-SHARP` are closed-form analytic controls. The CNN is compared against the classical
+baseline on the same test patches with a **leakage-safe grouped-by-hole split**
+([issue #14](https://github.com/fsantibanezleal/CAOS_CoreLog/issues/14), fixed), so the headline accuracy is not
+inflated by overlapping sliding windows leaking between train and test. The reconstruction-only OOD AE scores a
+moderate **AUC 0.729** (frame-vs-core separation, stated plainly); the shipped detector is feature-space
+Mahalanobis, which is why the App reports both.
 
 ## Quickstart
 

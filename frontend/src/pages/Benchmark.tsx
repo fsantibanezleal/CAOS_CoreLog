@@ -30,8 +30,8 @@ export default function Benchmark() {
     <article className="page-body prose">
       <h1>Benchmark</h1>
       <p className="lede">{es
-        ? 'Comparaciones cruzadas, las que NO dependen de un solo caso van aquí (no en la App). Todas salen del precálculo del engine TS.'
-        : 'Cross-case comparisons, the ones that do NOT depend on a single case live here (not in the App). All come from the TS-engine bake.'}</p>
+        ? 'Comparaciones cruzadas, las que no dependen de un solo caso van aquí (no en la App). Todas salen del precálculo del engine TS.'
+        : 'Cross-case comparisons, the ones that do not depend on a single case live here (not in the App). All come from the TS-engine bake.'}</p>
 
       {!data ? <p className="pf-note">{es ? 'cargando…' : 'loading…'}</p> : (
         <>
@@ -72,7 +72,7 @@ export default function Benchmark() {
             <thead><tr><th>{es ? 'modelo' : 'model'}</th><th>{es ? 'métrica' : 'metric'}</th><th>{es ? 'aprendido' : 'learned'}</th><th>{es ? 'baseline' : 'baseline'}</th></tr></thead>
             <tbody>
               <tr><td>lithology-cnn</td><td>{es ? 'precisión' : 'accuracy'}</td><td><b>{(learned.lithoCNN.acc * 100).toFixed(1)}%</b></td><td>{(learned.lithoCNN.acc_baseline * 100).toFixed(1)}%</td></tr>
-              <tr><td>core-ood</td><td>AUC</td><td><b>{learned.ood.auc.toFixed(3)}</b></td><td>, </td></tr>
+              <tr><td>core-ood</td><td>AUC</td><td><b>{learned.ood.auc.toFixed(3)}</b></td><td>{es ? 'n/c' : 'n/a'}</td></tr>
             </tbody>
           </table>
           <p className="pf-note">{es
