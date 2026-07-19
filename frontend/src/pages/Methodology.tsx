@@ -15,7 +15,7 @@ export default function Methodology() {
           content: (
             <div className="pf-doc-sec">
               <p>{es ? 'Cada litología tiene una textura procedural, color base + grano + bandeo/veteo, modulada por ruido de valor semillado. La bandeja apila N canales; cada canal es una secuencia de runs de core de distintas litologías a lo largo de x, con su intervalo de profundidad. El generador entrega la imagen RGBA y los segmentos ground-truth (gratis), lo que permite puntuar la segmentación.'
-                : 'Each lithology has a procedural texture, base colour + grain + banding/veining, modulated by seeded value noise. The tray stacks N channels; each channel is a sequence of core runs of different lithologies along x, with its depth interval. The generator yields the RGBA image AND the ground-truth segments (free), which lets us score the segmentation.'}</p>
+                : 'Each lithology has a procedural texture, base colour + grain + banding/veining, modulated by seeded value noise. The tray stacks N channels; each channel is a sequence of core runs of different lithologies along x, with its depth interval. The generator yields the RGBA image and the ground-truth segments (free), which lets us score the segmentation.'}</p>
             </div>
           ),
         },
