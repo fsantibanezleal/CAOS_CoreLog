@@ -1,0 +1,91 @@
+{
+ "cnn_acc": 0.994,
+ "baseline_acc": 0.9286,
+ "classes": [
+  "granite",
+  "basalt",
+  "sandstone",
+  "limestone",
+  "schist",
+  "ore"
+ ],
+ "recall": {
+  "granite": 0.996415770609319,
+  "basalt": 1.0,
+  "sandstone": 0.9863013698630136,
+  "limestone": 1.0,
+  "schist": 0.992831541218638,
+  "ore": 0.9916666666666667
+ },
+ "split": "grouped-by-hole (14 train / 4 test holes)",
+ "detectors": [
+  {
+   "name": "recon_mse",
+   "aupr": 0.2778,
+   "auroc": 0.3078
+  },
+  {
+   "name": "litho_mahalanobis",
+   "aupr": 0.9215,
+   "auroc": 0.9463
+  },
+  {
+   "name": "litho_knn",
+   "aupr": 0.9219,
+   "auroc": 0.9554
+  },
+  {
+   "name": "energy",
+   "aupr": 0.7364,
+   "auroc": 0.8542
+  },
+  {
+   "name": "msp",
+   "aupr": 0.8336,
+   "auroc": 0.8875
+  },
+  {
+   "name": "mobilenet_v3_small_mahalanobis",
+   "aupr": 0.9992,
+   "auroc": 0.9995
+  },
+  {
+   "name": "mobilenet_v3_small_knn",
+   "aupr": 0.9975,
+   "auroc": 0.9985
+  },
+  {
+   "name": "resnet18_mahalanobis",
+   "aupr": 0.9755,
+   "auroc": 0.9851
+  },
+  {
+   "name": "resnet18_knn",
+   "aupr": 0.9773,
+   "auroc": 0.9876
+  }
+ ],
+ "shipped_ood": {
+  "name": "litho_mahalanobis",
+  "auroc": 0.9463,
+  "fpr95": 0.282
+ },
+ "winner_ood": {
+  "name": "mobilenet_v3_small_mahalanobis",
+  "auroc": 0.9995
+ },
+ "realhead_classes": [
+  "Red sandstone",
+  "Light sandstone",
+  "Gray siltstone",
+  "Mudstone",
+  "Granite",
+  "Basalt",
+  "Marble"
+ ],
+ "realhead_litho64_top1": 0.8878,
+ "realhead_litho64_f1": 0.8869,
+ "realhead_shipped": "mobilenet",
+ "realhead_mobilenet_top1": 0.9916,
+ "realhead_mobilenet_f1": 0.9916
+}
