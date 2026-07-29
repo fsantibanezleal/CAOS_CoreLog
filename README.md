@@ -3,6 +3,13 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/fsantibanezleal/CAOS_CoreLog/ci.yml?branch=main&label=CI)](https://github.com/fsantibanezleal/CAOS_CoreLog/actions)
 [![License](https://img.shields.io/github/license/fsantibanezleal/CAOS_CoreLog)](LICENSE)
 [![Live demo](https://img.shields.io/badge/demo-live-2ea44f)](https://corelog.fasl-work.com)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21519229-blue)](https://doi.org/10.5281/zenodo.21519229)
+
+Technical report (CC-BY-4.0): *"CoreLog Vision: Lithology from Drill-Core Imagery, with Honest Sim-to-Real
+Out-of-Distribution Detection"*, concept DOI [10.5281/zenodo.21519229](https://doi.org/10.5281/zenodo.21519229)
+(source in [`manuscripts/corelog-vision/`](manuscripts/corelog-vision/)). Synthetic CNN 99.4% (vs 92.9% baseline,
+leakage-safe), real DCID-7 99.2% (dedicated head), and feature-space OOD detects the sim-to-real shift (AUPR up to
+0.999) where reconstruction fails (0.28).
 
 [![CI](https://github.com/fsantibanezleal/CAOS_CoreLog/actions/workflows/ci.yml/badge.svg)](https://github.com/fsantibanezleal/CAOS_CoreLog/actions)
 **Live:** https://corelog.fasl-work.com

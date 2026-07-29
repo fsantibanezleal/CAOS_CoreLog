@@ -1,0 +1,215 @@
+\documentclass[journal]{IEEEtran}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{orcidlink}
+\usepackage{balance}
+
+\graphicspath{{../figures/}}
+
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.75}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.80}
+
+\begin{document}
+
+\title{CoreLog Vision: Lithology from Drill-Core Imagery,\\ with Honest Sim-to-Real Out-of-Distribution\\ Detection}
+
+\author{Felipe~Santiba\~nez-Leal~\orcidlink{0000-0002-0150-3246}%
+\thanks{F. Santiba\~nez-Leal is with the CAOS open-research programme, Santiago, Chile
+(e-mail: fsantibanez@gmail.com; ORCID 0000-0002-0150-3246).}%
+\thanks{Technical report, 2026. Interactive tool and reproducible pipeline (MIT) at
+\url{https://github.com/fsantibanezleal/CAOS_CoreLog}; live at \url{https://corelog.fasl-work.com}.}}
+
+\markboth{Technical Report, 2026}%
+{Santiba\~nez-Leal: Lithology from drill-core imagery with sim-to-real OOD detection}
+
+\maketitle
+
+\begin{abstract}
+Logging the lithology of drill core, identifying the rock type down a borehole from the physical core in its
+trays, is slow, subjective manual work, and automating it from core-tray photographs is an obvious target for
+computer vision. The catch is data: labelled core photographs are scarce, so a model is often trained on
+synthetic or one operation's core and then asked to read another's, and it will do so \emph{silently and wrongly}
+unless it can tell that the new core is unlike its training data. CoreLog Vision is an in-browser pipeline that
+classifies core-tray imagery into lithologies and, crucially, detects when it is looking at core it was not
+trained on. On synthetic core its convolutional classifier reaches $99.4\%$ accuracy over six lithologies against
+a classical colour-and-texture baseline's $92.9\%$, on a leakage-safe split that holds out entire boreholes (not
+random patches) so the number is not inflated by patches from the same hole appearing in train and test. On real
+core, from the open DCID-7 drill-core image dataset, a dedicated head reaches $99.2\%$ over seven lithologies,
+while the synthetic-trained features transfer to only $88.8\%$, the honest sim-to-real gap. The report's central
+result is the detector that guards that gap: nine out-of-distribution methods are benchmarked at telling real
+DCID-7 core from synthetic training core (both funnelled to the same $24$-pixel window so no detector can cheat on
+resolution), and \emph{feature-space} detectors succeed (the best at area-under-precision-recall $0.999$, the
+shipped one at $0.92$) while a \emph{reconstruction}-based detector fails ($0.28$). The lesson, know what you do
+not know, and do it in feature space, is the report's contribution; every number and figure regenerates from the
+committed artifacts.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Drill-core logging, lithology classification, computer vision, convolutional neural networks, out-of-distribution
+detection, sim-to-real, Mahalanobis, mineral exploration, reproducibility.
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+\IEEEPARstart{A} geologist logs a drill hole by reading its core, tray by tray, and naming the rock type at each
+depth, a task that is slow, tiring and subjective, and that produces the lithology column every downstream
+mine-planning decision rests on. Photographs of the core trays are routinely taken, so classifying lithology from
+those images with computer vision is a natural automation, and convolutional networks do it
+well~\cite{krizhevsky,he,alzubaidi,fu}. The obstacle is not the classifier but the data. Labelled core imagery is
+scarce and operation-specific: core from one deposit, one drill, one photographic setup looks different from
+another's, so a model trained on synthetic core or on one mine's photographs faces a distribution shift when
+applied elsewhere. A classifier will answer confidently on such out-of-distribution core and be silently wrong,
+which in a logging context means a corrupted lithology column no one flagged.
+
+CoreLog Vision is a pipeline built around that problem. It segments a core-tray image along each core channel,
+classifies each window's lithology with a small convolutional network run live in the browser, and stitches a
+depth log, and it does two honest things the classifier alone does not. First, it is evaluated without leakage,
+on a split that holds out entire boreholes, so the accuracy is what the model would achieve on a genuinely new
+hole, not an inflated number from patches of the same hole on both sides of the split. Second, and centrally, it
+carries an out-of-distribution detector that flags when the incoming core is unlike the training data, so a user
+is warned rather than misled. This report reports the classifier's honest accuracy on synthetic and on real
+core, and benchmarks the out-of-distribution detector, with the finding that feature-space detection works where
+reconstruction-based detection does not.
+
+\section{The Lithology Classifier}\label{sec:cnn}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.99\columnwidth]{fig-litho.pdf}
+\caption{Lithology classification accuracy. \textbf{(a)} On synthetic core the convolutional network reaches
+$99.4\%$ against a classical colour-and-texture baseline's $92.9\%$, on a leakage-safe split that holds out
+entire boreholes; on real DCID-7 core a dedicated head reaches $99.2\%$ over seven lithologies, while the
+synthetic-trained features transfer to only $88.8\%$, the honest sim-to-real gap. \textbf{(b)} The synthetic
+CNN's per-class recall is $0.986$ to $1.000$ across the six lithologies, with no weak class.}
+\label{fig:litho}
+\end{figure}
+
+The classifier is a small convolutional network over a sliding window along each core channel, classifying into
+six lithologies (granite, basalt, sandstone, limestone, schist, ore) with a softmax confidence, trained offline
+and run live in the browser. Its accuracy is reported on a split that holds out entire boreholes, fourteen holes
+to train and four to test, so no window from a test hole is ever seen in training; this matters because random
+patch splits inflate core-logging accuracy by letting near-identical patches of one hole appear on both sides.
+On that honest split (Fig.~\ref{fig:litho}) the network reaches $99.4\%$ accuracy, against $92.9\%$ for a
+classical colour-and-texture baseline, a $6.5$-point margin that is the value of learning texture over
+hand-crafted colour statistics, and its per-class recall is uniformly high ($0.986$ to $1.000$), with no
+lithology the model systematically misses. On synthetic core, in short, the classifier is excellent and honestly
+so.
+
+\section{Real Core and the Sim-to-Real Gap}\label{sec:real}
+
+Synthetic core is not the target; real core is, and here the honesty of the report matters. Applied to the open
+DCID-7 drill-core image dataset (seven real lithologies, from red sandstone through granite and basalt to
+marble), the pipeline shows the expected sim-to-real behaviour (Fig.~\ref{fig:litho}a). A \emph{dedicated} head,
+a compact MobileNetV3~\cite{howard} trained on the real data, reaches $99.2\%$ top-1 accuracy over the seven
+lithologies, genuinely strong on real core. But the features learned on \emph{synthetic} core, transferred to the
+real data with a light head, reach only $88.8\%$: the ten-point drop is the sim-to-real gap, the price of having
+been trained on procedural core rather than photographs. Both numbers are honest and both are useful: they say
+that real core is learnable to high accuracy \emph{if} you have real labels, and that a synthetic-trained model
+degrades meaningfully on real core, which is exactly why the pipeline must know when it is seeing real core.
+
+\section{Detecting Out-of-Distribution Core}\label{sec:ood}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.99\columnwidth]{fig-ood.pdf}
+\caption{Sim-to-real out-of-distribution detection: nine detectors telling real DCID-7 core from the synthetic
+training core, scored by area under the precision-recall curve. Both streams are funnelled to the same
+$24$-pixel window so no detector can exploit a raw resolution or blur difference. \emph{Feature-space} detectors
+(Mahalanobis and $k$-nearest-neighbour distances in a network's feature space) succeed, the best at $0.999$ and
+the shipped lightweight one at $0.92$; softmax-based scores are moderate; and a \emph{reconstruction}-error
+detector fails outright ($0.28$).}
+\label{fig:ood}
+\end{figure}
+
+The guard against silent sim-to-real error is an out-of-distribution detector, and its design is the report's
+central methodological result (Fig.~\ref{fig:ood}). Nine detectors are benchmarked on the task of distinguishing
+real DCID-7 core (out-of-distribution) from held-out synthetic core (in-distribution), with a control that removes
+the obvious cheat: both streams are funnelled through the same $24$-pixel live-window resolution, so no detector
+can win merely by noticing that real photographs are sharper or blurrier than synthetic ones. Under that fair
+comparison, the ranking is clear and instructive. \emph{Feature-space} distance detectors, a Mahalanobis or
+$k$-nearest-neighbour distance in the feature space of a network~\cite{lee}, dominate: the best (a
+MobileNetV3 feature Mahalanobis) reaches area-under-precision-recall $0.999$, and even the lightweight shipped
+detector, a Mahalanobis distance in the lithology CNN's own $64$-dimensional features, reaches $0.92$ (AUROC
+$0.95$). Softmax-confidence detectors~\cite{hendrycks} and the energy score~\cite{liu} are moderate ($0.74$ to
+$0.83$). And a \emph{reconstruction}-error detector, an autoencoder flagging what it cannot reconstruct, fails
+almost completely ($0.28$), below the useful range. The lesson is specific and portable: to know that incoming
+core is unlike the training data, measure distance in a good feature space, not reconstruction error, and a
+lightweight feature-Mahalanobis detector reusing the classifier's own features is enough to ship.
+
+\section{Discussion and Scope}\label{sec:discuss}
+
+The pipeline's three numbers tell a coherent, honest story. On synthetic core the classifier is excellent
+($99.4\%$) and beats the classical baseline; on real core it is excellent \emph{with} a dedicated head ($99.2\%$)
+and degrades to $88.8\%$ on transferred synthetic features; and it can tell real core from synthetic at
+area-under-precision-recall up to $0.999$ in feature space. Together they describe a system that is accurate where
+it has been trained and, crucially, aware of when it has not, which is the property a deployable core-logging aid
+needs. The scope is stated plainly. The six-class synthetic accuracy is on procedurally generated core, useful for
+controlled evaluation but not a photograph of real rock; the real numbers are on the open DCID-7 dataset, a
+genuine but single dataset, and a production deployment would need calibration and labels from the target
+operation. The tool is a logging \emph{aid} with an out-of-distribution guard, not an autonomous logger, and it
+says so, and it flags the core it is unsure about rather than logging it confidently. None of this is hidden; the
+interface shows the confidence and the out-of-distribution flag on every segment.
+
+\section{Conclusion}
+
+CoreLog Vision classifies drill-core lithology from tray imagery, at $99.4\%$ on synthetic core (against a
+classical baseline's $92.9\%$, leakage-safe) and $99.2\%$ on real DCID-7 core with a dedicated head, and it guards
+the sim-to-real gap with an out-of-distribution detector that reaches $0.999$ in feature space where a
+reconstruction detector fails. Reporting the leakage-safe accuracy, the honest sim-to-real drop, and the
+feature-space out-of-distribution result together, so the system knows what it does not know, is the report's
+discipline, and the reproducible pipeline that does it is its contribution.
+
+\appendices
+\section{Reproduction}\label{app:repro}
+
+The committed artifacts under \texttt{data/derived/} carry the lithology-classifier metrics (\texttt{cl-learned.json}:
+the CNN and baseline accuracy on the borehole-grouped split, the per-class confusion) and the out-of-distribution
+benchmark (\texttt{ood-bench.json}: the nine detectors, the resolution control, the shipped and best detectors,
+and the real-head accuracies on DCID-7). The figure scripts under \texttt{manuscripts/corelog-vision/figures/}
+read those artifacts. The models are trained offline (PyTorch, exported to ONNX) and run in the browser
+(onnxruntime-web); re-evaluating reproduces Figs.~\ref{fig:litho}--\ref{fig:ood}.
+
+\balance
+
+\begin{thebibliography}{00}
+
+\bibitem{krizhevsky} A.~Krizhevsky, I.~Sutskever, and G.~E. Hinton, ``ImageNet classification with deep
+convolutional neural networks,'' \emph{Communications of the ACM}, vol.~60, no.~6, pp.~84--90, 2017.
+doi:10.1145/3065386.
+
+\bibitem{he} K.~He, X.~Zhang, S.~Ren, and J.~Sun, ``Deep residual learning for image recognition,'' in \emph{Proc.
+IEEE Conf. Computer Vision and Pattern Recognition (CVPR)}, 2016, pp.~770--778. doi:10.1109/CVPR.2016.90.
+
+\bibitem{howard} A.~Howard \emph{et al.}, ``Searching for MobileNetV3,'' in \emph{Proc. IEEE/CVF Int. Conf.
+Computer Vision (ICCV)}, 2019, pp.~1314--1324. arXiv:1905.02244.
+
+\bibitem{alzubaidi} F.~Alzubaidi, P.~Mostaghimi, P.~Swietojanski, S.~R. Clark, and R.~T. Armstrong, ``Automated
+lithology classification from drill core images using convolutional neural networks,'' \emph{Journal of Petroleum
+Science and Engineering}, vol.~197, art.~107933, 2021. doi:10.1016/j.petrol.2020.107933.
+
+\bibitem{fu} D.~Fu \emph{et al.}, ``Deep learning based lithology classification of drill core images,'' \emph{PLOS
+ONE}, vol.~17, no.~7, art.~e0270826, 2022. doi:10.1371/journal.pone.0270826.
+
+\bibitem{hendrycks} D.~Hendrycks and K.~Gimpel, ``A baseline for detecting misclassified and out-of-distribution
+examples in neural networks,'' in \emph{Int. Conf. Learning Representations (ICLR)}, 2017. arXiv:1610.02136.
+
+\bibitem{lee} K.~Lee, K.~Lee, H.~Lee, and J.~Shin, ``A simple unified framework for detecting out-of-distribution
+samples and adversarial attacks,'' in \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2018.
+arXiv:1807.03888.
+
+\bibitem{liu} W.~Liu, X.~Wang, J.~Owens, and Y.~Li, ``Energy-based out-of-distribution detection,'' in
+\emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2020. arXiv:2010.03759.
+
+\end{thebibliography}
+
+\end{document}
