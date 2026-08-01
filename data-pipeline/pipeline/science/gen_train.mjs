@@ -1,7 +1,7 @@
 // Generate the learned-model training patches by running the SAME TypeScript CV engine the browser runs, so the CNN
 // trains on EXACTLY the textures the App shows, and is compared against the SAME classical baseline. Writes to
 // data/raw/ (git-ignored, regenerable). Invoked by pipeline.retrain before train_litho.py. Run:
-//   node --import tsx data-pipeline/cllab/science/gen_train.mjs
+//   node --import tsx data-pipeline/pipeline/science/gen_train.mjs
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
