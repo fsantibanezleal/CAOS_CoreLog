@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Callout, Tabs, useShellLang } from '@fasl-work/caos-app-shell';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Callout, useShellLang } from '@fasl-work/caos-app-shell';
 import { CASES, caseSpec, type CoreCase } from '../cv/cases.ts';
 import { classifyTray, lithoFeatureSamples, makeBaselineClassifier, makeTray, scoreVsTruth } from '../cv/index.ts';
 import { LITHO_INFO, LITHOLOGIES, N_LITHO, type Lithology, type RgbaImage, type Segment } from '../cv/types.ts';
@@ -35,11 +36,24 @@ function buildConfusion(items: Array<{ truth: number; pred: number }>): number[]
   return m;
 }
 
+
+/** ADR-0071 rules 4+5. The tab set differs between the synthetic and real lanes, so the groups are
+ *  declared over the union and filtered to whatever the active lane actually provides. */
+const TAB_GROUPS: { id: string; en: string; es: string; members: string[] }[] = [
+  { id: 'core',     en: 'Core',      es: 'Testigo',    members: ['tray', 'patch', 'strip'] },
+  { id: 'evidence', en: 'Evidence',  es: 'Evidencia',  members: ['saliency', 'channels', 'legend'] },
+  { id: 'skill',    en: 'Skill',     es: 'Desempeno',  members: ['confusion', 'recall'] },
+  { id: 'learned',  en: 'Learned',   es: 'Aprendido',  members: ['latent', 'ood'] },
+];
+
 export default function Tool() {
   const lang = useShellLang();
   const es = lang === 'es';
   const [source, setSource] = useState<Source>('synthetic');
   const [caseId, setCaseId] = useState('S-PORPH');
+  const [activeTab, setActiveTab] = useState('tray');
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [realId, setRealId] = useState('');
   const [conf, setConf] = useState(0.45);
   const [useCnn, setUseCnn] = useState(false);
@@ -407,10 +421,20 @@ export default function Tool() {
   ] : [{ id: 'patch', label: es ? 'Parche' : 'Patch', content: <p className="pf-note">{es ? 'cargando muestras reales (DCID)...' : 'loading real samples (DCID)...'}</p> }];
 
   const tabs = source === 'synthetic' ? syntheticTabs : realTabs;
+  useEffect(() => {
+    if (tabs.length && !tabs.some((x) => x.id === activeTab)) setActiveTab(tabs[0].id);
+  }, [tabs.length, activeTab, source]);
 
   return (
     <div className="page-body pf-layout">
       <aside className="pf-side">
+        {/* ADR-0070 entry: without a visible control the focus route is an orphan. Carries the case. */}
+        <Link className="pf-focus-enter" to={`/focus/${caseId}`}>
+          <span className="pf-focus-enter-t">{es ? 'Modo enfoque' : 'Focus mode'}</span>
+          <span className="pf-focus-enter-d">
+            {es ? 'Abrir esta bandeja a pantalla completa' : 'Open this core tray full screen'}
+          </span>
+        </Link>
         <div className="pf-card">
           <div className="pf-card-t">{es ? 'Fuente' : 'Source'}</div>
           <div className="pf-chips">
@@ -495,7 +519,45 @@ export default function Tool() {
               : 'The lithology CNN and the OOD detector were trained on CoreLog\'s synthetic core generator, so on real DCID photos they are out-of-distribution: the predicted class is indicative only. The gap shows in three honest signals: low classifier confidence, the latent-space separation, and the OOD reconstruction error (reported with its measured value, and called weak when it is, rather than a blanket "always fires").'}
           </Callout>
         )}
-        <Tabs key={source} tabs={tabs.map((t) => ({ ...t, content: <PanelBoundary key={`${source}-${caseId}-${t.id}`} lang={es ? 'es' : 'en'}>{t.content}</PanelBoundary> }))} ariaLabel={es ? 'vistas' : 'views'} />
+        <div className="pf-tabrow" role="tablist" aria-label={es ? 'vistas' : 'views'}>
+          {TAB_GROUPS.filter((g) => tabs.some((x) => g.members.includes(x.id))).map((g) => {
+            const mine = tabs.filter((x) => g.members.includes(x.id));
+            const activeHere = mine.some((x) => x.id === activeTab);
+            const shown = activeHere ? mine.find((x) => x.id === activeTab)! : mine[0];
+            const multi = mine.length > 1;
+            return (
+              <div key={g.id} className="pf-tabwrap"
+                   onPointerEnter={() => { if (multi) { if (closeTimer.current) clearTimeout(closeTimer.current); setOpenMenu(g.id); } }}
+                   onPointerLeave={() => {
+                     if (closeTimer.current) clearTimeout(closeTimer.current);
+                     closeTimer.current = setTimeout(() => setOpenMenu((mm) => (mm === g.id ? null : mm)), 240);
+                   }}>
+                <button role="tab" aria-selected={activeHere} className={`pf-tab ${activeHere ? 'on' : ''}`}
+                        onClick={() => {
+                          if (!multi) { setActiveTab(mine[0].id); setOpenMenu(null); return; }
+                          setOpenMenu(openMenu === g.id ? null : g.id);
+                          if (!activeHere) setActiveTab(shown.id);
+                        }}>
+                  {activeHere ? shown.label : (es ? g.es : g.en)}{multi ? <span className="pf-caret">v</span> : null}
+                </button>
+                {multi && openMenu === g.id && (
+                  <div className="pf-tabmenu" role="menu">
+                    {mine.map((x) => (
+                      <button key={x.id} role="menuitem" className={x.id === activeTab ? 'on' : ''}
+                              onClick={() => { setActiveTab(x.id); setOpenMenu(null); }}>{x.label}</button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="pf-tabpanel">
+          {(() => {
+            const cur = tabs.find((x) => x.id === activeTab) ?? tabs[0];
+            return cur ? <PanelBoundary key={`${source}-${caseId}-${cur.id}`} lang={es ? 'es' : 'en'}>{cur.content}</PanelBoundary> : null;
+          })()}
+        </div>
       </main>
     </div>
   );

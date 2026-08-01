@@ -213,3 +213,77 @@ main.page:has(> .page-body:not(.pf-layout)) { overflow-y: auto; min-height: 0; }
       `auto` and the row clips its own menu. Group the tabs instead (ADR-0071 rule 5). */
 .tablist { flex-wrap: nowrap !important; }
 .tablist .tab, .tablist button { flex: 0 0 auto; white-space: nowrap; }
+
+/* ADR-0071: rows sized by the ROW, one tab row, rail scrolls itself. */
+.page-body.pf-layout { grid-template-rows: minmax(0, 1fr); align-items: stretch; overflow: hidden; }
+.page-body.pf-layout > * { min-height: 0; }
+.page-body.pf-layout > .pf-side { min-height: 0; max-height: 100%; overflow-y: auto; overflow-x: hidden; padding-right: 6px; }
+.pf-main { min-height: 0; display: flex; flex-direction: column; }
+.pf-tabrow { display: flex; flex-wrap: nowrap; gap: 0.3rem; align-items: center; min-width: 0; max-width: 100%;
+  overflow: visible; flex: 0 0 auto; border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.45rem; margin-bottom: 0.7rem; }
+.pf-tabwrap { position: relative; flex: 0 0 auto; }
+.pf-tab { white-space: nowrap; cursor: pointer; font-size: 0.88rem; font-weight: 600; padding: 0.42rem 0.85rem;
+  border-radius: 8px; border: 1px solid transparent; background: transparent; color: var(--color-fg-subtle); }
+.pf-tab:hover { color: var(--color-accent); }
+.pf-tab.on { color: var(--color-bg); background: var(--color-accent); border-color: var(--color-accent); }
+.pf-caret { margin-left: 0.4rem; font-size: 0.62rem; opacity: 0.75; }
+.pf-tabmenu { position: absolute; top: 100%; left: 0; z-index: 60; min-width: 200px; display: flex;
+  flex-direction: column; gap: 0.15rem; padding: 0.5rem 0.3rem 0.3rem; margin: 0; background: var(--color-surface);
+  border: 1px solid var(--color-border); border-radius: 0 9px 9px 9px; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+.pf-tabmenu button { text-align: left; white-space: nowrap; cursor: pointer; font-size: 0.82rem;
+  padding: 0.34rem 0.55rem; border-radius: 6px; border: none; background: transparent; color: var(--color-fg-subtle); }
+.pf-tabmenu button:hover { background: color-mix(in srgb, var(--color-accent) 14%, transparent); color: var(--color-accent); }
+.pf-tabmenu button.on { color: var(--color-accent); font-weight: 700; }
+.pf-tabpanel { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding-right: 4px; }
+.pf-tabpanel canvas { max-height: 100%; }
+
+.pf-focus-enter { display: block; text-decoration: none; border: 1px solid var(--color-accent);
+  border-radius: 10px; padding: 0.55rem 0.75rem; margin-bottom: 0.8rem;
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.pf-focus-enter:hover { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
+.pf-focus-enter-t { display: block; font-size: 0.86rem; font-weight: 700; color: var(--color-accent); }
+.pf-focus-enter-d { display: block; font-size: 0.72rem; color: var(--color-fg-subtle); margin-top: 0.15rem; line-height: 1.4; }
+
+/* ADR-0070 FOCUS VIEW. */
+.clf { position: fixed; inset: 0; display: grid; grid-template-columns: 1fr 320px;
+  background: var(--color-bg); color: var(--color-fg); overflow: hidden; }
+@media (max-width: 900px) { .clf { grid-template-columns: 1fr; grid-template-rows: 1fr auto; } }
+.clf-stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; display: flex; flex-direction: column;
+  padding: 14px 14px 14px 150px; }
+.clf-stage > div:first-child { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.clf-stage canvas { max-width: 100%; max-height: 100%; display: block; }
+.clf-badge { position: absolute; left: 16px; bottom: 16px; max-width: 58ch; z-index: 5; padding: 0.6rem 0.75rem;
+  border-radius: 10px; border: 1px solid var(--color-border); border-left: 3px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-surface) 93%, transparent); }
+.clf-badge-t { font-weight: 700; font-size: 0.92rem; color: var(--color-accent); }
+.clf-badge-d { font-size: 0.76rem; line-height: 1.45; color: var(--color-fg-subtle); margin-top: 0.2rem; }
+.clf-hud { position: absolute; top: 14px; left: 16px; z-index: 5; display: flex; flex-direction: column; gap: 0.45rem; }
+.clf-hud-item { min-width: 116px; padding: 0.3rem 0.55rem; border-radius: 8px; border: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent); }
+.clf-hud-v { font-family: var(--font-mono, ui-monospace, monospace); font-size: 1.05rem; font-weight: 700; }
+.clf-hud-v.accent { color: var(--color-accent); }
+.clf-hud-v.blue { color: var(--color-info, #4a9eff); }
+.clf-hud-l { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-fg-subtle); }
+.clf-exit { position: absolute; top: 14px; right: 16px; z-index: 6; text-decoration: none; font-size: 0.78rem;
+  font-weight: 600; padding: 0.35rem 0.7rem; border-radius: 8px; border: 1px solid var(--color-border);
+  background: var(--color-surface); color: var(--color-fg); }
+.clf-exit:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.clf-rail { min-height: 0; overflow-y: auto; border-left: 1px solid var(--color-border); padding: 0.9rem 0.9rem 1.2rem;
+  display: flex; flex-direction: column; gap: 0.7rem; background: var(--color-surface); }
+.clf-title { font-size: 1rem; font-weight: 700; line-height: 1.25; }
+.clf-sub { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.7rem; color: var(--color-fg-subtle); }
+.clf-seg { display: flex; gap: 0.3rem; }
+.clf-seg button { flex: 1 1 0; cursor: pointer; font-size: 0.76rem; font-weight: 600; padding: 0.36rem 0.4rem;
+  border-radius: 8px; border: 1px solid var(--color-border); background: transparent; color: var(--color-fg-subtle); }
+.clf-seg button.on { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-bg); }
+.clf-ctl { display: flex; flex-direction: column; gap: 0.2rem; }
+.clf-ctl-l { display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--color-fg-subtle); }
+.clf-ctl-l b { font-family: var(--font-mono, ui-monospace, monospace); color: var(--color-fg); }
+.clf-ctl input[type="range"] { width: 100%; }
+.clf-note { font-size: 0.7rem; line-height: 1.5; color: var(--color-fg-subtle);
+  border-top: 1px solid var(--color-border); padding-top: 0.6rem; }
+.clf-cases { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: auto; padding-top: 0.6rem; }
+.clf-cases a { text-decoration: none; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.66rem;
+  padding: 0.22rem 0.45rem; border-radius: 6px; border: 1px solid var(--color-border); color: var(--color-fg-subtle); }
+.clf-cases a.on { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-bg); }

@@ -3,6 +3,28 @@
 All notable changes to CAOS CoreLog Vision. Versions follow `X.XX.XXX` (display), see `cllab.__version__` and
 `frontend/package.json`. The project stays in `0.x` while the synthetic core-tray images anchor the metrics.
 
+## [0.11.000] · 2026-08-01
+
+### Changed - ADR-0071 layout and one row of tabs
+
+Rows sized by the ROW, rail scrolls itself, and the tabs are grouped into FOUR groups on one 45px row
+(Core, Evidence, Skill, Learned) with sub-views revealed on hover. The groups are declared over the union
+of both lanes and filtered to whatever the active lane provides, because the synthetic and real lanes ship
+different tab sets and a selected view can otherwise vanish on a lane switch.
+
+### Added - ADR-0070 focus mode
+
+A full-viewport view of the selected tray, running the SAME classifier at the SAME threshold as the App.
+
+The stage is the TRAY WITH ITS LITHOLOGY OVERLAY, because logging is a visual act: the question a geologist
+actually asks of this product is "does that contact sit where I would put it", and that can only be answered
+against the imagery at size. The rail toggles the overlay off precisely so that judgement can be made.
+
+The state named on the stage describes the CLASSIFIER'S OWN CONFIDENCE and says plainly that this is what
+the model CLAIMS, not a measure of correctness: a confidently wrong log looks identical from here, and the
+confusion matrix in the App is where correctness is measured. Raising the threshold shows where the model
+stops committing, which is the set of segments a geologist should review.
+
 ## [0.10.001] · 2026-08-01
 
 ### Fixed - the docs routes clipped with no way to reach the content
