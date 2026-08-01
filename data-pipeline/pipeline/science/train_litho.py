@@ -1,7 +1,7 @@
 """HEAVY lane (local-only), train CoreLog's two learned models and export them to ONNX + a metrics JSON. Run inside
 the .venv-precompute (torch) after gen_train.mjs has written data/raw/{litho-train,ood-patches}.json:
 
-    python data-pipeline/cllab/science/train_litho.py
+    python data-pipeline/pipeline/science/train_litho.py
 
 1. lithology-cnn, a small per-patch CNN classifier (PATCH×PATCH RGB → 6-way softmax), benchmarked vs the CLASSICAL
    colour/texture nearest-centroid baseline on the SAME held-out patches (the baseline's prediction is baked into the

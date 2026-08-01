@@ -52,8 +52,8 @@ export default function Implementation() {
           content: (
             <div className="pf-doc-sec">
               <p>{es
-                ? 'El detector OOD en espacio de features y la cabeza real DCID-7 se precalculan offline (data-pipeline/cllab/science/ood_bench.py, .venv-precompute + torch) y embarcan como artefactos compactos. El contrato es: backbone congelado · embedding · {estadísticos de Mahalanobis, banco kNN, cabeza lineal}.'
-                : 'The feature-space OOD detector and the DCID-7 real head are baked offline (data-pipeline/cllab/science/ood_bench.py, .venv-precompute + torch) and shipped as compact artifacts. The contract is: frozen backbone · embedding · {Mahalanobis statistics, kNN bank, linear head}.'}</p>
+                ? 'El detector OOD en espacio de features y la cabeza real DCID-7 se precalculan offline (data-pipeline/pipeline/science/ood_bench.py, .venv-precompute + torch) y embarcan como artefactos compactos. El contrato es: backbone congelado · embedding · {estadísticos de Mahalanobis, banco kNN, cabeza lineal}.'
+                : 'The feature-space OOD detector and the DCID-7 real head are baked offline (data-pipeline/pipeline/science/ood_bench.py, .venv-precompute + torch) and shipped as compact artifacts. The contract is: frozen backbone · embedding · {Mahalanobis statistics, kNN bank, linear head}.'}</p>
               <ul className="pf-list">
                 <li><b>lithology-cnn.onnx</b> (~0.31 MB), {es ? 'ahora con dos salidas' : 'now with two outputs'}: <code>p</code> (softmax 6) + <code>f</code> ({es ? 'embedding de 64-d que alimenta el Mahalanobis en vivo por ventana' : 'the 64-d embedding feeding the live per-window Mahalanobis'}).</li>
                 <li><b>ood-detector.json</b> (~0.6 MB): {es ? 'centroides por clase mu_c, la inversa de covarianza compartida Sigma^-1 (64x64), el banco kNN (400x64) y los cuantiles de umbral del ID sintético.' : 'the class centroids mu_c, the shared inverse covariance Sigma^-1 (64x64), the kNN bank (400x64) and the synthetic-ID threshold quantiles.'}</li>
@@ -75,7 +75,7 @@ export default function Implementation() {
               <pre className="codeblock">{`# light .venv-pipeline (numpy only)
 ruff check data-pipeline tests          # clean
 pytest                                  # 9 passed
-python -m cllab.pipeline all            # 8 cases · traces + manifests
+python -m pipeline.pipeline all            # 8 cases · traces + manifests
 python scripts/check_artifacts.py       # CONTRACT 2 OK
 # byte-identical re-run · deterministic
 cd frontend && npm test                 # cv 4 + contract 5 = 9 passed

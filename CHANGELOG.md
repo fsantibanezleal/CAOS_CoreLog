@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to CAOS CoreLog Vision. Versions follow `X.XX.XXX` (display), see `cllab.__version__` and
+All notable changes to CAOS CoreLog Vision. Versions follow `X.XX.XXX` (display), see `pipeline.__version__` and
 `frontend/package.json`. The project stays in `0.x` while the synthetic core-tray images anchor the metrics.
 
 ## [0.11.000] · 2026-08-01
@@ -81,7 +81,7 @@ Tab grouping and the ADR-0070 focus view are still outstanding for this product.
 
 ### Added, feature-space OOD + a DCID-fine-tuned real head (the beyond-current-ladder step)
 - **Principled feature-space OOD** replacing the weak reconstruction-MSE novelty. Offline benchmark
-  (`data-pipeline/cllab/science/ood_bench.py`, `.venv-precompute` + torch) fits a class-conditional Gaussian
+  (`data-pipeline/pipeline/science/ood_bench.py`, `.venv-precompute` + torch) fits a class-conditional Gaussian
   (Mahalanobis, Lee et al. 2018) and a kNN bank (Sun et al. 2022) on the synthetic training distribution and
   compares them against energy (Liu et al. 2020), MSP (Hendrycks and Gimpel 2017) and the incumbent reconstruction
   score, on the honest same-task test (in-distribution = synthetic, OOD = real DCID, both funnelled through 24 px to
@@ -118,7 +118,7 @@ Tab grouping and the ADR-0070 focus view are still outstanding for this product.
   are dropped/resolved: no fabricated DOI, and the leakage-safe split uses DCID's own train/test split + pHash dedupe.
 
 ### Data
-- `data-pipeline/cllab/science/fetch_dcid.py`: a reproducible fetch of a leakage-safe DCID-512-7 subset (300 train /
+- `data-pipeline/pipeline/science/fetch_dcid.py`: a reproducible fetch of a leakage-safe DCID-512-7 subset (300 train /
   120 test per class) into `data/raw/dcid` (gitignored); the RWDA `noise-*` folders are excluded.
 
 ## [0.08.000], 2026-07-07
@@ -156,7 +156,7 @@ Tab grouping and the ADR-0070 focus view are still outstanding for this product.
 
 ### Changed, version sync
 - All version surfaces aligned to **0.08.000** (`frontend/package.json` 0.8.0, `VERSION`, `pyproject.toml`,
-  `cllab.__version__`, regenerated manifests `engine_version`). The shell footer now derives the display version from
+  `pipeline.__version__`, regenerated manifests `engine_version`). The shell footer now derives the display version from
   `package.json` via a vite `define`, so the footer can no longer drift.
 
 ## [0.07.001], 2026-07-04
@@ -194,7 +194,7 @@ First complete build of CoreLog Vision on the CAOS product-repo archetype (ADR-0
   mirror (`frontend/src/lib/contract.types.ts`) that fails `tsc` on drift.
 - **8 cases by category** (`cases/core_cases.py`): 3 lithology suites, 3 image-quality scenarios, the UNIFORM + SHARP
   oracles, mirroring `frontend/src/cv/cases.ts`.
-- **numpy-light pipeline** (`cllab.pipeline`) that reshapes the committed `case-results.json` (baked by the TS engine)
+- **numpy-light pipeline** (`pipeline.pipeline`) that reshapes the committed `case-results.json` (baked by the TS engine)
   into per-case replay traces + manifests; a two-language `--retrain` lane (Node bake → torch train → ONNX).
 - **The frontend SPA**, the 6 standard pages on the shared `@fasl-work/caos-app-shell`. The App re-segments live as
   you pick a case / drag the confidence threshold / toggle CNN-vs-baseline, with 10 reacting tabs (the tray canvas +
@@ -206,5 +206,5 @@ First complete build of CoreLog Vision on the CAOS product-repo archetype (ADR-0
   `README` / `STRUCTURE` / `LICENSES` / `ATTRIBUTION`.
 
 ### Verified running
-ruff clean · pytest 9/9 · `cllab.pipeline all` (8 cases) · CONTRACT 2 OK · byte-identical re-run · npm test 9/9
+ruff clean · pytest 9/9 · `pipeline.pipeline all` (8 cases) · CONTRACT 2 OK · byte-identical re-run · npm test 9/9
 (cv 4 + contract 5) · `npm run build` green.

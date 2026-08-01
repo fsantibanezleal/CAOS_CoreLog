@@ -15,7 +15,7 @@ Governed by the **two data contracts** of ADR-0057 (see [docs/architecture/08_da
 
 ## CONTRACT 1, ingestion (the *bring-your-own-tray* gate)
 
-Defined in `data-pipeline/cllab/io/contract.py`; full schema in
+Defined in `data-pipeline/pipeline/io/contract.py`; full schema in
 [the data-contracts doc](../docs/architecture/08_data-contracts.md) and the
 [bring-your-own guide](../docs/guides/02_bring-your-own-data.md).
 
@@ -31,7 +31,7 @@ asserts it).
 
 ## CONTRACT 2, artifact (pipeline → web)
 
-`data-pipeline/cllab/core/{trace.py, manifest.py}` (`corelog.trace/v1` + `manifest/v2`). The web loads only manifests
+`data-pipeline/pipeline/core/{trace.py, manifest.py}` (`corelog.trace/v1` + `manifest/v2`). The web loads only manifests
 + traces + the shared artifacts; `frontend/src/lib/contract.types.ts` mirrors the shapes so a drift fails `tsc`. **No
 raw/heavy data is committed**, only the compact derived artifacts (the CI guards reject `.parquet/.h5/.mat/.npy`,
 venvs, and native binaries; the synthetic tray images are generated procedurally, never stored as files).
