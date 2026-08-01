@@ -21,7 +21,7 @@ the reconstruction-based OOD signal is reported as a measured novelty ratio vers
 frame-vs-core contrast, AUC 0.729).
 
 For batch/offline ingestion of a real **multi-channel tray descriptor** (depth stitching, channel splitting), the
-Contract 1 validation gate below (`cllab/io/contract.py`, Python-side) is the entry point; the schema + outlier policy
+Contract 1 validation gate below (`pipeline/io/contract.py`, Python-side) is the entry point; the schema + outlier policy
 are documented in [data-contracts](../architecture/08_data-contracts.md) and `data/README.md`.
 
 ## The tray-descriptor schema
@@ -42,8 +42,8 @@ A tiny valid example ships at `data/examples/trays.csv`.
 ## Validate it
 
 ```python
-from cllab.io.contract import validate_records, validate_image
-from cllab.io.formats import read_csv_rows
+from pipeline.io.contract import validate_records, validate_image
+from pipeline.io.formats import read_csv_rows
 
 rep = validate_records(read_csv_rows("my_trays.csv"))
 print(rep.summary())          # "N accepted, M rejected, K flagged"

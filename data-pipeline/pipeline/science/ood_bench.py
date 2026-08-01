@@ -8,7 +8,7 @@ committed compact artifacts. If no feature-space score beats reconstruction, tha
 
 Run (after `scratch_fetch_dcid` has populated data/raw/dcid and gen_train.mjs has written litho-train.json):
 
-    .venv-precompute/Scripts/python data-pipeline/cllab/science/ood_bench.py
+    .venv-precompute/Scripts/python data-pipeline/pipeline/science/ood_bench.py
 
 Outputs (committed, small): data/derived/{ood-bench.json, ood-detector.json, real-litho-cnn.onnx,
 lithology-cnn.onnx (feature output added)}.
