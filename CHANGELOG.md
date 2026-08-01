@@ -3,6 +3,20 @@
 All notable changes to CAOS CoreLog Vision. Versions follow `X.XX.XXX` (display), see `cllab.__version__` and
 `frontend/package.json`. The project stays in `0.x` while the synthetic core-tray images anchor the metrics.
 
+## [0.10.001] · 2026-08-01
+
+### Fixed - the docs routes clipped with no way to reach the content
+
+The ADR-0071 floor put `height: 100dvh; overflow: hidden` on the whole shell with no inner scroll for the
+prose routes. `/benchmark` hid 2479px, `/experiments` 738px and `/methodology` 265px, with nothing able to
+scroll. Prose routes get their own scroll now.
+
+Note for whoever applies the floor next: this repo renders `page-body pf-layout`, NOT a `cl-` prefix, so the
+applier must be given `pf` or it emits a selector that matches nothing and silently changes nothing. The
+floor was appended with the wrong prefix here and corrected in the same pass.
+
+Tab grouping and the ADR-0070 focus view are still outstanding for this product.
+
 ## [0.10.000] · 2026-07-30
 
 ### Fixed
