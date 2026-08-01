@@ -106,8 +106,8 @@ export function OodComparison({ ood, es }: { ood: OodBenchFile | null; es: boole
   if (!ood) {
     return (
       <Callout variant="honest" title={es ? 'Benchmark OOD no disponible' : 'OOD benchmark unavailable'}>
-        {es ? 'ood-bench.json no cargó en esta sesión; ejecutar `python data-pipeline/cllab/science/ood_bench.py`.'
-          : 'ood-bench.json did not load this session; run `python data-pipeline/cllab/science/ood_bench.py`.'}
+        {es ? 'ood-bench.json no cargó en esta sesión; ejecutar `python data-pipeline/pipeline/science/ood_bench.py`.'
+          : 'ood-bench.json did not load this session; run `python data-pipeline/pipeline/science/ood_bench.py`.'}
       </Callout>
     );
   }

@@ -2,8 +2,8 @@
 unusual aspect / coarse resolution are flagged; the committed example passes."""
 from pathlib import Path
 
-from cllab.io.contract import validate_image, validate_records
-from cllab.io.formats import read_csv_rows
+from pipeline.io.contract import validate_image, validate_records
+from pipeline.io.formats import read_csv_rows
 
 
 def _row(**over):

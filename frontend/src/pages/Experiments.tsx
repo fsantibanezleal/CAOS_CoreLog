@@ -43,8 +43,8 @@ export default function Experiments() {
 
       <h2>{es ? 'Protocolo OOD: split seguro ante fugas, dedupe y control nulo' : 'OOD protocol: leakage-safe split, dedupe and null control'}</h2>
       <p>{es
-        ? 'La contribución de features-OOD + cabeza real se mide offline (data-pipeline/cllab/science/ood_bench.py) sobre DCID-7 completo, no sobre los pocos parches embarcados. El protocolo evita las fugas que inflarían la exactitud.'
-        : 'The feature-OOD + real-head contribution is measured offline (data-pipeline/cllab/science/ood_bench.py) over the full DCID-7, not the few shipped patches. The protocol avoids the leakage that would inflate accuracy.'}</p>
+        ? 'La contribución de features-OOD + cabeza real se mide offline (data-pipeline/pipeline/science/ood_bench.py) sobre DCID-7 completo, no sobre los pocos parches embarcados. El protocolo evita las fugas que inflarían la exactitud.'
+        : 'The feature-OOD + real-head contribution is measured offline (data-pipeline/pipeline/science/ood_bench.py) over the full DCID-7, not the few shipped patches. The protocol avoids the leakage that would inflate accuracy.'}</p>
       <ul className="pf-list">
         <li><b>{es ? 'Split seguro ante fugas' : 'Leakage-safe split'}</b>: {es
           ? 'se usa el split train/test propio de DCID (imágenes fuente distintas), más deduplicación por hash perceptual entre lados para eliminar casi-duplicados. Las carpetas de aumentación RWDA (noise-*) se excluyen por completo.'

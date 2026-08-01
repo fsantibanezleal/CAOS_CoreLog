@@ -4,7 +4,7 @@ CoreLog's offline lane is **two-language** (like ChancaDEM / DispatchLab / PitFo
 TypeScript engine the browser runs, driven from Node via `tsx`; Python only orchestrates + reshapes. This avoids ever
 re-implementing the CV engine in Python.
 
-## The named stages (`cllab/stages/`)
+## The named stages (`pipeline/stages/`)
 
 | Stage | What (heavy lane) |
 |---|---|
@@ -15,11 +15,11 @@ re-implementing the CV engine in Python.
 | `evaluate` | the CNN accuracy vs the classical baseline on the test split (leakage-safe grouped-by-hole split, [issue #14](https://github.com/fsantibanezleal/CAOS_CoreLog/issues/14) fixed, ~0.99) + the OOD AUC |
 | `export` | build the compact per-case trace + manifest (Contract 2), the light, numpy-only step |
 
-## The two lanes of `cllab.pipeline`
+## The two lanes of `pipeline.pipeline`
 
 ```bash
-python -m cllab.pipeline all              # light (numpy): reshape the committed case-results.json → traces + manifests
-python -m cllab.pipeline all --retrain    # heavy: bake → gen_train → train_litho, then reshape
+python data-pipeline/run.py all              # light (numpy): reshape the committed case-results.json → traces + manifests
+python data-pipeline/run.py all --retrain    # heavy: bake → gen_train → train_litho, then reshape
 ```
 
 The **default is light**: the committed `data/derived/case-results.json` + `cl-learned.json` + the two `.onnx` are the

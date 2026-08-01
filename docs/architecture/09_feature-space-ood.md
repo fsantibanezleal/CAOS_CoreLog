@@ -7,7 +7,7 @@ new algorithm. Mahalanobis (Lee et al. 2018), kNN-OOD (Sun et al. 2022), energy 
 (Hendrycks and Gimpel 2017) are established; the work here is selecting and measuring the score that separates
 CoreLog's synthetic to real gap, with rigorous controls, and reporting the honest numbers including any null.
 
-The offline benchmark is `data-pipeline/cllab/science/ood_bench.py` (run in `.venv-precompute`, torch). Its outputs
+The offline benchmark is `data-pipeline/pipeline/science/ood_bench.py` (run in `.venv-precompute`, torch). Its outputs
 ship as compact artifacts: `data/derived/ood-bench.json` (the full table for the Benchmark page),
 `data/derived/ood-detector.json` (the shipped live statistics), the augmented `lithology-cnn.onnx` (a new 64-d
 feature output `f`) and `real-litho-cnn.onnx` (the DCID-7 head).

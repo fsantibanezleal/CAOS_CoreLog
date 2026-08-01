@@ -50,8 +50,8 @@ Mahalanobis, which is why the App reports both.
 
 ```bash
 # light lane (numpy only), rebuild the replay artifacts + run the checks
-python -m venv .venv-pipeline && .venv-pipeline/Scripts/pip install -r data-pipeline/requirements.txt -r requirements-dev.txt -e .
-.venv-pipeline/Scripts/python -m cllab.pipeline all      # 8 cases → traces + manifests
+python -m venv .venv-pipeline && .venv-pipeline/Scripts/pip install -r data-pipeline/requirements.txt -r requirements-dev.txt
+.venv-pipeline/Scripts/python data-pipeline/run.py all      # 8 cases → traces + manifests
 .venv-pipeline/Scripts/python scripts/check_artifacts.py # CONTRACT 2 OK
 
 # the SPA (the CV engine + CNN run live in the browser)
@@ -60,14 +60,14 @@ npm test                                                 # cv 4 + contract 5
 
 # heavy lane (local only), re-bake + retrain the learned models (torch → ONNX)
 python -m venv .venv-precompute && .venv-precompute/Scripts/pip install -r data-pipeline/requirements-precompute.txt
-.venv-pipeline/Scripts/python -m cllab.pipeline all --retrain
+.venv-pipeline/Scripts/python data-pipeline/run.py all --retrain
 ```
 
 ## Layout
 
 See [STRUCTURE.md](STRUCTURE.md) and the wiki in [docs/](docs/README.md). The CV engine is the TypeScript code in
 [`frontend/src/cv/`](frontend/src/cv/) (it runs in the browser **and** in the offline Node bake, no Python re-port);
-`data-pipeline/cllab/` is the two contracts + the staged pipeline + the lane gate.
+`data-pipeline/pipeline/` is the two contracts + the staged pipeline + the lane gate.
 
 ## License
 
