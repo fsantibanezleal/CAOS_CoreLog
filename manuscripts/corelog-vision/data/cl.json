@@ -87,5 +87,7 @@
  "realhead_litho64_f1": 0.8869,
  "realhead_shipped": "mobilenet",
  "realhead_mobilenet_top1": 0.9916,
- "realhead_mobilenet_f1": 0.9916
+ "realhead_mobilenet_f1": 0.9916,
+ "ood_n_id": 1344,
+ "ood_n_ood": 829
 }
