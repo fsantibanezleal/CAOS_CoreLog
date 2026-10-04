@@ -57,7 +57,8 @@ kNN, energy and MSP scores; the full table, the ROC overlay, the score histogram
 the Benchmark page and in `docs/architecture/09_feature-space-ood.md`.
 
 **DCID-fine-tuned real head.** A frozen MobileNetV3-Small backbone plus a linear head, trained on the real DCID-7
-train split, classifies real core at **top-1 99.2% / macro-F1 99.2%** on a held-out real split (829 patches), shipped
+train split, classifies real core at **top-1 99.2% / macro-F1 99.2%** on a held-out real split (829 patches; DCID's
+own 8:2 split, which does not state that source photographs stay on one side, so this is an upper bound), shipped
 as `real-litho-cnn.onnx`. The label-permutation null collapses to chance (13.9% vs 14.3%), confirming no leakage.
 This is an empirical, real-data contribution, not a new algorithm. See `docs/architecture/09_feature-space-ood.md`,
 `docs/guides/02_bring-your-own-data.md` and `data/derived/real/attribution.json` for the protocol, the data contract
