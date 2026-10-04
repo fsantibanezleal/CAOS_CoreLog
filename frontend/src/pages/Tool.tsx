@@ -59,7 +59,10 @@ export default function Tool() {
   const [useCnn, setUseCnn] = useState(false);
   const [overlay, setOverlay] = useState(true);
   const [oodMode, setOodMode] = useState<'mahal' | 'recon'>('mahal');
-  const [useDcidHead, setUseDcidHead] = useState(false);
+  // The real lane opens on the head trained on real core. It opened on the synthetic head, which labelled the first
+  // Red sandstone patch "Basalt" at 94% under a banner naming low confidence as the domain-gap signal: confidently
+  // wrong, beside a sentence saying the wrongness would show. The synthetic head stays one click away.
+  const [useDcidHead, setUseDcidHead] = useState(true);
   const [control, setControl] = useState<'none' | ControlKind>('none');
   const [headDim, setHeadDim] = useState(24);
   const [headAvail, setHeadAvail] = useState(false);
@@ -514,9 +517,16 @@ export default function Tool() {
       <main className="pf-main">
         {source === 'real' && (
           <Callout variant="honest" title={es ? 'Modelos sintéticos sobre datos reales (fuera de distribución)' : 'Synthetic-trained models on real data (out-of-distribution)'}>
-            {es
-              ? 'El CNN de litología y el detector OOD se entrenaron con el generador de core sintético de CoreLog, así que sobre fotos reales DCID quedan fuera de distribución: la clase predicha es solo indicativa. La brecha se ve en tres señales honestas: baja confianza del clasificador, la separación en el espacio latente y el error de reconstrucción OOD (que se reporta con su valor medido, y se indica cuando es débil, no un simple "dispara siempre").'
-              : 'The lithology CNN and the OOD detector were trained on CoreLog\'s synthetic core generator, so on real DCID photos they are out-of-distribution: the predicted class is indicative only. The gap shows in three honest signals: low classifier confidence, the latent-space separation, and the OOD reconstruction error (reported with its measured value, and called weak when it is, rather than a blanket "always fires").'}
+            {/* The banner names the head on screen. It always described the synthetic CNN, which is no longer the
+                default here (0.11.001): under the DCID-7 head it would have called a real-trained prediction
+                indicative only. */}
+            {useDcidHead && headAvail
+              ? es
+                ? 'La clase mostrada viene de la cabeza DCID-7, entrenada con core real. El detector OOD y el CNN sintético (a un clic) se entrenaron con el generador de core sintético de CoreLog, así que sobre fotos reales DCID quedan fuera de distribución. La brecha se ve en tres señales: la confianza del CNN sintético, la separación en el espacio latente y el error de reconstrucción OOD (que se reporta con su valor medido, y se indica cuando es débil, no un simple "dispara siempre").'
+                : 'The class shown comes from the DCID-7 head, trained on real core. The OOD detector and the synthetic CNN (one click away) were trained on CoreLog\'s synthetic core generator, so on real DCID photos they are out-of-distribution. The gap shows in three signals: the synthetic CNN\'s confidence, the latent-space separation, and the OOD reconstruction error (reported with its measured value, and called weak when it is, rather than a blanket "always fires").'
+              : es
+                ? 'El CNN de litología y el detector OOD se entrenaron con el generador de core sintético de CoreLog, así que sobre fotos reales DCID quedan fuera de distribución: la clase predicha es solo indicativa, y puede estar equivocada con alta confianza. La brecha se ve en tres señales: la confianza del clasificador, la separación en el espacio latente y el error de reconstrucción OOD (que se reporta con su valor medido, y se indica cuando es débil, no un simple "dispara siempre").'
+                : 'The lithology CNN and the OOD detector were trained on CoreLog\'s synthetic core generator, so on real DCID photos they are out-of-distribution: the predicted class is indicative only, and it can be wrong with high confidence. The gap shows in three signals: the classifier\'s confidence, the latent-space separation, and the OOD reconstruction error (reported with its measured value, and called weak when it is, rather than a blanket "always fires").'}
           </Callout>
         )}
         <div className="pf-tabrow" role="tablist" aria-label={es ? 'vistas' : 'views'}>
