@@ -31,7 +31,11 @@ engine, and the models trained only on them). Two parts of the repository are no
 
 | Files | What | Terms |
 |---|---|---|
-| `data/derived/real/dcid-*.jpg` (21 images), `data/derived/real/attribution.json` | Verbatim 512x512 samples from the DCID-512-7 test split, the real lane's patches | CC BY-NC 4.0 per the dataset's GitHub README and Hugging Face card; the journal article states CC BY-NC-ND 4.0. Shipped unmodified, with attribution, for non-commercial use only |
-| `data/derived/real-litho-cnn.onnx` | The real DCID-7 head: a linear head on a frozen MobileNetV3-Small, trained on a sample of DCID-7 | Trained on non-commercial data: not for commercial use. **Open question:** if the article's NoDerivatives term governs, a model trained on the images may be a derivative that may not be redistributed at all. Until the dataset's authors settle which licence applies, the model is shipped for non-commercial research use only and is not covered by the MIT licence |
+| `data/derived/real/dcid-*.jpg` (21 images), `data/derived/real/attribution.json` | Verbatim 512x512 samples from the DCID-512-7 test split, the real lane's patches | The dataset's licence, CC BY-NC 4.0 (its GitHub README and Hugging Face card): shipped unmodified, with attribution, for non-commercial use |
+| `data/derived/real-litho-cnn.onnx` | The real DCID-7 head: a linear head on a frozen MobileNetV3-Small, trained on a sample of DCID-7 | Distributed under the dataset's licence, CC BY-NC 4.0, like the images: attributed, non-commercial use |
+
+The DCID images and the model trained on them follow the dataset's distribution terms as published with it:
+attribution to its authors, and no commercial use. CoreLog has no commercial use. Anyone reusing these files must do
+the same.
 
 DCID: Li, J.-Y. et al. (2025). A large-scale, high-quality dataset for lithology identification: Construction and applications. *Petroleum Science*, 22(8), 3207-3228, doi:10.1016/j.petsci.2025.04.013; https://github.com/JiayuLi1120/drill-core-image-dataset.

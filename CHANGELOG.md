@@ -3,6 +3,15 @@
 All notable changes to CAOS CoreLog Vision. Versions follow `X.XX.XXX` (display), see `pipeline.__version__` and
 `frontend/package.json`. The project stays in `0.x` while the synthetic core-tray images anchor the metrics.
 
+## [0.11.002] · 2026-10-04
+
+### Changed
+
+- The DCID images and the model trained on them are distributed under the dataset's own terms, CC BY-NC 4.0 (attribution,
+  non-commercial use; CoreLog has no commercial use), in place of the open question 0.11.001 recorded about the
+  trained head. Owner's decision, 2026-10-04: the dataset is required for the real lane and its published rules are
+  followed. (#60)
+
 ## [0.11.001] · 2026-10-04
 
 Fixes from the 2026-10-02 pre-publication review (#60).

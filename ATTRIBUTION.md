@@ -25,7 +25,7 @@ cases are closed-form analytic controls.
 The real lane uses **real drill-core photography** from DCID, the Drill Core Image Dataset: 21 verbatim 512x512
 samples of its DCID-512-7 test split ship in `data/derived/real/`, and the real DCID-7 head
 (`data/derived/real-litho-cnn.onnx`) was trained on a sample of DCID-7. Li, J.-Y. et al. (2025). A large-scale, high-quality dataset for lithology identification: Construction and applications. *Petroleum Science*, 22(8), 3207-3228, doi:10.1016/j.petsci.2025.04.013; https://github.com/JiayuLi1120/drill-core-image-dataset. Licence: CC BY-NC 4.0
-per the dataset's README (the article states CC BY-NC-ND 4.0); non-commercial use only, and not covered by this
+as published with the dataset (its GitHub README and Hugging Face card); attribution and non-commercial use, not covered by this
 repository's MIT licence. See [LICENSES.md](LICENSES.md).
 
 ## Archetype
