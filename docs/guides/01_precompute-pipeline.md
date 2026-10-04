@@ -18,7 +18,7 @@ This is what CI and `deploy-pages` run, it is fast and deterministic (a re-run i
 
 ```bash
 python -m venv .venv-precompute
-.venv-precompute/Scripts/pip install -r data-pipeline/requirements-precompute.txt   # numpy + torch + onnx
+.venv-precompute/Scripts/pip install -r data-pipeline/requirements-precompute.txt   # numpy, torch, onnx, torchvision, pillow, requests
 # Node + tsx must be available (cd frontend && npm ci) for the bake/gen_train steps
 .venv-pipeline/Scripts/python data-pipeline/run.py all --retrain
 ```
