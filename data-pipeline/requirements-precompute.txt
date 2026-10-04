@@ -4,3 +4,8 @@
 numpy==2.4.6
 torch==2.6.0
 onnx==1.17.0
+# Imported by the OOD benchmark and the DCID fetch (pipeline/science/ood_bench.py, fetch_dcid.py) and pinned to the
+# versions installed in .venv-precompute on 2026-10-04 (issue #39: they were imported but pinned nowhere).
+torchvision==0.21.0
+pillow==12.3.0
+requests==2.34.2
