@@ -3,6 +3,15 @@
 All notable changes to CAOS CoreLog Vision. Versions follow `X.XX.XXX` (display), see `pipeline.__version__` and
 `frontend/package.json`. The project stays in `0.x` while the synthetic core-tray images anchor the metrics.
 
+## [0.11.003] · 2026-10-04
+
+### Fixed
+
+- The precompute lane imports `torchvision`, `PIL` and `requests` (`pipeline/science/ood_bench.py`,
+  `fetch_dcid.py`) but pinned none of them. `data-pipeline/requirements-precompute.txt` now pins them to the versions
+  installed in `.venv-precompute` (torchvision 0.21.0, pillow 12.3.0, requests 2.34.2), and the guide lists them.
+  The README part of the issue (a leaky split, an OOD AUC of 0.790) was already gone. (#39)
+
 ## [0.11.002] · 2026-10-04
 
 ### Changed
