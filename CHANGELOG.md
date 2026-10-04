@@ -3,6 +3,32 @@
 All notable changes to CAOS CoreLog Vision. Versions follow `X.XX.XXX` (display), see `pipeline.__version__` and
 `frontend/package.json`. The project stays in `0.x` while the synthetic core-tray images anchor the metrics.
 
+## [0.11.001] · 2026-10-04
+
+Fixes from the 2026-10-02 pre-publication review (#60).
+
+### Fixed
+
+- **The DCID data is declared as what it is.** `LICENSES.md` and `ATTRIBUTION.md` said no real photography was used
+  or redistributed. The real lane ships 21 verbatim DCID images and `real-litho-cnn.onnx`, a head trained on DCID-7.
+  Both now carry a carve-out: CC BY-NC 4.0 per the dataset's README (the article states CC BY-NC-ND 4.0),
+  non-commercial use only, not covered by the MIT licence. They also record the open question: if the NoDerivatives
+  term governs, a model trained on the images may not be redistributable.
+- **The real-data 99.2% carries its caveat.** DCID describes its split only as 8:2 per category, and calls DCID-7
+  the variant for evaluating upper-bound performance. It does not say whether crops of one photograph stay on one
+  side, so the docs no longer say the split separates "distinct source images", and the permutation null is no
+  longer read as "no leakage". The README, the model-evaluation and feature-space pages, and the Experiments page
+  now say so, and state how the subset was chosen: a seeded draw of 300 training and 120 test images per class
+  (2,062 and 829 after the dedupe).
+- **The README cites the detector the App ships**: LithoCNN-Mahalanobis, AUROC 0.946, AUPR 0.92, FPR at 95% TPR
+  0.28. It cited AUPR 0.999, the offline MobileNetV3-Small detector.
+- **The real lane opens on the DCID-7 head.** It opened on the synthetic head, which labelled the first Red
+  sandstone patch "Basalt" at 94% under a banner naming low confidence as the domain-gap signal. The banner now
+  names the head on screen.
+- **`<html lang>` follows the interface language**; `index.html` hardcoded `es`, so every English page declared
+  Spanish.
+- **Deep links answer 200**: each route and each case's focus view gets its own `index.html` (13 documents).
+
 ## [0.11.000] · 2026-08-01
 
 ### Changed - ADR-0071 layout and one row of tabs

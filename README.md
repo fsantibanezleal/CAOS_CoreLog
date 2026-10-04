@@ -8,8 +8,18 @@
 Technical report (CC-BY-4.0): *"CoreLog Vision: Lithology from Drill-Core Imagery, with Honest Sim-to-Real
 Out-of-Distribution Detection"*, concept DOI [10.5281/zenodo.21519229](https://doi.org/10.5281/zenodo.21519229)
 (source in [`manuscripts/corelog-vision/`](manuscripts/corelog-vision/)). Synthetic CNN 99.4% (vs 92.9% baseline,
-leakage-safe), real DCID-7 99.2% (dedicated head), and feature-space OOD detects the sim-to-real shift (AUPR up to
-0.999) where reconstruction fails (0.28).
+leakage-safe), real DCID-7 99.2% (dedicated head; see the caveat below), and feature-space OOD detects the
+sim-to-real shift where reconstruction fails (AUPR 0.28): the detector the App ships per window, LithoCNN-Mahalanobis,
+reaches AUROC 0.946 and AUPR 0.92 (FPR at 95% TPR 0.28); a frozen MobileNetV3-Small detector reaches AUPR 0.999
+offline and is not shipped.
+
+**The real-data number needs its caveat.** The 99.2% is measured on DCID's own train/test split, which its authors
+describe only as an 8:2 split per category, on DCID-7, the variant they call suitable for evaluating upper-bound
+performance. Whether crops of one source photograph fall on both sides of that split is not stated, so texture may
+leak from training to test; a perceptual-hash dedupe removed 49 near-duplicates, and a label-permutation null (13.9%)
+shows the labels carry the signal, not that the test cores are unseen. CoreLog uses a seeded random draw of 300
+training and 120 test images per class (2,062 and 829 after the dedupe) of DCID-7's 28,000 and 7,000. The DCID
+images and the head trained on them are CC BY-NC data, not MIT: see [LICENSES.md](LICENSES.md).
 
 [![CI](https://github.com/fsantibanezleal/CAOS_CoreLog/actions/workflows/ci.yml/badge.svg)](https://github.com/fsantibanezleal/CAOS_CoreLog/actions)
 **Live:** https://corelog.fasl-work.com

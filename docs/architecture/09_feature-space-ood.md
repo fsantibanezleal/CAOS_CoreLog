@@ -37,8 +37,11 @@ p_c = e^{z_c} / sum_j e^{z_j},   H(x) = - sum_c p_c log p_c
 
 ## 3. Leakage-safe protocol
 
-- **Split.** The dataset's OWN DCID-512-7 train/test split (distinct source images), plus a perceptual-hash
-  dedupe across the two sides to drop near-duplicates. The RWDA augmentation folders (`noise-*`) are excluded
+- **Split.** The dataset's OWN DCID-512-7 train/test split, plus a perceptual-hash dedupe across the two sides to
+  drop near-duplicates. DCID describes its split only as 8:2 per category; it does not say whether crops of one
+  source photograph stay on one side, so texture leakage between train and test is not ruled out (this page said
+  "distinct source images" until 0.11.001, which the dataset does not state). Its authors call DCID-7 the variant
+  suitable for evaluating upper-bound performance. The RWDA augmentation folders (`noise-*`) are excluded
   entirely, so no augmented copy of a test image leaks into training.
 - **Native DCID-7 space.** The real head is evaluated on DCID's 7 native classes (no mapping to CoreLog's 6),
   so confusion is not an artefact of the mapping.
@@ -46,7 +49,8 @@ p_c = e^{z_c} / sum_j e^{z_j},   H(x) = - sum_c p_c log p_c
   window resolution) then upsampled identically, so a backbone cannot separate the two on raw blur instead of
   domain.
 - **Data.** synthetic 6048 (4704 train holes / 1344 held-out holes), DCID train 2062, DCID test 829, dedupe
-  dropped 49.
+  dropped 49. The DCID sets are a seeded random draw (`numpy` seed 0) of 300 training and 120 test images per class
+  from DCID-7's 28,000 and 7,000, before the dedupe.
 
 ## 4. Measured results (this build)
 
@@ -79,7 +83,8 @@ its real accuracy is the domain-mismatch confusion shown in the App.
 ## 5. Negative controls
 
 - **Label-permutation null.** Shuffling the DCID-7 training labels and retraining the head collapses accuracy to
-  **13.9%**, at chance (1/7 = 14.3%). No leakage.
+  **13.9%**, at chance (1/7 = 14.3%): the labels carry the signal. It does not show that the test patches come
+  from cores the head never saw; that depends on DCID's split (see section 3).
 - **Non-core control.** Pure noise and a smooth gradient are flagged OOD: every non-core patch exceeds the
   synthetic-ID 95th-percentile threshold, and the medians are monotone (non-core 3799 > real 202 > synthetic 21).
   Honest caveat: the strictest reading (every non-core patch above the single most extreme real patch) does not
